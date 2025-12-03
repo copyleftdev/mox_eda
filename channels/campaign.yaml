@@ -1,0 +1,90 @@
+# Campaign & Brand Deal domain channels
+campaign.created:
+  address: campaign.created
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    campaignCreated:
+      $ref: "../components/messages/campaign.yaml#/CampaignCreated"
+
+campaign.updated:
+  address: campaign.updated
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    campaignUpdated:
+      $ref: "../components/messages/campaign.yaml#/CampaignUpdated"
+
+campaign.status.changed:
+  address: campaign.status.changed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    campaignStatusChanged:
+      $ref: "../components/messages/campaign.yaml#/CampaignStatusChanged"
+
+campaign.talent.added:
+  address: campaign.talent.added
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    talentAddedToCampaign:
+      $ref: "../components/messages/campaign.yaml#/TalentAddedToCampaign"
+
+deliverable.created:
+  address: deliverable.created
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    deliverableCreated:
+      $ref: "../components/messages/campaign.yaml#/DeliverableCreated"
+
+deliverable.status.changed:
+  address: deliverable.status.changed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    deliverableStatusChanged:
+      $ref: "../components/messages/campaign.yaml#/DeliverableStatusChanged"
+
+deliverable.submitted:
+  address: deliverable.submitted
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    deliverableSubmitted:
+      $ref: "../components/messages/campaign.yaml#/DeliverableSubmitted"
+
+deliverable.approved:
+  address: deliverable.approved
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    deliverableApproved:
+      $ref: "../components/messages/campaign.yaml#/DeliverableApproved"
+
+deliverable.rejected:
+  address: deliverable.rejected
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    deliverableRejected:
+      $ref: "../components/messages/campaign.yaml#/DeliverableRejected"
+
+campaign.performance.snapshot:
+  address: campaign.performance.snapshot
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    campaignPerformanceSnapshot:
+      $ref: "../components/messages/campaign.yaml#/CampaignPerformanceSnapshot"

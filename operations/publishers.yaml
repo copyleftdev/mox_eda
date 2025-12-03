@@ -1,0 +1,741 @@
+# All publisher (send) operations
+# AUTH / ORG publishers
+authServiceEmitsUserOnboarded:
+  action: send
+  channel:
+    $ref: "../channels/auth.yaml#/auth.user.onboarded"
+  summary: auth-service emits when a user completes onboarding.
+
+orgServiceEmitsTeamMemberAdded:
+  action: send
+  channel:
+    $ref: "../channels/auth.yaml#/org.team.member.added"
+  summary: org-service emits when a team member is added.
+
+# TALENT publishers
+talentServiceEmitsTalentCreated:
+  action: send
+  channel:
+    $ref: "../channels/talent.yaml#/talent.created"
+  summary: talent-service emits when a talent record is created.
+
+talentServiceEmitsTalentUpdated:
+  action: send
+  channel:
+    $ref: "../channels/talent.yaml#/talent.updated"
+  summary: talent-service emits when a talent record is updated.
+
+talentServiceEmitsTalentStatusChanged:
+  action: send
+  channel:
+    $ref: "../channels/talent.yaml#/talent.status.changed"
+  summary: talent-service emits when a talent's status changes.
+
+talentServiceEmitsTalentNoteCreated:
+  action: send
+  channel:
+    $ref: "../channels/talent.yaml#/talent.note.created"
+  summary: talent-service emits when a note is added to a talent.
+
+talentServiceEmitsTalentNoteUpdated:
+  action: send
+  channel:
+    $ref: "../channels/talent.yaml#/talent.note.updated"
+  summary: talent-service emits when a talent note is updated.
+
+# PROJECT / ISSUE publishers
+scheduleServiceEmitsProjectCreated:
+  action: send
+  channel:
+    $ref: "../channels/project.yaml#/project.created"
+  summary: schedule-service emits when a project is created.
+
+scheduleServiceEmitsIssueCreated:
+  action: send
+  channel:
+    $ref: "../channels/project.yaml#/issue.created"
+  summary: schedule-service emits when an issue is created.
+
+scheduleServiceEmitsIssueUpdated:
+  action: send
+  channel:
+    $ref: "../channels/project.yaml#/issue.updated"
+  summary: schedule-service emits when an issue is updated.
+
+scheduleServiceEmitsChecklistItemCompleted:
+  action: send
+  channel:
+    $ref: "../channels/project.yaml#/issue.checklist.item.completed"
+  summary: schedule-service emits when a checklist item is completed.
+
+# SCHEDULE publishers
+scheduleServiceEmitsBlockCreated:
+  action: send
+  channel:
+    $ref: "../channels/schedule.yaml#/schedule.block.created"
+  summary: schedule-service emits when a schedule block is created.
+
+scheduleServiceEmitsBlockUpdated:
+  action: send
+  channel:
+    $ref: "../channels/schedule.yaml#/schedule.block.updated"
+  summary: schedule-service emits when a schedule block is updated.
+
+scheduleServiceEmitsConflict:
+  action: send
+  channel:
+    $ref: "../channels/schedule.yaml#/schedule.conflicted"
+  summary: schedule-service emits when a scheduling conflict is detected.
+
+# BATTLE publishers
+battleServiceEmitsBattleRecorded:
+  action: send
+  channel:
+    $ref: "../channels/battle.yaml#/battle.recorded"
+  summary: battle-service emits when a battle is recorded.
+
+battleServiceEmitsBattleUpdated:
+  action: send
+  channel:
+    $ref: "../channels/battle.yaml#/battle.updated"
+  summary: battle-service emits when a battle record is updated.
+
+battleServiceEmitsPerformanceSnapshot:
+  action: send
+  channel:
+    $ref: "../channels/battle.yaml#/performance.snapshot.captured"
+  summary: battle-service emits when a performance snapshot is captured.
+
+# SEMANTIC publishers
+semanticServiceEmitsEmbeddingUpserted:
+  action: send
+  channel:
+    $ref: "../channels/semantic.yaml#/semantic.embedding.upserted"
+  summary: semantic-service emits when an embedding is created or updated.
+
+semanticServiceEmitsSummaryGenerated:
+  action: send
+  channel:
+    $ref: "../channels/semantic.yaml#/semantic.summary.generated"
+  summary: semantic-service emits when a summary is generated.
+
+# NOTIFICATION publishers
+notificationServiceEmitsDelivered:
+  action: send
+  channel:
+    $ref: "../channels/notification.yaml#/notification.delivered"
+  summary: notification-service emits when a notification is delivered.
+
+# AUDIT publishers
+auditServiceEmitsAuditLogWritten:
+  action: send
+  channel:
+    $ref: "../channels/audit.yaml#/audit.written"
+  summary: audit-service emits when an audit log entry is written.
+
+# CONTRACT publishers
+contractServiceEmitsContractCreated:
+  action: send
+  channel:
+    $ref: "../channels/contract.yaml#/contract.created"
+  summary: contract-service emits when a contract is created.
+
+contractServiceEmitsContractSigned:
+  action: send
+  channel:
+    $ref: "../channels/contract.yaml#/contract.signed"
+  summary: contract-service emits when a contract is signed.
+
+contractServiceEmitsContractStatusChanged:
+  action: send
+  channel:
+    $ref: "../channels/contract.yaml#/contract.status.changed"
+  summary: contract-service emits when a contract status changes.
+
+contractServiceEmitsContractExpired:
+  action: send
+  channel:
+    $ref: "../channels/contract.yaml#/contract.expired"
+  summary: contract-service emits when a contract expires.
+
+billingServiceEmitsInvoiceGenerated:
+  action: send
+  channel:
+    $ref: "../channels/contract.yaml#/invoice.generated"
+  summary: billing-service emits when an invoice is generated.
+
+billingServiceEmitsInvoicePaid:
+  action: send
+  channel:
+    $ref: "../channels/contract.yaml#/invoice.paid"
+  summary: billing-service emits when an invoice is paid.
+
+billingServiceEmitsPayoutProcessed:
+  action: send
+  channel:
+    $ref: "../channels/contract.yaml#/payout.processed"
+  summary: billing-service emits when a talent payout is processed.
+
+# CAMPAIGN publishers
+campaignServiceEmitsCampaignCreated:
+  action: send
+  channel:
+    $ref: "../channels/campaign.yaml#/campaign.created"
+  summary: campaign-service emits when a campaign is created.
+
+campaignServiceEmitsCampaignUpdated:
+  action: send
+  channel:
+    $ref: "../channels/campaign.yaml#/campaign.updated"
+  summary: campaign-service emits when a campaign is updated.
+
+campaignServiceEmitsCampaignStatusChanged:
+  action: send
+  channel:
+    $ref: "../channels/campaign.yaml#/campaign.status.changed"
+  summary: campaign-service emits when a campaign status changes.
+
+campaignServiceEmitsTalentAdded:
+  action: send
+  channel:
+    $ref: "../channels/campaign.yaml#/campaign.talent.added"
+  summary: campaign-service emits when a talent is added to a campaign.
+
+campaignServiceEmitsDeliverableCreated:
+  action: send
+  channel:
+    $ref: "../channels/campaign.yaml#/deliverable.created"
+  summary: campaign-service emits when a deliverable is created.
+
+campaignServiceEmitsDeliverableStatusChanged:
+  action: send
+  channel:
+    $ref: "../channels/campaign.yaml#/deliverable.status.changed"
+  summary: campaign-service emits when a deliverable status changes.
+
+campaignServiceEmitsDeliverableSubmitted:
+  action: send
+  channel:
+    $ref: "../channels/campaign.yaml#/deliverable.submitted"
+  summary: campaign-service emits when a deliverable is submitted.
+
+campaignServiceEmitsDeliverableApproved:
+  action: send
+  channel:
+    $ref: "../channels/campaign.yaml#/deliverable.approved"
+  summary: campaign-service emits when a deliverable is approved.
+
+campaignServiceEmitsDeliverableRejected:
+  action: send
+  channel:
+    $ref: "../channels/campaign.yaml#/deliverable.rejected"
+  summary: campaign-service emits when a deliverable is rejected.
+
+campaignServiceEmitsPerformanceSnapshot:
+  action: send
+  channel:
+    $ref: "../channels/campaign.yaml#/campaign.performance.snapshot"
+  summary: campaign-service emits campaign performance snapshots.
+
+# TENANT publishers
+tenantServiceEmitsTenantProvisioned:
+  action: send
+  channel:
+    $ref: "../channels/tenant.yaml#/tenant.provisioned"
+  summary: tenant-service emits when a new tenant is provisioned.
+
+tenantServiceEmitsTenantUpdated:
+  action: send
+  channel:
+    $ref: "../channels/tenant.yaml#/tenant.updated"
+  summary: tenant-service emits when a tenant is updated.
+
+tenantServiceEmitsTenantSuspended:
+  action: send
+  channel:
+    $ref: "../channels/tenant.yaml#/tenant.suspended"
+  summary: tenant-service emits when a tenant is suspended.
+
+tenantServiceEmitsTenantReactivated:
+  action: send
+  channel:
+    $ref: "../channels/tenant.yaml#/tenant.reactivated"
+  summary: tenant-service emits when a tenant is reactivated.
+
+subscriptionServiceEmitsSubscriptionCreated:
+  action: send
+  channel:
+    $ref: "../channels/tenant.yaml#/subscription.created"
+  summary: subscription-service emits when a subscription is created.
+
+subscriptionServiceEmitsSubscriptionChanged:
+  action: send
+  channel:
+    $ref: "../channels/tenant.yaml#/subscription.changed"
+  summary: subscription-service emits when a subscription plan changes.
+
+subscriptionServiceEmitsSubscriptionCancelled:
+  action: send
+  channel:
+    $ref: "../channels/tenant.yaml#/subscription.cancelled"
+  summary: subscription-service emits when a subscription is cancelled.
+
+subscriptionServiceEmitsSubscriptionRenewed:
+  action: send
+  channel:
+    $ref: "../channels/tenant.yaml#/subscription.renewed"
+  summary: subscription-service emits when a subscription is renewed.
+
+subscriptionServiceEmitsPaymentFailed:
+  action: send
+  channel:
+    $ref: "../channels/tenant.yaml#/payment.failed"
+  summary: subscription-service emits when a payment fails.
+
+usageServiceEmitsUsageRecorded:
+  action: send
+  channel:
+    $ref: "../channels/tenant.yaml#/usage.recorded"
+  summary: usage-service emits usage metrics periodically.
+
+usageServiceEmitsQuotaExceeded:
+  action: send
+  channel:
+    $ref: "../channels/tenant.yaml#/quota.exceeded"
+  summary: usage-service emits when a tenant exceeds a quota.
+
+featureServiceEmitsFeatureToggled:
+  action: send
+  channel:
+    $ref: "../channels/tenant.yaml#/feature.toggled"
+  summary: feature-service emits when a feature flag is toggled.
+
+# OUTREACH publishers
+outreachServiceEmitsCampaignCreated:
+  action: send
+  channel:
+    $ref: "../channels/outreach.yaml#/outreach.campaign.created"
+  summary: outreach-service emits when an outreach campaign is created.
+
+outreachServiceEmitsCampaignUpdated:
+  action: send
+  channel:
+    $ref: "../channels/outreach.yaml#/outreach.campaign.updated"
+  summary: outreach-service emits when an outreach campaign is updated.
+
+outreachServiceEmitsMessageSent:
+  action: send
+  channel:
+    $ref: "../channels/outreach.yaml#/outreach.message.sent"
+  summary: outreach-service emits when an outreach message is sent.
+
+outreachServiceEmitsMessageDelivered:
+  action: send
+  channel:
+    $ref: "../channels/outreach.yaml#/outreach.message.delivered"
+  summary: outreach-service emits when message delivery is confirmed.
+
+outreachServiceEmitsMessageOpened:
+  action: send
+  channel:
+    $ref: "../channels/outreach.yaml#/outreach.message.opened"
+  summary: outreach-service emits when a message is opened.
+
+outreachServiceEmitsMessageClicked:
+  action: send
+  channel:
+    $ref: "../channels/outreach.yaml#/outreach.message.clicked"
+  summary: outreach-service emits when a link in a message is clicked.
+
+outreachServiceEmitsResponseReceived:
+  action: send
+  channel:
+    $ref: "../channels/outreach.yaml#/outreach.response.received"
+  summary: outreach-service emits when a response is received from a prospect.
+
+outreachServiceEmitsConversationCreated:
+  action: send
+  channel:
+    $ref: "../channels/outreach.yaml#/conversation.created"
+  summary: outreach-service emits when a conversation thread is created.
+
+outreachServiceEmitsConversationStatusChanged:
+  action: send
+  channel:
+    $ref: "../channels/outreach.yaml#/conversation.status.changed"
+  summary: outreach-service emits when a conversation status changes.
+
+calendarServiceEmitsMeetingScheduled:
+  action: send
+  channel:
+    $ref: "../channels/outreach.yaml#/meeting.scheduled"
+  summary: calendar-service emits when a meeting is scheduled.
+
+calendarServiceEmitsMeetingUpdated:
+  action: send
+  channel:
+    $ref: "../channels/outreach.yaml#/meeting.updated"
+  summary: calendar-service emits when a meeting is updated.
+
+calendarServiceEmitsMeetingCancelled:
+  action: send
+  channel:
+    $ref: "../channels/outreach.yaml#/meeting.cancelled"
+  summary: calendar-service emits when a meeting is cancelled.
+
+calendarServiceEmitsMeetingCompleted:
+  action: send
+  channel:
+    $ref: "../channels/outreach.yaml#/meeting.completed"
+  summary: calendar-service emits when a meeting is completed.
+
+outreachServiceEmitsCallLogged:
+  action: send
+  channel:
+    $ref: "../channels/outreach.yaml#/call.logged"
+  summary: outreach-service emits when a call is logged.
+
+outreachServiceEmitsFollowUpScheduled:
+  action: send
+  channel:
+    $ref: "../channels/outreach.yaml#/followup.scheduled"
+  summary: outreach-service emits when a follow-up is scheduled.
+
+outreachServiceEmitsFollowUpCompleted:
+  action: send
+  channel:
+    $ref: "../channels/outreach.yaml#/followup.completed"
+  summary: outreach-service emits when a follow-up is completed.
+
+# INTEGRATION publishers
+integrationServiceEmitsPlatformConnected:
+  action: send
+  channel:
+    $ref: "../channels/integration.yaml#/platform.connected"
+  summary: integration-service emits when an external platform is connected.
+
+integrationServiceEmitsPlatformDisconnected:
+  action: send
+  channel:
+    $ref: "../channels/integration.yaml#/platform.disconnected"
+  summary: integration-service emits when an external platform is disconnected.
+
+integrationServiceEmitsTokenRefreshed:
+  action: send
+  channel:
+    $ref: "../channels/integration.yaml#/platform.token.refreshed"
+  summary: integration-service emits when a platform token is refreshed.
+
+integrationServiceEmitsTokenExpired:
+  action: send
+  channel:
+    $ref: "../channels/integration.yaml#/platform.token.expired"
+  summary: integration-service emits when a platform token expires.
+
+syncServiceEmitsSyncJobStarted:
+  action: send
+  channel:
+    $ref: "../channels/integration.yaml#/sync.job.started"
+  summary: sync-service emits when a sync job starts.
+
+syncServiceEmitsSyncJobCompleted:
+  action: send
+  channel:
+    $ref: "../channels/integration.yaml#/sync.job.completed"
+  summary: sync-service emits when a sync job completes.
+
+syncServiceEmitsTikTokProfileSynced:
+  action: send
+  channel:
+    $ref: "../channels/integration.yaml#/tiktok.profile.synced"
+  summary: sync-service emits when a TikTok profile is synced.
+
+syncServiceEmitsTikTokVideosSynced:
+  action: send
+  channel:
+    $ref: "../channels/integration.yaml#/tiktok.videos.synced"
+  summary: sync-service emits when TikTok videos are synced.
+
+syncServiceEmitsTikTokAnalyticsSynced:
+  action: send
+  channel:
+    $ref: "../channels/integration.yaml#/tiktok.analytics.synced"
+  summary: sync-service emits when TikTok analytics are synced.
+
+syncServiceEmitsInstagramProfileSynced:
+  action: send
+  channel:
+    $ref: "../channels/integration.yaml#/instagram.profile.synced"
+  summary: sync-service emits when an Instagram profile is synced.
+
+syncServiceEmitsInstagramMediaSynced:
+  action: send
+  channel:
+    $ref: "../channels/integration.yaml#/instagram.media.synced"
+  summary: sync-service emits when Instagram media is synced.
+
+syncServiceEmitsYouTubeChannelSynced:
+  action: send
+  channel:
+    $ref: "../channels/integration.yaml#/youtube.channel.synced"
+  summary: sync-service emits when a YouTube channel is synced.
+
+syncServiceEmitsYouTubeVideosSynced:
+  action: send
+  channel:
+    $ref: "../channels/integration.yaml#/youtube.videos.synced"
+  summary: sync-service emits when YouTube videos are synced.
+
+webhookServiceEmitsWebhookReceived:
+  action: send
+  channel:
+    $ref: "../channels/integration.yaml#/webhook.received"
+  summary: webhook-service emits when a webhook is received from a platform.
+
+webhookServiceEmitsWebhookProcessed:
+  action: send
+  channel:
+    $ref: "../channels/integration.yaml#/webhook.processed"
+  summary: webhook-service emits when a webhook is processed.
+
+integrationServiceEmitsRateLimitApproached:
+  action: send
+  channel:
+    $ref: "../channels/integration.yaml#/api.ratelimit.approached"
+  summary: integration-service emits when API rate limit is approaching.
+
+integrationServiceEmitsRateLimitExceeded:
+  action: send
+  channel:
+    $ref: "../channels/integration.yaml#/api.ratelimit.exceeded"
+  summary: integration-service emits when API rate limit is exceeded.
+
+integrationServiceEmitsApiCallLogged:
+  action: send
+  channel:
+    $ref: "../channels/integration.yaml#/api.call.logged"
+  summary: integration-service emits API call logs for monitoring.
+
+# STRIPE publishers
+stripeGatewayEmitsWebhookReceived:
+  action: send
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.webhook.received"
+  summary: stripe-gateway emits raw webhook events for audit trail.
+
+stripeGatewayEmitsCustomerCreated:
+  action: send
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.customer.created"
+  summary: stripe-gateway emits when Stripe customer is created.
+
+stripeGatewayEmitsCustomerUpdated:
+  action: send
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.customer.updated"
+  summary: stripe-gateway emits when Stripe customer is updated.
+
+stripeGatewayEmitsSubscriptionCreated:
+  action: send
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.subscription.created"
+  summary: stripe-gateway emits when subscription is created.
+
+stripeGatewayEmitsSubscriptionUpdated:
+  action: send
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.subscription.updated"
+  summary: stripe-gateway emits when subscription is updated.
+
+stripeGatewayEmitsSubscriptionDeleted:
+  action: send
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.subscription.deleted"
+  summary: stripe-gateway emits when subscription is cancelled/deleted.
+
+stripeGatewayEmitsInvoiceCreated:
+  action: send
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.invoice.created"
+  summary: stripe-gateway emits when invoice is created.
+
+stripeGatewayEmitsInvoicePaid:
+  action: send
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.invoice.paid"
+  summary: stripe-gateway emits when invoice is paid.
+
+stripeGatewayEmitsInvoicePaymentFailed:
+  action: send
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.invoice.payment_failed"
+  summary: stripe-gateway emits when invoice payment fails.
+
+stripeGatewayEmitsConnectAccountCreated:
+  action: send
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.connect.account.created"
+  summary: stripe-gateway emits when Connect account is created.
+
+stripeGatewayEmitsConnectAccountUpdated:
+  action: send
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.connect.account.updated"
+  summary: stripe-gateway emits when Connect account is updated.
+
+stripeGatewayEmitsTransferCreated:
+  action: send
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.transfer.created"
+  summary: stripe-gateway emits when transfer to talent is created.
+
+stripeGatewayEmitsPayoutCreated:
+  action: send
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.payout.created"
+  summary: stripe-gateway emits when payout to talent bank is initiated.
+
+stripeGatewayEmitsPayoutFailed:
+  action: send
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.payout.failed"
+  summary: stripe-gateway emits when payout fails.
+
+usageServiceEmitsStripeUsageReported:
+  action: send
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.usage.reported"
+  summary: usage-service emits when usage is reported to Stripe Meters.
+
+stripeGatewayEmitsCheckoutCompleted:
+  action: send
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.checkout.completed"
+  summary: stripe-gateway emits when checkout session completes.
+
+# ANALYTICS publishers
+analyticsServiceEmitsMetricRecorded:
+  action: send
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.metric.recorded"
+  summary: analytics-service emits real-time metric updates.
+
+analyticsServiceEmitsCounterIncremented:
+  action: send
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.counter.incremented"
+  summary: analytics-service emits counter increments.
+
+analyticsServiceEmitsAggregationComputed:
+  action: send
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.aggregation.computed"
+  summary: analytics-service emits periodic aggregations.
+
+analyticsServiceEmitsTrendAnalyzed:
+  action: send
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.trend.analyzed"
+  summary: analytics-service emits trend analysis results.
+
+analyticsServiceEmitsTalentPerformanceComputed:
+  action: send
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.talent.performance.computed"
+  summary: analytics-service emits talent performance metrics.
+
+analyticsServiceEmitsTalentRankingsComputed:
+  action: send
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.talent.rankings.computed"
+  summary: analytics-service emits talent rankings.
+
+analyticsServiceEmitsCampaignAnalyticsComputed:
+  action: send
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.campaign.computed"
+  summary: analytics-service emits campaign analytics.
+
+analyticsServiceEmitsCampaignAttributionComputed:
+  action: send
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.campaign.attribution.computed"
+  summary: analytics-service emits campaign attribution analysis.
+
+analyticsServiceEmitsOutreachAnalyticsComputed:
+  action: send
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.outreach.computed"
+  summary: analytics-service emits outreach analytics.
+
+analyticsServiceEmitsRevenueAnalyticsComputed:
+  action: send
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.revenue.computed"
+  summary: analytics-service emits revenue analytics.
+
+analyticsServiceEmitsFunnelAnalyzed:
+  action: send
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.funnel.analyzed"
+  summary: analytics-service emits funnel analysis results.
+
+analyticsServiceEmitsCohortAnalyzed:
+  action: send
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.cohort.analyzed"
+  summary: analytics-service emits cohort analysis results.
+
+mlServiceEmitsPredictionGenerated:
+  action: send
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.prediction.generated"
+  summary: ml-service emits ML predictions.
+
+mlServiceEmitsAnomalyDetected:
+  action: send
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.anomaly.detected"
+  summary: ml-service emits anomaly detections.
+
+mlServiceEmitsChurnRiskAssessed:
+  action: send
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.churn.risk.assessed"
+  summary: ml-service emits churn risk assessments.
+
+reportingServiceEmitsReportGenerated:
+  action: send
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.report.generated"
+  summary: reporting-service emits generated reports.
+
+reportingServiceEmitsReportScheduled:
+  action: send
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.report.scheduled"
+  summary: reporting-service emits report schedules.
+
+dataExportServiceEmitsExportCompleted:
+  action: send
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.export.completed"
+  summary: data-export-service emits completed exports.
+
+alertingServiceEmitsAlertTriggered:
+  action: send
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.alert.triggered"
+  summary: alerting-service emits triggered alerts.
+
+alertingServiceEmitsAlertResolved:
+  action: send
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.alert.resolved"
+  summary: alerting-service emits resolved alerts.
+
+dashboardServiceEmitsDashboardRefreshed:
+  action: send
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.dashboard.refreshed"
+  summary: dashboard-service emits dashboard refresh events.

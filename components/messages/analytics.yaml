@@ -1,0 +1,318 @@
+# Analytics domain messages - Expert Level
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# REAL-TIME METRICS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+MetricRecorded:
+  name: MetricRecorded
+  title: Metric recorded
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.analytics.metric.recorded"
+          data:
+            $ref: "../schemas/analytics.yaml#/MetricRecordedData"
+
+CounterIncremented:
+  name: CounterIncremented
+  title: Counter incremented
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.analytics.counter.incremented"
+          data:
+            $ref: "../schemas/analytics.yaml#/CounterIncrementedData"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# AGGREGATIONS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+AggregationComputed:
+  name: AggregationComputed
+  title: Aggregation computed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.analytics.aggregation.computed"
+          data:
+            $ref: "../schemas/analytics.yaml#/AggregationComputedData"
+
+TrendAnalyzed:
+  name: TrendAnalyzed
+  title: Trend analyzed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.analytics.trend.analyzed"
+          data:
+            $ref: "../schemas/analytics.yaml#/TrendAnalyzedData"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# TALENT ANALYTICS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+TalentPerformanceComputed:
+  name: TalentPerformanceComputed
+  title: Talent performance computed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.analytics.talent.performance.computed"
+          data:
+            $ref: "../schemas/analytics.yaml#/TalentPerformanceComputedData"
+
+TalentRankingsComputed:
+  name: TalentRankingsComputed
+  title: Talent rankings computed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.analytics.talent.rankings.computed"
+          data:
+            $ref: "../schemas/analytics.yaml#/TalentRankingsComputedData"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# CAMPAIGN ANALYTICS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+CampaignAnalyticsComputed:
+  name: CampaignAnalyticsComputed
+  title: Campaign analytics computed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.analytics.campaign.computed"
+          data:
+            $ref: "../schemas/analytics.yaml#/CampaignAnalyticsComputedData"
+
+CampaignAttributionComputed:
+  name: CampaignAttributionComputed
+  title: Campaign attribution computed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.analytics.campaign.attribution.computed"
+          data:
+            $ref: "../schemas/analytics.yaml#/CampaignAttributionComputedData"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# OUTREACH ANALYTICS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+OutreachAnalyticsComputed:
+  name: OutreachAnalyticsComputed
+  title: Outreach analytics computed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.analytics.outreach.computed"
+          data:
+            $ref: "../schemas/analytics.yaml#/OutreachAnalyticsComputedData"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# REVENUE ANALYTICS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+RevenueAnalyticsComputed:
+  name: RevenueAnalyticsComputed
+  title: Revenue analytics computed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.analytics.revenue.computed"
+          data:
+            $ref: "../schemas/analytics.yaml#/RevenueAnalyticsComputedData"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# FUNNEL & COHORT
+# ═══════════════════════════════════════════════════════════════════════════════
+
+FunnelAnalyzed:
+  name: FunnelAnalyzed
+  title: Funnel analyzed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.analytics.funnel.analyzed"
+          data:
+            $ref: "../schemas/analytics.yaml#/FunnelAnalyzedData"
+
+CohortAnalyzed:
+  name: CohortAnalyzed
+  title: Cohort analyzed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.analytics.cohort.analyzed"
+          data:
+            $ref: "../schemas/analytics.yaml#/CohortAnalyzedData"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PREDICTIVE / ML
+# ═══════════════════════════════════════════════════════════════════════════════
+
+PredictionGenerated:
+  name: PredictionGenerated
+  title: ML prediction generated
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.analytics.prediction.generated"
+          data:
+            $ref: "../schemas/analytics.yaml#/PredictionGeneratedData"
+
+AnomalyDetected:
+  name: AnomalyDetected
+  title: Anomaly detected
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.analytics.anomaly.detected"
+          data:
+            $ref: "../schemas/analytics.yaml#/AnomalyDetectedData"
+
+ChurnRiskAssessed:
+  name: ChurnRiskAssessed
+  title: Churn risk assessed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.analytics.churn.risk.assessed"
+          data:
+            $ref: "../schemas/analytics.yaml#/ChurnRiskAssessedData"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# REPORTING
+# ═══════════════════════════════════════════════════════════════════════════════
+
+ReportGenerated:
+  name: ReportGenerated
+  title: Report generated
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.analytics.report.generated"
+          data:
+            $ref: "../schemas/analytics.yaml#/ReportGeneratedData"
+
+ReportScheduled:
+  name: ReportScheduled
+  title: Report scheduled
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.analytics.report.scheduled"
+          data:
+            $ref: "../schemas/analytics.yaml#/ReportScheduledData"
+
+DataExportCompleted:
+  name: DataExportCompleted
+  title: Data export completed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.analytics.export.completed"
+          data:
+            $ref: "../schemas/analytics.yaml#/DataExportCompletedData"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ALERTING
+# ═══════════════════════════════════════════════════════════════════════════════
+
+AlertTriggered:
+  name: AlertTriggered
+  title: Alert triggered
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.analytics.alert.triggered"
+          data:
+            $ref: "../schemas/analytics.yaml#/AlertTriggeredData"
+
+AlertResolved:
+  name: AlertResolved
+  title: Alert resolved
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.analytics.alert.resolved"
+          data:
+            $ref: "../schemas/analytics.yaml#/AlertResolvedData"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# DASHBOARD
+# ═══════════════════════════════════════════════════════════════════════════════
+
+DashboardRefreshed:
+  name: DashboardRefreshed
+  title: Dashboard refreshed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.analytics.dashboard.refreshed"
+          data:
+            $ref: "../schemas/analytics.yaml#/DashboardRefreshedData"

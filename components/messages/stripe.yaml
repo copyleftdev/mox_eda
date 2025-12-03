@@ -1,0 +1,217 @@
+# Stripe Integration domain messages
+# Inbound webhooks from Stripe translated to internal CloudEvents
+
+# Raw webhook (for audit trail)
+StripeWebhookReceived:
+  name: StripeWebhookReceived
+  title: Stripe webhook received
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.stripe.webhook.received"
+          data:
+            $ref: "../schemas/stripe.yaml#/StripeWebhookReceivedData"
+
+# Customer events
+StripeCustomerCreated:
+  name: StripeCustomerCreated
+  title: Stripe customer created
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.stripe.customer.created"
+          data:
+            $ref: "../schemas/stripe.yaml#/StripeCustomerCreatedData"
+
+StripeCustomerUpdated:
+  name: StripeCustomerUpdated
+  title: Stripe customer updated
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.stripe.customer.updated"
+          data:
+            $ref: "../schemas/stripe.yaml#/StripeCustomerUpdatedData"
+
+# Subscription events
+StripeSubscriptionCreated:
+  name: StripeSubscriptionCreated
+  title: Stripe subscription created
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.stripe.subscription.created"
+          data:
+            $ref: "../schemas/stripe.yaml#/StripeSubscriptionCreatedData"
+
+StripeSubscriptionUpdated:
+  name: StripeSubscriptionUpdated
+  title: Stripe subscription updated
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.stripe.subscription.updated"
+          data:
+            $ref: "../schemas/stripe.yaml#/StripeSubscriptionUpdatedData"
+
+StripeSubscriptionDeleted:
+  name: StripeSubscriptionDeleted
+  title: Stripe subscription deleted
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.stripe.subscription.deleted"
+          data:
+            $ref: "../schemas/stripe.yaml#/StripeSubscriptionDeletedData"
+
+# Invoice events
+StripeInvoiceCreated:
+  name: StripeInvoiceCreated
+  title: Stripe invoice created
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.stripe.invoice.created"
+          data:
+            $ref: "../schemas/stripe.yaml#/StripeInvoiceCreatedData"
+
+StripeInvoicePaid:
+  name: StripeInvoicePaid
+  title: Stripe invoice paid
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.stripe.invoice.paid"
+          data:
+            $ref: "../schemas/stripe.yaml#/StripeInvoicePaidData"
+
+StripeInvoicePaymentFailed:
+  name: StripeInvoicePaymentFailed
+  title: Stripe invoice payment failed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.stripe.invoice.payment_failed"
+          data:
+            $ref: "../schemas/stripe.yaml#/StripeInvoicePaymentFailedData"
+
+# Connect events (talent payouts)
+StripeConnectAccountCreated:
+  name: StripeConnectAccountCreated
+  title: Stripe Connect account created
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.stripe.connect.account.created"
+          data:
+            $ref: "../schemas/stripe.yaml#/StripeConnectAccountCreatedData"
+
+StripeConnectAccountUpdated:
+  name: StripeConnectAccountUpdated
+  title: Stripe Connect account updated
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.stripe.connect.account.updated"
+          data:
+            $ref: "../schemas/stripe.yaml#/StripeConnectAccountUpdatedData"
+
+StripeTransferCreated:
+  name: StripeTransferCreated
+  title: Stripe transfer to talent created
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.stripe.transfer.created"
+          data:
+            $ref: "../schemas/stripe.yaml#/StripeTransferCreatedData"
+
+StripePayoutCreated:
+  name: StripePayoutCreated
+  title: Stripe payout to talent bank created
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.stripe.payout.created"
+          data:
+            $ref: "../schemas/stripe.yaml#/StripePayoutCreatedData"
+
+StripePayoutFailed:
+  name: StripePayoutFailed
+  title: Stripe payout failed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.stripe.payout.failed"
+          data:
+            $ref: "../schemas/stripe.yaml#/StripePayoutFailedData"
+
+# Usage reporting (outbound)
+StripeUsageReported:
+  name: StripeUsageReported
+  title: Usage reported to Stripe Meters
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.stripe.usage.reported"
+          data:
+            $ref: "../schemas/stripe.yaml#/StripeUsageReportedData"
+
+# Checkout
+StripeCheckoutCompleted:
+  name: StripeCheckoutCompleted
+  title: Stripe checkout session completed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.stripe.checkout.completed"
+          data:
+            $ref: "../schemas/stripe.yaml#/StripeCheckoutCompletedData"

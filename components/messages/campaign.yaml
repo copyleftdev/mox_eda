@@ -1,0 +1,130 @@
+# Campaign & Brand Deal domain messages
+CampaignCreated:
+  name: CampaignCreated
+  title: Campaign created
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.campaign.created"
+          data:
+            $ref: "../schemas/campaign.yaml#/CampaignCreatedData"
+
+CampaignUpdated:
+  name: CampaignUpdated
+  title: Campaign updated
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.campaign.updated"
+          data:
+            $ref: "../schemas/campaign.yaml#/CampaignUpdatedData"
+
+CampaignStatusChanged:
+  name: CampaignStatusChanged
+  title: Campaign status changed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.campaign.status.changed"
+          data:
+            $ref: "../schemas/campaign.yaml#/CampaignStatusChangedData"
+
+TalentAddedToCampaign:
+  name: TalentAddedToCampaign
+  title: Talent added to campaign
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.campaign.talent.added"
+          data:
+            $ref: "../schemas/campaign.yaml#/TalentAddedToCampaignData"
+
+DeliverableCreated:
+  name: DeliverableCreated
+  title: Deliverable created
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.deliverable.created"
+          data:
+            $ref: "../schemas/campaign.yaml#/DeliverableCreatedData"
+
+DeliverableStatusChanged:
+  name: DeliverableStatusChanged
+  title: Deliverable status changed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.deliverable.status.changed"
+          data:
+            $ref: "../schemas/campaign.yaml#/DeliverableStatusChangedData"
+
+DeliverableSubmitted:
+  name: DeliverableSubmitted
+  title: Deliverable submitted for review
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.deliverable.submitted"
+          data:
+            $ref: "../schemas/campaign.yaml#/DeliverableSubmittedData"
+
+DeliverableApproved:
+  name: DeliverableApproved
+  title: Deliverable approved
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.deliverable.approved"
+          data:
+            $ref: "../schemas/campaign.yaml#/DeliverableApprovedData"
+
+DeliverableRejected:
+  name: DeliverableRejected
+  title: Deliverable rejected
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.deliverable.rejected"
+          data:
+            $ref: "../schemas/campaign.yaml#/DeliverableRejectedData"
+
+CampaignPerformanceSnapshot:
+  name: CampaignPerformanceSnapshot
+  title: Campaign performance snapshot captured
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.campaign.performance.snapshot"
+          data:
+            $ref: "../schemas/campaign.yaml#/CampaignPerformanceSnapshotData"

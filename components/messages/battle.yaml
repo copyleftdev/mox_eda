@@ -1,0 +1,39 @@
+# Battle & Performance domain messages
+BattleRecorded:
+  name: BattleRecorded
+  title: Battle recorded
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.battle.recorded"
+          data:
+            $ref: "../schemas/battle.yaml#/BattleRecordedData"
+
+BattleUpdated:
+  name: BattleUpdated
+  title: Battle updated
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.battle.updated"
+          data:
+            $ref: "../schemas/battle.yaml#/BattleUpdatedData"
+
+PerformanceSnapshotCaptured:
+  name: PerformanceSnapshotCaptured
+  title: Performance snapshot captured
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.performance.snapshot.captured"
+          data:
+            $ref: "../schemas/battle.yaml#/PerformanceSnapshotCapturedData"

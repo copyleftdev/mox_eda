@@ -1,0 +1,230 @@
+# Contract & Payment domain schemas
+ContractId:
+  allOf: [{ $ref: "./common.yaml#/Id" }]
+
+InvoiceId:
+  allOf: [{ $ref: "./common.yaml#/Id" }]
+
+PayoutId:
+  allOf: [{ $ref: "./common.yaml#/Id" }]
+
+ContractCreatedData:
+  type: object
+  required: [org_id, contract_id, talent_id, contract_type, status, effective_date, created_at, created_by]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    contract_id:
+      $ref: "#/ContractId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    contract_type:
+      $ref: "#/ContractType"
+    status:
+      $ref: "#/ContractStatus"
+    title:
+      type: string
+    effective_date:
+      $ref: "./common.yaml#/Timestamp"
+    expiration_date:
+      $ref: "./common.yaml#/Timestamp"
+      nullable: true
+    auto_renew:
+      type: boolean
+      default: false
+    revenue_share_pct:
+      type: number
+      description: Agency's percentage (0-100).
+      nullable: true
+    base_rate_cents:
+      type: integer
+      description: Base rate in cents (USD).
+      nullable: true
+    currency:
+      type: string
+      default: "USD"
+    terms_md:
+      type: string
+      nullable: true
+      description: Contract terms in markdown.
+    created_at:
+      $ref: "./common.yaml#/Timestamp"
+    created_by:
+      $ref: "./common.yaml#/UserId"
+
+ContractSignedData:
+  type: object
+  required: [org_id, contract_id, talent_id, signed_at, signed_by]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    contract_id:
+      $ref: "#/ContractId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    signature_method:
+      type: string
+      enum: [electronic, manual, docusign, hellosign]
+    signed_at:
+      $ref: "./common.yaml#/Timestamp"
+    signed_by:
+      $ref: "./common.yaml#/UserId"
+
+ContractStatusChangedData:
+  type: object
+  required: [org_id, contract_id, from_status, to_status, changed_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    contract_id:
+      $ref: "#/ContractId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    from_status:
+      $ref: "#/ContractStatus"
+    to_status:
+      $ref: "#/ContractStatus"
+    reason:
+      type: string
+      nullable: true
+    changed_at:
+      $ref: "./common.yaml#/Timestamp"
+    changed_by:
+      $ref: "./common.yaml#/UserId"
+
+ContractExpiredData:
+  type: object
+  required: [org_id, contract_id, talent_id, expired_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    contract_id:
+      $ref: "#/ContractId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    expired_at:
+      $ref: "./common.yaml#/Timestamp"
+    renewed:
+      type: boolean
+      default: false
+    renewal_contract_id:
+      $ref: "#/ContractId"
+      nullable: true
+
+InvoiceGeneratedData:
+  type: object
+  required: [org_id, invoice_id, talent_id, amount_cents, currency, due_date, generated_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    invoice_id:
+      $ref: "#/InvoiceId"
+    contract_id:
+      $ref: "#/ContractId"
+      nullable: true
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    campaign_id:
+      $ref: "./campaign.yaml#/CampaignId"
+      nullable: true
+    amount_cents:
+      type: integer
+    currency:
+      type: string
+      default: "USD"
+    line_items:
+      type: array
+      items:
+        $ref: "#/InvoiceLineItem"
+    due_date:
+      $ref: "./common.yaml#/Timestamp"
+    status:
+      $ref: "#/InvoiceStatus"
+    generated_at:
+      $ref: "./common.yaml#/Timestamp"
+
+InvoicePaidData:
+  type: object
+  required: [org_id, invoice_id, amount_cents, paid_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    invoice_id:
+      $ref: "#/InvoiceId"
+    amount_cents:
+      type: integer
+    currency:
+      type: string
+    payment_method:
+      type: string
+      enum: [bank_transfer, credit_card, paypal, stripe, manual]
+    transaction_id:
+      type: string
+      nullable: true
+    paid_at:
+      $ref: "./common.yaml#/Timestamp"
+
+PayoutProcessedData:
+  type: object
+  required: [org_id, payout_id, talent_id, net_amount_cents, currency, processed_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    payout_id:
+      $ref: "#/PayoutId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    gross_amount_cents:
+      type: integer
+    agency_fee_cents:
+      type: integer
+    net_amount_cents:
+      type: integer
+    currency:
+      type: string
+      default: "USD"
+    payout_method:
+      type: string
+      enum: [bank_transfer, paypal, venmo, check, crypto]
+    invoice_ids:
+      type: array
+      items:
+        $ref: "#/InvoiceId"
+    period_start:
+      $ref: "./common.yaml#/Timestamp"
+    period_end:
+      $ref: "./common.yaml#/Timestamp"
+    processed_at:
+      $ref: "./common.yaml#/Timestamp"
+    processed_by:
+      $ref: "./common.yaml#/UserId"
+
+# Enums
+ContractType:
+  type: string
+  enum: [exclusive, non_exclusive, per_campaign, retainer, trial]
+
+ContractStatus:
+  type: string
+  enum: [draft, pending_signature, active, suspended, expired, terminated]
+
+InvoiceStatus:
+  type: string
+  enum: [draft, sent, paid, overdue, cancelled, disputed]
+
+InvoiceLineItem:
+  type: object
+  required: [description, amount_cents]
+  properties:
+    description:
+      type: string
+    quantity:
+      type: integer
+      default: 1
+    unit_price_cents:
+      type: integer
+    amount_cents:
+      type: integer
+    campaign_id:
+      $ref: "./campaign.yaml#/CampaignId"
+      nullable: true

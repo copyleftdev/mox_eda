@@ -1,0 +1,69 @@
+# Schedule domain schemas
+ScheduleBlockCreatedData:
+  type: object
+  required: [org_id, schedule_block_id, talent_id, start_at, end_at, kind, created_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    schedule_block_id:
+      $ref: "./common.yaml#/ScheduleBlockId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    issue_id:
+      $ref: "./common.yaml#/IssueId"
+      nullable: true
+    kind:
+      $ref: "#/ScheduleBlockKind"
+    start_at:
+      $ref: "./common.yaml#/Timestamp"
+    end_at:
+      $ref: "./common.yaml#/Timestamp"
+    recurrence_rule:
+      type: string
+      nullable: true
+      description: iCal RRULE string.
+    created_at:
+      $ref: "./common.yaml#/Timestamp"
+    created_by:
+      $ref: "./common.yaml#/UserId"
+
+ScheduleBlockUpdatedData:
+  type: object
+  required: [org_id, schedule_block_id, patch, updated_at, updated_by]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    schedule_block_id:
+      $ref: "./common.yaml#/ScheduleBlockId"
+    patch:
+      type: object
+      additionalProperties: true
+    updated_at:
+      $ref: "./common.yaml#/Timestamp"
+    updated_by:
+      $ref: "./common.yaml#/UserId"
+
+ScheduleConflictedData:
+  type: object
+  required: [org_id, talent_id, window_start, window_end, conflict_ids, detected_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    window_start:
+      $ref: "./common.yaml#/Timestamp"
+    window_end:
+      $ref: "./common.yaml#/Timestamp"
+    conflict_ids:
+      type: array
+      items:
+        $ref: "./common.yaml#/ScheduleBlockId"
+    reason:
+      type: string
+    detected_at:
+      $ref: "./common.yaml#/Timestamp"
+
+ScheduleBlockKind:
+  type: string
+  enum: [live, battle, prep, review, rest, meeting, content]

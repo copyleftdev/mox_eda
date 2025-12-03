@@ -1,0 +1,26 @@
+# Notification domain messages
+NotificationRequested:
+  name: NotificationRequested
+  title: Notification requested
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.notification.requested"
+          data:
+            $ref: "../schemas/notification.yaml#/NotificationRequestedData"
+
+NotificationDelivered:
+  name: NotificationDelivered
+  title: Notification delivered
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.notification.delivered"
+          data:
+            $ref: "../schemas/notification.yaml#/NotificationDeliveredData"

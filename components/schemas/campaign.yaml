@@ -1,0 +1,310 @@
+# Campaign & Brand Deal domain schemas
+CampaignId:
+  allOf: [{ $ref: "./common.yaml#/Id" }]
+
+DeliverableId:
+  allOf: [{ $ref: "./common.yaml#/Id" }]
+
+BrandId:
+  allOf: [{ $ref: "./common.yaml#/Id" }]
+
+CampaignCreatedData:
+  type: object
+  required: [org_id, campaign_id, name, brand_name, status, created_at, created_by]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    campaign_id:
+      $ref: "#/CampaignId"
+    brand_id:
+      $ref: "#/BrandId"
+      nullable: true
+    brand_name:
+      type: string
+    name:
+      type: string
+    description_md:
+      type: string
+      nullable: true
+    status:
+      $ref: "#/CampaignStatus"
+    campaign_type:
+      $ref: "#/CampaignType"
+    budget_cents:
+      type: integer
+      nullable: true
+    currency:
+      type: string
+      default: "USD"
+    start_date:
+      $ref: "./common.yaml#/Timestamp"
+      nullable: true
+    end_date:
+      $ref: "./common.yaml#/Timestamp"
+      nullable: true
+    talent_ids:
+      type: array
+      items:
+        $ref: "./common.yaml#/TalentId"
+    hashtags:
+      type: array
+      items:
+        type: string
+    created_at:
+      $ref: "./common.yaml#/Timestamp"
+    created_by:
+      $ref: "./common.yaml#/UserId"
+
+CampaignUpdatedData:
+  type: object
+  required: [org_id, campaign_id, patch, updated_at, updated_by]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    campaign_id:
+      $ref: "#/CampaignId"
+    patch:
+      type: object
+      additionalProperties: true
+    updated_at:
+      $ref: "./common.yaml#/Timestamp"
+    updated_by:
+      $ref: "./common.yaml#/UserId"
+
+CampaignStatusChangedData:
+  type: object
+  required: [org_id, campaign_id, from_status, to_status, changed_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    campaign_id:
+      $ref: "#/CampaignId"
+    from_status:
+      $ref: "#/CampaignStatus"
+    to_status:
+      $ref: "#/CampaignStatus"
+    reason:
+      type: string
+      nullable: true
+    changed_at:
+      $ref: "./common.yaml#/Timestamp"
+    changed_by:
+      $ref: "./common.yaml#/UserId"
+
+TalentAddedToCampaignData:
+  type: object
+  required: [org_id, campaign_id, talent_id, added_at, added_by]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    campaign_id:
+      $ref: "#/CampaignId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    role:
+      type: string
+      enum: [primary, featured, supporting]
+      default: primary
+    compensation_cents:
+      type: integer
+      nullable: true
+    added_at:
+      $ref: "./common.yaml#/Timestamp"
+    added_by:
+      $ref: "./common.yaml#/UserId"
+
+DeliverableCreatedData:
+  type: object
+  required: [org_id, campaign_id, deliverable_id, talent_id, deliverable_type, due_date, created_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    campaign_id:
+      $ref: "#/CampaignId"
+    deliverable_id:
+      $ref: "#/DeliverableId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    deliverable_type:
+      $ref: "#/DeliverableType"
+    title:
+      type: string
+    description_md:
+      type: string
+      nullable: true
+    status:
+      $ref: "#/DeliverableStatus"
+    platform:
+      $ref: "#/Platform"
+    due_date:
+      $ref: "./common.yaml#/Timestamp"
+    requirements:
+      type: object
+      properties:
+        min_duration_s:
+          type: integer
+          nullable: true
+        max_duration_s:
+          type: integer
+          nullable: true
+        hashtags:
+          type: array
+          items:
+            type: string
+        mentions:
+          type: array
+          items:
+            type: string
+        talking_points:
+          type: array
+          items:
+            type: string
+        ftc_disclosure_required:
+          type: boolean
+          default: true
+    created_at:
+      $ref: "./common.yaml#/Timestamp"
+    created_by:
+      $ref: "./common.yaml#/UserId"
+
+DeliverableStatusChangedData:
+  type: object
+  required: [org_id, deliverable_id, from_status, to_status, changed_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    campaign_id:
+      $ref: "#/CampaignId"
+    deliverable_id:
+      $ref: "#/DeliverableId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    from_status:
+      $ref: "#/DeliverableStatus"
+    to_status:
+      $ref: "#/DeliverableStatus"
+    content_url:
+      type: string
+      nullable: true
+      description: URL to the published content (when status=published).
+    changed_at:
+      $ref: "./common.yaml#/Timestamp"
+    changed_by:
+      $ref: "./common.yaml#/UserId"
+
+DeliverableSubmittedData:
+  type: object
+  required: [org_id, deliverable_id, submitted_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    campaign_id:
+      $ref: "#/CampaignId"
+    deliverable_id:
+      $ref: "#/DeliverableId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    draft_url:
+      type: string
+      nullable: true
+    notes:
+      type: string
+      nullable: true
+    submitted_at:
+      $ref: "./common.yaml#/Timestamp"
+
+DeliverableApprovedData:
+  type: object
+  required: [org_id, deliverable_id, approved_at, approved_by]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    campaign_id:
+      $ref: "#/CampaignId"
+    deliverable_id:
+      $ref: "#/DeliverableId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    feedback:
+      type: string
+      nullable: true
+    approved_at:
+      $ref: "./common.yaml#/Timestamp"
+    approved_by:
+      $ref: "./common.yaml#/UserId"
+
+DeliverableRejectedData:
+  type: object
+  required: [org_id, deliverable_id, reason, rejected_at, rejected_by]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    campaign_id:
+      $ref: "#/CampaignId"
+    deliverable_id:
+      $ref: "#/DeliverableId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    reason:
+      type: string
+    revision_notes:
+      type: string
+      nullable: true
+    rejected_at:
+      $ref: "./common.yaml#/Timestamp"
+    rejected_by:
+      $ref: "./common.yaml#/UserId"
+
+CampaignPerformanceSnapshotData:
+  type: object
+  required: [org_id, campaign_id, snapshot_at, metrics]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    campaign_id:
+      $ref: "#/CampaignId"
+    snapshot_at:
+      $ref: "./common.yaml#/Timestamp"
+    metrics:
+      type: object
+      properties:
+        total_views:
+          type: integer
+        total_likes:
+          type: integer
+        total_comments:
+          type: integer
+        total_shares:
+          type: integer
+        total_reach:
+          type: integer
+        engagement_rate:
+          type: number
+        estimated_value_cents:
+          type: integer
+        spend_cents:
+          type: integer
+        roi:
+          type: number
+          nullable: true
+
+# Enums
+CampaignStatus:
+  type: string
+  enum: [draft, proposed, negotiating, confirmed, active, paused, completed, cancelled]
+
+CampaignType:
+  type: string
+  enum: [sponsored_post, brand_ambassador, affiliate, product_seeding, event, ugc, whitelisting]
+
+DeliverableType:
+  type: string
+  enum: [tiktok_video, tiktok_live, instagram_reel, instagram_story, instagram_post, youtube_short, youtube_video, tweet, blog_post]
+
+DeliverableStatus:
+  type: string
+  enum: [pending, in_progress, submitted, revision_requested, approved, published, cancelled]
+
+Platform:
+  type: string
+  enum: [tiktok, instagram, youtube, twitter, twitch, facebook, linkedin, other]

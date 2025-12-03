@@ -1,0 +1,91 @@
+# Contract & Payment domain messages
+ContractCreated:
+  name: ContractCreated
+  title: Contract created
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.contract.created"
+          data:
+            $ref: "../schemas/contract.yaml#/ContractCreatedData"
+
+ContractSigned:
+  name: ContractSigned
+  title: Contract signed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.contract.signed"
+          data:
+            $ref: "../schemas/contract.yaml#/ContractSignedData"
+
+ContractStatusChanged:
+  name: ContractStatusChanged
+  title: Contract status changed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.contract.status.changed"
+          data:
+            $ref: "../schemas/contract.yaml#/ContractStatusChangedData"
+
+ContractExpired:
+  name: ContractExpired
+  title: Contract expired
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.contract.expired"
+          data:
+            $ref: "../schemas/contract.yaml#/ContractExpiredData"
+
+InvoiceGenerated:
+  name: InvoiceGenerated
+  title: Invoice generated
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.invoice.generated"
+          data:
+            $ref: "../schemas/contract.yaml#/InvoiceGeneratedData"
+
+InvoicePaid:
+  name: InvoicePaid
+  title: Invoice paid
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.invoice.paid"
+          data:
+            $ref: "../schemas/contract.yaml#/InvoicePaidData"
+
+PayoutProcessed:
+  name: PayoutProcessed
+  title: Payout processed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.payout.processed"
+          data:
+            $ref: "../schemas/contract.yaml#/PayoutProcessedData"

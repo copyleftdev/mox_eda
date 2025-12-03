@@ -1,0 +1,63 @@
+# Notification domain schemas
+NotificationRequestedData:
+  type: object
+  required: [org_id, request_id, kind, targets, template, requested_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    request_id:
+      $ref: "./common.yaml#/Id"
+    kind:
+      $ref: "#/NotificationKind"
+    targets:
+      type: array
+      items:
+        $ref: "#/NotificationTarget"
+    template:
+      type: string
+    payload:
+      type: object
+      additionalProperties: true
+    requested_at:
+      $ref: "./common.yaml#/Timestamp"
+
+NotificationDeliveredData:
+  type: object
+  required: [org_id, request_id, channel, delivered_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    request_id:
+      $ref: "./common.yaml#/Id"
+    channel:
+      $ref: "#/NotificationChannel"
+    status:
+      $ref: "#/DeliveryStatus"
+    error:
+      type: string
+      nullable: true
+    delivered_at:
+      $ref: "./common.yaml#/Timestamp"
+
+NotificationTarget:
+  type: object
+  required: [target_type, target_id]
+  properties:
+    target_type:
+      type: string
+      enum: [user, team, talent]
+    target_id:
+      $ref: "./common.yaml#/Id"
+
+NotificationKind:
+  type: string
+  enum: [reminder, alert, digest, mention]
+
+NotificationChannel:
+  type: string
+  enum: [slack, discord, email, sms, push]
+
+DeliveryStatus:
+  type: string
+  enum: [sent, failed, throttled]
+  default: sent

@@ -1,0 +1,45 @@
+# Talent CRM domain channels
+talent.created:
+  address: talent.created
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    talentCreated:
+      $ref: "../components/messages/talent.yaml#/TalentCreated"
+
+talent.updated:
+  address: talent.updated
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    talentUpdated:
+      $ref: "../components/messages/talent.yaml#/TalentUpdated"
+
+talent.status.changed:
+  address: talent.status.changed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    talentStatusChanged:
+      $ref: "../components/messages/talent.yaml#/TalentStatusChanged"
+
+talent.note.created:
+  address: talent.note.created
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    talentNoteCreated:
+      $ref: "../components/messages/talent.yaml#/TalentNoteCreated"
+
+talent.note.updated:
+  address: talent.note.updated
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    talentNoteUpdated:
+      $ref: "../components/messages/talent.yaml#/TalentNoteUpdated"

@@ -1,0 +1,112 @@
+# Talent CRM domain schemas
+TalentCreatedData:
+  type: object
+  required: [org_id, talent_id, tiktok_handle, created_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    tiktok_handle:
+      type: string
+    display_name:
+      type: string
+      nullable: true
+    tz:
+      type: string
+      nullable: true
+    niches:
+      type: array
+      items:
+        type: string
+    created_at:
+      $ref: "./common.yaml#/Timestamp"
+    created_by:
+      $ref: "./common.yaml#/UserId"
+
+TalentUpdatedData:
+  type: object
+  required: [org_id, talent_id, updated_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    patch:
+      type: object
+      additionalProperties: true
+      description: JSON merge-patch of changed fields.
+    updated_at:
+      $ref: "./common.yaml#/Timestamp"
+    updated_by:
+      $ref: "./common.yaml#/UserId"
+
+TalentStatusChangedData:
+  type: object
+  required: [org_id, talent_id, from_status, to_status, changed_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    from_status:
+      $ref: "#/TalentStatus"
+    to_status:
+      $ref: "#/TalentStatus"
+    reason:
+      type: string
+      nullable: true
+    changed_at:
+      $ref: "./common.yaml#/Timestamp"
+    changed_by:
+      $ref: "./common.yaml#/UserId"
+
+TalentStatus:
+  type: string
+  enum: [prospect, onboarding, active, paused, offboarded]
+
+TalentNoteCreatedData:
+  type: object
+  required: [org_id, talent_id, note_id, author_id, body_md, created_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    note_id:
+      $ref: "./common.yaml#/NoteId"
+    author_id:
+      $ref: "./common.yaml#/UserId"
+    body_md:
+      type: string
+    visibility:
+      $ref: "#/NoteVisibility"
+    tags:
+      type: array
+      items:
+        type: string
+    created_at:
+      $ref: "./common.yaml#/Timestamp"
+
+TalentNoteUpdatedData:
+  type: object
+  required: [org_id, talent_id, note_id, editor_id, patch, updated_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    note_id:
+      $ref: "./common.yaml#/NoteId"
+    editor_id:
+      $ref: "./common.yaml#/UserId"
+    patch:
+      type: object
+      additionalProperties: true
+    updated_at:
+      $ref: "./common.yaml#/Timestamp"
+
+NoteVisibility:
+  type: string
+  enum: [team, org, private]
+  default: team

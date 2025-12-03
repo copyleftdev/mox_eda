@@ -1,0 +1,18 @@
+# Semantic / AI domain channels
+semantic.embedding.upserted:
+  address: semantic.embedding.upserted
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    embeddingUpserted:
+      $ref: "../components/messages/semantic.yaml#/EmbeddingUpserted"
+
+semantic.summary.generated:
+  address: semantic.summary.generated
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    semanticSummaryGenerated:
+      $ref: "../components/messages/semantic.yaml#/SemanticSummaryGenerated"

@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://mox.dev/schemas/rfc-index-v1.json",
+  "title": "Mox RFC Index Schema",
+  "description": "Index of all RFCs for tooling",
+  "type": "object",
+  "required": ["version", "rfcs", "totals"],
+  "properties": {
+    "version": { "type": "string" },
+    "generated": { "type": "string", "format": "date" },
+    "rfcs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "file"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "file": { "type": "string" },
+          "task_count": { "type": "integer" },
+          "acceptance_criteria_count": { "type": "integer" }
+        }
+      }
+    },
+    "totals": {
+      "type": "object",
+      "properties": {
+        "rfcs": { "type": "integer" },
+        "tasks": { "type": "integer" },
+        "acceptance_criteria": { "type": "integer" }
+      }
+    },
+    "labels": { "type": "array", "items": { "type": "string" } },
+    "priority_distribution": { "type": "object" },
+    "estimate_distribution": { "type": "object" }
+  }
+}

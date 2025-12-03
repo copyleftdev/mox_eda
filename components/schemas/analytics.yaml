@@ -1,0 +1,1253 @@
+# Analytics domain schemas - Expert Level
+# Covers real-time metrics, aggregations, funnels, attribution, ML insights, and reporting
+
+ReportId:
+  allOf: [{ $ref: "./common.yaml#/Id" }]
+
+DashboardId:
+  allOf: [{ $ref: "./common.yaml#/Id" }]
+
+AlertId:
+  allOf: [{ $ref: "./common.yaml#/Id" }]
+
+CohortId:
+  allOf: [{ $ref: "./common.yaml#/Id" }]
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# REAL-TIME METRICS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Live metric update (streaming to dashboards)
+MetricRecordedData:
+  type: object
+  required: [org_id, metric_name, value, recorded_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    tenant_id:
+      $ref: "./tenant.yaml#/TenantId"
+      nullable: true
+    metric_name:
+      $ref: "#/MetricName"
+    value:
+      type: number
+    previous_value:
+      type: number
+      nullable: true
+    delta:
+      type: number
+      nullable: true
+    delta_percent:
+      type: number
+      nullable: true
+    unit:
+      $ref: "#/MetricUnit"
+    dimensions:
+      $ref: "#/MetricDimensions"
+    tags:
+      type: object
+      additionalProperties:
+        type: string
+    recorded_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# Real-time counter increment (high-frequency)
+CounterIncrementedData:
+  type: object
+  required: [org_id, counter_name, increment, recorded_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    tenant_id:
+      $ref: "./tenant.yaml#/TenantId"
+      nullable: true
+    counter_name:
+      type: string
+    increment:
+      type: integer
+      default: 1
+    current_value:
+      type: integer
+      nullable: true
+    dimensions:
+      $ref: "#/MetricDimensions"
+    recorded_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# TIME-SERIES AGGREGATIONS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Periodic rollup (hourly, daily, weekly, monthly)
+AggregationComputedData:
+  type: object
+  required: [org_id, aggregation_type, metric_name, period_start, period_end, computed_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    tenant_id:
+      $ref: "./tenant.yaml#/TenantId"
+      nullable: true
+    aggregation_type:
+      $ref: "#/AggregationType"
+    metric_name:
+      $ref: "#/MetricName"
+    granularity:
+      $ref: "#/TimeGranularity"
+    period_start:
+      $ref: "./common.yaml#/Timestamp"
+    period_end:
+      $ref: "./common.yaml#/Timestamp"
+    values:
+      $ref: "#/AggregatedValues"
+    dimensions:
+      $ref: "#/MetricDimensions"
+    sample_count:
+      type: integer
+    computed_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# Trend analysis result
+TrendAnalyzedData:
+  type: object
+  required: [org_id, metric_name, trend_direction, analyzed_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    metric_name:
+      $ref: "#/MetricName"
+    trend_direction:
+      type: string
+      enum: [rising, falling, stable, volatile]
+    trend_strength:
+      type: number
+      description: 0-1 confidence score
+    percent_change:
+      type: number
+    comparison_period:
+      $ref: "#/ComparisonPeriod"
+    current_value:
+      type: number
+    previous_value:
+      type: number
+    forecast_next_period:
+      type: number
+      nullable: true
+    seasonality_detected:
+      type: boolean
+      default: false
+    dimensions:
+      $ref: "#/MetricDimensions"
+    analyzed_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# TALENT PERFORMANCE ANALYTICS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+TalentPerformanceComputedData:
+  type: object
+  required: [org_id, talent_id, period_start, period_end, computed_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    period_start:
+      $ref: "./common.yaml#/Timestamp"
+    period_end:
+      $ref: "./common.yaml#/Timestamp"
+    granularity:
+      $ref: "#/TimeGranularity"
+    # Growth metrics
+    follower_growth:
+      $ref: "#/GrowthMetric"
+    engagement_rate:
+      $ref: "#/RateMetric"
+    avg_views_per_post:
+      $ref: "#/GrowthMetric"
+    # Content metrics
+    posts_published:
+      type: integer
+    total_views:
+      type: integer
+    total_likes:
+      type: integer
+    total_comments:
+      type: integer
+    total_shares:
+      type: integer
+    # Platform breakdown
+    platform_metrics:
+      type: object
+      additionalProperties:
+        $ref: "#/PlatformPerformance"
+    # Calculated scores
+    performance_score:
+      type: number
+      description: 0-100 composite score
+    virality_score:
+      type: number
+      description: 0-100 likelihood of viral content
+    consistency_score:
+      type: number
+      description: 0-100 posting consistency
+    # Comparisons
+    rank_in_roster:
+      type: integer
+      nullable: true
+    percentile:
+      type: number
+      nullable: true
+    computed_at:
+      $ref: "./common.yaml#/Timestamp"
+
+TalentRankingsComputedData:
+  type: object
+  required: [org_id, ranking_type, period, rankings, computed_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    ranking_type:
+      type: string
+      enum: [engagement, growth, revenue, virality, consistency, overall]
+    period:
+      $ref: "#/TimeGranularity"
+    period_start:
+      $ref: "./common.yaml#/Timestamp"
+    period_end:
+      $ref: "./common.yaml#/Timestamp"
+    rankings:
+      type: array
+      items:
+        $ref: "#/TalentRanking"
+    total_talents:
+      type: integer
+    computed_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# CAMPAIGN ANALYTICS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+CampaignAnalyticsComputedData:
+  type: object
+  required: [org_id, campaign_id, computed_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    campaign_id:
+      $ref: "./campaign.yaml#/CampaignId"
+    period_start:
+      $ref: "./common.yaml#/Timestamp"
+    period_end:
+      $ref: "./common.yaml#/Timestamp"
+    # Reach metrics
+    total_reach:
+      type: integer
+    total_impressions:
+      type: integer
+    unique_viewers:
+      type: integer
+    # Engagement metrics
+    total_engagements:
+      type: integer
+    engagement_rate:
+      type: number
+    avg_watch_time_seconds:
+      type: number
+      nullable: true
+    # Conversion metrics
+    clicks:
+      type: integer
+    click_through_rate:
+      type: number
+    conversions:
+      type: integer
+      nullable: true
+    conversion_rate:
+      type: number
+      nullable: true
+    # Financial metrics
+    total_spend:
+      $ref: "#/MoneyAmount"
+    cost_per_engagement:
+      $ref: "#/MoneyAmount"
+    cost_per_click:
+      $ref: "#/MoneyAmount"
+    cost_per_conversion:
+      $ref: "#/MoneyAmount"
+      nullable: true
+    roi_percent:
+      type: number
+      nullable: true
+    # Content breakdown
+    deliverables_completed:
+      type: integer
+    deliverables_pending:
+      type: integer
+    top_performing_content:
+      type: array
+      items:
+        $ref: "#/ContentPerformance"
+    # Talent breakdown
+    talent_performance:
+      type: array
+      items:
+        $ref: "#/CampaignTalentPerformance"
+    # Audience insights
+    audience_demographics:
+      $ref: "#/AudienceDemographics"
+      nullable: true
+    computed_at:
+      $ref: "./common.yaml#/Timestamp"
+
+CampaignAttributionComputedData:
+  type: object
+  required: [org_id, campaign_id, attribution_model, computed_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    campaign_id:
+      $ref: "./campaign.yaml#/CampaignId"
+    attribution_model:
+      $ref: "#/AttributionModel"
+    conversion_window_days:
+      type: integer
+      default: 30
+    # Attribution breakdown
+    attributed_conversions:
+      type: integer
+    attributed_revenue:
+      $ref: "#/MoneyAmount"
+    # Channel attribution
+    channel_attribution:
+      type: array
+      items:
+        $ref: "#/ChannelAttribution"
+    # Touchpoint analysis
+    avg_touchpoints_to_conversion:
+      type: number
+    top_conversion_paths:
+      type: array
+      items:
+        $ref: "#/ConversionPath"
+    computed_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# OUTREACH ANALYTICS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+OutreachAnalyticsComputedData:
+  type: object
+  required: [org_id, period_start, period_end, computed_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    outreach_campaign_id:
+      $ref: "./outreach.yaml#/OutreachCampaignId"
+      nullable: true
+    period_start:
+      $ref: "./common.yaml#/Timestamp"
+    period_end:
+      $ref: "./common.yaml#/Timestamp"
+    # Volume metrics
+    messages_sent:
+      type: integer
+    messages_delivered:
+      type: integer
+    delivery_rate:
+      type: number
+    # Engagement metrics
+    opens:
+      type: integer
+    open_rate:
+      type: number
+    unique_opens:
+      type: integer
+    clicks:
+      type: integer
+    click_rate:
+      type: number
+    click_to_open_rate:
+      type: number
+    # Response metrics
+    responses:
+      type: integer
+    response_rate:
+      type: number
+    positive_responses:
+      type: integer
+    positive_response_rate:
+      type: number
+    # Conversion metrics
+    meetings_scheduled:
+      type: integer
+    meeting_rate:
+      type: number
+    conversions:
+      type: integer
+    conversion_rate:
+      type: number
+    # Timing analytics
+    best_send_times:
+      type: array
+      items:
+        $ref: "#/OptimalTiming"
+    avg_response_time_hours:
+      type: number
+    # Channel breakdown
+    channel_breakdown:
+      type: object
+      additionalProperties:
+        $ref: "#/ChannelMetrics"
+    computed_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# REVENUE ANALYTICS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+RevenueAnalyticsComputedData:
+  type: object
+  required: [org_id, period_start, period_end, computed_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    tenant_id:
+      $ref: "./tenant.yaml#/TenantId"
+      nullable: true
+    period_start:
+      $ref: "./common.yaml#/Timestamp"
+    period_end:
+      $ref: "./common.yaml#/Timestamp"
+    granularity:
+      $ref: "#/TimeGranularity"
+    # Core revenue metrics
+    mrr:
+      $ref: "#/MoneyAmount"
+    arr:
+      $ref: "#/MoneyAmount"
+    total_revenue:
+      $ref: "#/MoneyAmount"
+    recurring_revenue:
+      $ref: "#/MoneyAmount"
+    one_time_revenue:
+      $ref: "#/MoneyAmount"
+    # Growth metrics
+    mrr_growth:
+      $ref: "#/GrowthMetric"
+    new_mrr:
+      $ref: "#/MoneyAmount"
+    expansion_mrr:
+      $ref: "#/MoneyAmount"
+    contraction_mrr:
+      $ref: "#/MoneyAmount"
+    churned_mrr:
+      $ref: "#/MoneyAmount"
+    net_mrr_change:
+      $ref: "#/MoneyAmount"
+    # Customer metrics
+    total_customers:
+      type: integer
+    new_customers:
+      type: integer
+    churned_customers:
+      type: integer
+    churn_rate:
+      type: number
+    net_revenue_retention:
+      type: number
+    gross_revenue_retention:
+      type: number
+    # Unit economics
+    arpu:
+      $ref: "#/MoneyAmount"
+    arppu:
+      $ref: "#/MoneyAmount"
+    ltv:
+      $ref: "#/MoneyAmount"
+    cac:
+      $ref: "#/MoneyAmount"
+      nullable: true
+    ltv_to_cac_ratio:
+      type: number
+      nullable: true
+    payback_period_months:
+      type: number
+      nullable: true
+    # Revenue breakdown
+    revenue_by_plan:
+      type: object
+      additionalProperties:
+        $ref: "#/MoneyAmount"
+    revenue_by_source:
+      type: object
+      additionalProperties:
+        $ref: "#/MoneyAmount"
+    computed_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# FUNNEL & COHORT ANALYTICS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+FunnelAnalyzedData:
+  type: object
+  required: [org_id, funnel_name, stages, analyzed_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    funnel_name:
+      $ref: "#/FunnelType"
+    period_start:
+      $ref: "./common.yaml#/Timestamp"
+    period_end:
+      $ref: "./common.yaml#/Timestamp"
+    stages:
+      type: array
+      items:
+        $ref: "#/FunnelStage"
+    overall_conversion_rate:
+      type: number
+    avg_time_to_convert_hours:
+      type: number
+      nullable: true
+    drop_off_analysis:
+      type: array
+      items:
+        $ref: "#/DropOffPoint"
+    segment_breakdown:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          $ref: "#/FunnelStage"
+    analyzed_at:
+      $ref: "./common.yaml#/Timestamp"
+
+CohortAnalyzedData:
+  type: object
+  required: [org_id, cohort_type, cohort_period, analyzed_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    cohort_id:
+      $ref: "#/CohortId"
+    cohort_type:
+      $ref: "#/CohortType"
+    cohort_period:
+      type: string
+      description: e.g., "2024-01" for January 2024 cohort
+    cohort_size:
+      type: integer
+    metric:
+      $ref: "#/MetricName"
+    # Retention/behavior over time
+    periods:
+      type: array
+      items:
+        $ref: "#/CohortPeriodData"
+    # Summary stats
+    retention_at_30_days:
+      type: number
+      nullable: true
+    retention_at_90_days:
+      type: number
+      nullable: true
+    lifetime_value:
+      $ref: "#/MoneyAmount"
+      nullable: true
+    avg_engagement:
+      type: number
+      nullable: true
+    analyzed_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PREDICTIVE / ML ANALYTICS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+PredictionGeneratedData:
+  type: object
+  required: [org_id, prediction_type, prediction, confidence, generated_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    prediction_type:
+      $ref: "#/PredictionType"
+    entity_type:
+      type: string
+      enum: [talent, campaign, tenant, revenue]
+    entity_id:
+      $ref: "./common.yaml#/Id"
+      nullable: true
+    prediction:
+      type: object
+      additionalProperties: true
+    confidence:
+      type: number
+      description: 0-1 confidence score
+    prediction_horizon:
+      type: string
+      description: e.g., "30d", "90d", "1y"
+    model_version:
+      type: string
+    features_used:
+      type: array
+      items:
+        type: string
+    generated_at:
+      $ref: "./common.yaml#/Timestamp"
+
+AnomalyDetectedData:
+  type: object
+  required: [org_id, metric_name, anomaly_type, severity, detected_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    metric_name:
+      $ref: "#/MetricName"
+    anomaly_type:
+      type: string
+      enum: [spike, drop, trend_break, seasonality_break, outlier]
+    severity:
+      type: string
+      enum: [low, medium, high, critical]
+    observed_value:
+      type: number
+    expected_value:
+      type: number
+    expected_range:
+      type: object
+      properties:
+        min:
+          type: number
+        max:
+          type: number
+    deviation_percent:
+      type: number
+    z_score:
+      type: number
+      nullable: true
+    dimensions:
+      $ref: "#/MetricDimensions"
+    possible_causes:
+      type: array
+      items:
+        type: string
+    detected_at:
+      $ref: "./common.yaml#/Timestamp"
+
+ChurnRiskAssessedData:
+  type: object
+  required: [org_id, entity_type, entity_id, risk_score, assessed_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    entity_type:
+      type: string
+      enum: [tenant, talent]
+    entity_id:
+      $ref: "./common.yaml#/Id"
+    risk_score:
+      type: number
+      description: 0-100 churn probability
+    risk_tier:
+      type: string
+      enum: [low, medium, high, critical]
+    risk_factors:
+      type: array
+      items:
+        $ref: "#/RiskFactor"
+    recommended_actions:
+      type: array
+      items:
+        type: string
+    predicted_churn_date:
+      $ref: "./common.yaml#/Timestamp"
+      nullable: true
+    assessed_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# REPORTING
+# ═══════════════════════════════════════════════════════════════════════════════
+
+ReportGeneratedData:
+  type: object
+  required: [org_id, report_id, report_type, generated_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    report_id:
+      $ref: "#/ReportId"
+    report_type:
+      $ref: "#/ReportType"
+    report_name:
+      type: string
+    period_start:
+      $ref: "./common.yaml#/Timestamp"
+    period_end:
+      $ref: "./common.yaml#/Timestamp"
+    format:
+      type: string
+      enum: [pdf, csv, xlsx, json, html]
+    file_url:
+      type: string
+      nullable: true
+    file_size_bytes:
+      type: integer
+      nullable: true
+    scheduled:
+      type: boolean
+      default: false
+    schedule_id:
+      type: string
+      nullable: true
+    recipients:
+      type: array
+      items:
+        type: string
+    generated_at:
+      $ref: "./common.yaml#/Timestamp"
+    generated_by:
+      $ref: "./common.yaml#/UserId"
+      nullable: true
+
+ReportScheduledData:
+  type: object
+  required: [org_id, schedule_id, report_type, frequency, created_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    schedule_id:
+      type: string
+    report_type:
+      $ref: "#/ReportType"
+    report_name:
+      type: string
+    frequency:
+      type: string
+      enum: [daily, weekly, monthly, quarterly]
+    day_of_week:
+      type: integer
+      nullable: true
+      description: 0=Sunday, 6=Saturday
+    day_of_month:
+      type: integer
+      nullable: true
+    time_utc:
+      type: string
+      description: HH:MM format
+    format:
+      type: string
+      enum: [pdf, csv, xlsx, json, html]
+    recipients:
+      type: array
+      items:
+        type: string
+    filters:
+      type: object
+      additionalProperties: true
+    created_at:
+      $ref: "./common.yaml#/Timestamp"
+    created_by:
+      $ref: "./common.yaml#/UserId"
+
+DataExportCompletedData:
+  type: object
+  required: [org_id, export_id, export_type, completed_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    export_id:
+      type: string
+    export_type:
+      type: string
+      enum: [full, incremental, snapshot]
+    data_types:
+      type: array
+      items:
+        type: string
+    format:
+      type: string
+      enum: [csv, json, parquet, avro]
+    destination:
+      type: string
+      enum: [s3, gcs, azure_blob, snowflake, bigquery, redshift, webhook]
+    destination_path:
+      type: string
+    rows_exported:
+      type: integer
+    file_size_bytes:
+      type: integer
+    compression:
+      type: string
+      enum: [none, gzip, snappy, zstd]
+      nullable: true
+    completed_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ALERTING
+# ═══════════════════════════════════════════════════════════════════════════════
+
+AlertTriggeredData:
+  type: object
+  required: [org_id, alert_id, alert_name, condition, triggered_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    alert_id:
+      $ref: "#/AlertId"
+    alert_name:
+      type: string
+    alert_type:
+      type: string
+      enum: [threshold, anomaly, trend, absence, composite]
+    severity:
+      type: string
+      enum: [info, warning, error, critical]
+    condition:
+      $ref: "#/AlertCondition"
+    metric_name:
+      $ref: "#/MetricName"
+    current_value:
+      type: number
+    threshold_value:
+      type: number
+      nullable: true
+    dimensions:
+      $ref: "#/MetricDimensions"
+    message:
+      type: string
+    runbook_url:
+      type: string
+      nullable: true
+    triggered_at:
+      $ref: "./common.yaml#/Timestamp"
+
+AlertResolvedData:
+  type: object
+  required: [org_id, alert_id, resolved_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    alert_id:
+      $ref: "#/AlertId"
+    alert_name:
+      type: string
+    duration_minutes:
+      type: integer
+    resolution_type:
+      type: string
+      enum: [auto_resolved, manual, acknowledged, suppressed]
+    resolved_by:
+      $ref: "./common.yaml#/UserId"
+      nullable: true
+    resolved_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# DASHBOARD EVENTS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+DashboardRefreshedData:
+  type: object
+  required: [org_id, dashboard_id, refreshed_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    dashboard_id:
+      $ref: "#/DashboardId"
+    dashboard_name:
+      type: string
+    widgets_refreshed:
+      type: integer
+    refresh_duration_ms:
+      type: integer
+    cache_hit:
+      type: boolean
+    triggered_by:
+      type: string
+      enum: [scheduled, manual, realtime, api]
+    refreshed_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SUPPORTING TYPES
+# ═══════════════════════════════════════════════════════════════════════════════
+
+MetricName:
+  type: string
+  enum:
+    # Talent metrics
+    - talent.followers
+    - talent.engagement_rate
+    - talent.views
+    - talent.posts
+    - talent.growth_rate
+    - talent.performance_score
+    # Campaign metrics
+    - campaign.reach
+    - campaign.impressions
+    - campaign.engagements
+    - campaign.clicks
+    - campaign.conversions
+    - campaign.spend
+    - campaign.roi
+    # Outreach metrics
+    - outreach.sent
+    - outreach.delivered
+    - outreach.opened
+    - outreach.clicked
+    - outreach.responded
+    - outreach.meetings
+    # Revenue metrics
+    - revenue.mrr
+    - revenue.arr
+    - revenue.new_mrr
+    - revenue.churned_mrr
+    - revenue.net_revenue_retention
+    # Platform metrics
+    - platform.active_users
+    - platform.api_calls
+    - platform.events_processed
+
+MetricUnit:
+  type: string
+  enum: [count, percent, currency, rate, score, duration_ms, bytes]
+
+MetricDimensions:
+  type: object
+  properties:
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    campaign_id:
+      $ref: "./campaign.yaml#/CampaignId"
+    platform:
+      $ref: "./campaign.yaml#/Platform"
+    channel:
+      $ref: "./outreach.yaml#/OutreachChannel"
+    plan:
+      type: string
+    country:
+      type: string
+    device:
+      type: string
+  additionalProperties:
+    type: string
+
+TimeGranularity:
+  type: string
+  enum: [minute, hour, day, week, month, quarter, year]
+
+AggregationType:
+  type: string
+  enum: [sum, avg, min, max, count, distinct_count, percentile_50, percentile_95, percentile_99]
+
+AggregatedValues:
+  type: object
+  properties:
+    sum:
+      type: number
+    avg:
+      type: number
+    min:
+      type: number
+    max:
+      type: number
+    count:
+      type: integer
+    stddev:
+      type: number
+    percentiles:
+      type: object
+      properties:
+        p50:
+          type: number
+        p90:
+          type: number
+        p95:
+          type: number
+        p99:
+          type: number
+
+ComparisonPeriod:
+  type: string
+  enum: [previous_period, previous_week, previous_month, previous_quarter, previous_year, same_period_last_year]
+
+GrowthMetric:
+  type: object
+  properties:
+    current:
+      type: number
+    previous:
+      type: number
+    change:
+      type: number
+    change_percent:
+      type: number
+
+RateMetric:
+  type: object
+  properties:
+    rate:
+      type: number
+    numerator:
+      type: integer
+    denominator:
+      type: integer
+
+MoneyAmount:
+  type: object
+  properties:
+    amount_cents:
+      type: integer
+    currency:
+      type: string
+      default: USD
+
+PlatformPerformance:
+  type: object
+  properties:
+    platform:
+      $ref: "./campaign.yaml#/Platform"
+    followers:
+      type: integer
+    posts:
+      type: integer
+    views:
+      type: integer
+    engagements:
+      type: integer
+    engagement_rate:
+      type: number
+
+TalentRanking:
+  type: object
+  properties:
+    rank:
+      type: integer
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    score:
+      type: number
+    change_from_previous:
+      type: integer
+      nullable: true
+
+ContentPerformance:
+  type: object
+  properties:
+    content_id:
+      type: string
+    platform:
+      $ref: "./campaign.yaml#/Platform"
+    views:
+      type: integer
+    engagements:
+      type: integer
+    engagement_rate:
+      type: number
+    url:
+      type: string
+
+CampaignTalentPerformance:
+  type: object
+  properties:
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    deliverables_completed:
+      type: integer
+    total_reach:
+      type: integer
+    engagement_rate:
+      type: number
+    cost:
+      $ref: "#/MoneyAmount"
+    roi:
+      type: number
+      nullable: true
+
+AudienceDemographics:
+  type: object
+  properties:
+    age_ranges:
+      type: object
+      additionalProperties:
+        type: number
+    genders:
+      type: object
+      additionalProperties:
+        type: number
+    countries:
+      type: object
+      additionalProperties:
+        type: number
+    interests:
+      type: array
+      items:
+        type: string
+
+AttributionModel:
+  type: string
+  enum: [first_touch, last_touch, linear, time_decay, position_based, data_driven]
+
+ChannelAttribution:
+  type: object
+  properties:
+    channel:
+      type: string
+    attributed_conversions:
+      type: number
+    attributed_revenue:
+      $ref: "#/MoneyAmount"
+    attribution_percent:
+      type: number
+
+ConversionPath:
+  type: object
+  properties:
+    path:
+      type: array
+      items:
+        type: string
+    conversions:
+      type: integer
+    avg_time_to_convert_hours:
+      type: number
+
+OptimalTiming:
+  type: object
+  properties:
+    day_of_week:
+      type: integer
+    hour_utc:
+      type: integer
+    engagement_index:
+      type: number
+
+ChannelMetrics:
+  type: object
+  properties:
+    sent:
+      type: integer
+    delivered:
+      type: integer
+    opened:
+      type: integer
+    clicked:
+      type: integer
+    responded:
+      type: integer
+
+FunnelType:
+  type: string
+  enum:
+    - talent_acquisition
+    - campaign_conversion
+    - outreach_to_signed
+    - trial_to_paid
+    - signup_to_activation
+
+FunnelStage:
+  type: object
+  properties:
+    stage_name:
+      type: string
+    stage_order:
+      type: integer
+    entered:
+      type: integer
+    exited:
+      type: integer
+    conversion_rate:
+      type: number
+    avg_time_in_stage_hours:
+      type: number
+      nullable: true
+
+DropOffPoint:
+  type: object
+  properties:
+    from_stage:
+      type: string
+    to_stage:
+      type: string
+    drop_off_count:
+      type: integer
+    drop_off_rate:
+      type: number
+    top_reasons:
+      type: array
+      items:
+        type: string
+
+CohortType:
+  type: string
+  enum: [signup_date, first_purchase, first_campaign, plan_type, acquisition_channel]
+
+CohortPeriodData:
+  type: object
+  properties:
+    period_number:
+      type: integer
+      description: 0 = cohort period, 1 = first period after, etc.
+    active_count:
+      type: integer
+    retention_rate:
+      type: number
+    metric_value:
+      type: number
+      nullable: true
+
+PredictionType:
+  type: string
+  enum:
+    - talent_performance_forecast
+    - campaign_roi_prediction
+    - churn_probability
+    - revenue_forecast
+    - viral_content_prediction
+    - optimal_posting_time
+    - ltv_prediction
+
+RiskFactor:
+  type: object
+  properties:
+    factor:
+      type: string
+    impact_score:
+      type: number
+    description:
+      type: string
+
+ReportType:
+  type: string
+  enum:
+    - executive_summary
+    - talent_performance
+    - campaign_analytics
+    - revenue_report
+    - outreach_report
+    - churn_analysis
+    - cohort_analysis
+    - custom
+
+AlertCondition:
+  type: object
+  properties:
+    operator:
+      type: string
+      enum: [gt, gte, lt, lte, eq, neq, between, outside]
+    threshold:
+      type: number
+    threshold_upper:
+      type: number
+      nullable: true
+    for_duration_minutes:
+      type: integer
+      nullable: true

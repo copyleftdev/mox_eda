@@ -1,0 +1,26 @@
+# Auth & Org domain messages
+AuthUserOnboarded:
+  name: AuthUserOnboarded
+  title: User onboarded into org
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.auth.user.onboarded"
+          data:
+            $ref: "../schemas/auth.yaml#/AuthUserOnboardedData"
+
+OrgTeamMemberAdded:
+  name: OrgTeamMemberAdded
+  title: Team member added
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.org.team.member.added"
+          data:
+            $ref: "../schemas/auth.yaml#/OrgTeamMemberAddedData"

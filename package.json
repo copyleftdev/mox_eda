@@ -1,0 +1,22 @@
+{
+  "name": "mox_eda",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "validate": "asyncapi validate asyncapi.yaml",
+    "bundle": "asyncapi bundle asyncapi.yaml -o dist/mox-bundled.yaml",
+    "docs": "asyncapi generate fromTemplate asyncapi.yaml @asyncapi/html-template -o docs",
+    "studio": "asyncapi start studio"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@asyncapi/cli": "^4.1.1"
+  }
+}

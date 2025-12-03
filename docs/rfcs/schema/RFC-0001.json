@@ -1,0 +1,228 @@
+{
+  "id": "RFC-0001",
+  "title": "Architecture Overview",
+  "status": "draft",
+  "created": "2024-12-03",
+  "updated": "2024-12-03",
+  "authors": ["Platform Team"],
+  "summary": "Mox is a single Rust binary implementing a distributed, fault-tolerant event-sourced system. Zero external dependencies, deterministic simulation testing, Raft consensus with Viewstamped Replication extensions.",
+  "motivation": "Traditional microservices architectures incur high operational cost ($2,000-5,000/mo) and complexity. TigerBeetle-style architecture reduces this to $150-300/mo while improving correctness through deterministic simulation.",
+  "dependencies": [],
+  "components": [
+    {
+      "name": "Core Binary",
+      "description": "Single Rust binary containing all system functionality",
+      "path": "src/",
+      "modules": [
+        {
+          "name": "main",
+          "description": "Entry point and CLI",
+          "file": "src/main.rs",
+          "interfaces": [
+            {
+              "name": "main",
+              "type": "function",
+              "description": "Application entry point",
+              "methods": []
+            }
+          ]
+        },
+        {
+          "name": "config",
+          "description": "Configuration management",
+          "file": "src/config.rs",
+          "interfaces": [
+            {
+              "name": "Config",
+              "type": "struct",
+              "description": "Application configuration",
+              "methods": [
+                {"name": "load", "signature": "fn load() -> Result<Config>", "description": "Load config from file and environment", "async": false},
+                {"name": "validate", "signature": "fn validate(&self) -> Result<()>", "description": "Validate configuration", "async": false}
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "IO Abstraction",
+      "description": "Trait-based I/O abstraction for production and simulation",
+      "path": "src/io/",
+      "modules": [
+        {
+          "name": "traits",
+          "description": "IO trait definition",
+          "file": "src/io/traits.rs",
+          "interfaces": [
+            {
+              "name": "IO",
+              "type": "trait",
+              "description": "Abstraction over all I/O operations",
+              "methods": [
+                {"name": "now", "signature": "fn now(&self) -> Instant", "description": "Get current time", "async": false},
+                {"name": "sleep", "signature": "async fn sleep(&self, duration: Duration)", "description": "Sleep for duration", "async": true},
+                {"name": "random", "signature": "fn random(&self) -> u64", "description": "Get random number", "async": false},
+                {"name": "write", "signature": "async fn write(&self, fd: FileId, offset: u64, data: &[u8]) -> Result<usize>", "description": "Write to disk", "async": true},
+                {"name": "read", "signature": "async fn read(&self, fd: FileId, offset: u64, len: usize) -> Result<Vec<u8>>", "description": "Read from disk", "async": true},
+                {"name": "fsync", "signature": "async fn fsync(&self, fd: FileId) -> Result<()>", "description": "Sync file to disk", "async": true},
+                {"name": "send", "signature": "async fn send(&self, to: NodeId, message: &[u8]) -> Result<()>", "description": "Send network message", "async": true},
+                {"name": "recv", "signature": "async fn recv(&self) -> Result<(NodeId, Vec<u8>)>", "description": "Receive network message", "async": true}
+              ]
+            }
+          ]
+        },
+        {
+          "name": "uring",
+          "description": "io_uring implementation for production",
+          "file": "src/io/uring.rs",
+          "interfaces": [
+            {
+              "name": "UringIO",
+              "type": "struct",
+              "description": "Production I/O using io_uring",
+              "methods": [
+                {"name": "new", "signature": "fn new(queue_depth: u32) -> Result<Self>", "description": "Create new io_uring instance", "async": false}
+              ]
+            }
+          ]
+        },
+        {
+          "name": "sim",
+          "description": "Simulated I/O for testing",
+          "file": "src/io/sim.rs",
+          "interfaces": [
+            {
+              "name": "SimIO",
+              "type": "struct",
+              "description": "Simulated I/O for deterministic testing",
+              "methods": [
+                {"name": "new", "signature": "fn new(node_id: NodeId, seed: u64) -> Self", "description": "Create new simulated I/O", "async": false}
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "acceptance_criteria": [
+    {
+      "id": "AC-001",
+      "category": "functional",
+      "criterion": "System compiles to a single statically-linked binary with no runtime dependencies",
+      "verification": "ldd binary shows 'not a dynamic executable' or only libc",
+      "priority": "must"
+    },
+    {
+      "id": "AC-002",
+      "category": "functional",
+      "criterion": "Binary can start a 3-node cluster on localhost with different ports",
+      "verification": "Run 'mox start --cluster localhost:9001,localhost:9002,localhost:9003 --id 1' on three terminals",
+      "priority": "must"
+    },
+    {
+      "id": "AC-003",
+      "category": "functional",
+      "criterion": "All I/O operations go through the IO trait abstraction",
+      "verification": "Code review confirms no direct std::fs or std::net usage in core modules",
+      "priority": "must"
+    },
+    {
+      "id": "AC-004",
+      "category": "reliability",
+      "criterion": "Cluster tolerates 1 node failure in 3-node setup, 2 failures in 5-node setup",
+      "verification": "Simulation test crashes minority nodes and confirms continued operation",
+      "priority": "must"
+    },
+    {
+      "id": "AC-005",
+      "category": "correctness",
+      "criterion": "All nodes converge to identical state after partition heals",
+      "verification": "Simulation test partitions network, submits operations, heals, and verifies state hashes match",
+      "priority": "must"
+    },
+    {
+      "id": "AC-006",
+      "category": "performance",
+      "criterion": "Cold start time is less than 500ms with empty state",
+      "verification": "Benchmark measures time from process start to first successful request",
+      "priority": "should"
+    },
+    {
+      "id": "AC-007",
+      "category": "observability",
+      "criterion": "Binary exposes Prometheus metrics endpoint at /metrics",
+      "verification": "curl http://localhost:8080/metrics returns valid Prometheus format",
+      "priority": "must"
+    },
+    {
+      "id": "AC-008",
+      "category": "functional",
+      "criterion": "Configuration loaded from TOML file with environment variable overrides",
+      "verification": "Set MOX_CLUSTER_NODE_ID=5 and verify it overrides config file value",
+      "priority": "must"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Setup Cargo workspace structure",
+      "description": "Create the base Cargo.toml with workspace configuration, set up directory structure for src/, tests/, benches/. Configure release profile for static linking.",
+      "component": "Core Binary",
+      "acceptance_criteria_ids": ["AC-001"],
+      "depends_on": [],
+      "labels": ["setup", "infrastructure"],
+      "estimate": "s"
+    },
+    {
+      "id": "TASK-002",
+      "title": "Implement IO trait abstraction",
+      "description": "Define the IO trait with all required methods (now, sleep, random, write, read, fsync, send, recv). Create placeholder implementations for UringIO and SimIO.",
+      "component": "IO Abstraction",
+      "acceptance_criteria_ids": ["AC-003"],
+      "depends_on": ["TASK-001"],
+      "labels": ["core", "io"],
+      "estimate": "m"
+    },
+    {
+      "id": "TASK-003",
+      "title": "Implement configuration loading",
+      "description": "Create Config struct with all cluster, storage, consensus, and API settings. Implement TOML parsing with environment variable overlay. Add validation.",
+      "component": "Core Binary",
+      "acceptance_criteria_ids": ["AC-008"],
+      "depends_on": ["TASK-001"],
+      "labels": ["core", "config"],
+      "estimate": "s"
+    },
+    {
+      "id": "TASK-004",
+      "title": "Implement CLI and main entry point",
+      "description": "Create CLI using clap with 'start', 'status', 'membership' subcommands. Wire up configuration loading and graceful shutdown.",
+      "component": "Core Binary",
+      "acceptance_criteria_ids": ["AC-002", "AC-006"],
+      "depends_on": ["TASK-003"],
+      "labels": ["core", "cli"],
+      "estimate": "m"
+    },
+    {
+      "id": "TASK-005",
+      "title": "Implement Prometheus metrics endpoint",
+      "description": "Add /metrics endpoint exposing standard metrics: uptime, requests, latencies, consensus state, storage stats.",
+      "component": "Core Binary",
+      "acceptance_criteria_ids": ["AC-007"],
+      "depends_on": ["TASK-004"],
+      "labels": ["observability", "metrics"],
+      "estimate": "s"
+    }
+  ],
+  "metrics": [
+    {"name": "cold_start_time", "target": "< 500", "unit": "ms", "percentile": "p99"},
+    {"name": "binary_size", "target": "< 50", "unit": "MB", "percentile": null},
+    {"name": "memory_baseline", "target": "< 100", "unit": "MB", "percentile": null}
+  ],
+  "references": [
+    {"title": "TigerBeetle Design Doc", "url": "https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/DESIGN.md"},
+    {"title": "Raft Paper", "url": "https://raft.github.io/raft.pdf"},
+    {"title": "io_uring Documentation", "url": "https://kernel.dk/io_uring.pdf"}
+  ]
+}

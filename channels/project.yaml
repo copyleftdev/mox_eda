@@ -1,0 +1,36 @@
+# Project & Issue domain channels
+project.created:
+  address: project.created
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    projectCreated:
+      $ref: "../components/messages/project.yaml#/ProjectCreated"
+
+issue.created:
+  address: issue.created
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    issueCreated:
+      $ref: "../components/messages/project.yaml#/IssueCreated"
+
+issue.updated:
+  address: issue.updated
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    issueUpdated:
+      $ref: "../components/messages/project.yaml#/IssueUpdated"
+
+issue.checklist.item.completed:
+  address: issue.checklist.item.completed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    checklistItemCompleted:
+      $ref: "../components/messages/project.yaml#/ChecklistItemCompleted"

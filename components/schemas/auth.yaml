@@ -1,0 +1,30 @@
+# Auth & Org domain schemas
+AuthUserOnboardedData:
+  type: object
+  required: [org_id, user_id, method, onboarded_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    user_id:
+      $ref: "./common.yaml#/UserId"
+    method:
+      type: string
+      enum: [invited, self_signup, tik_tok_oauth]
+    onboarded_at:
+      $ref: "./common.yaml#/Timestamp"
+
+OrgTeamMemberAddedData:
+  type: object
+  required: [org_id, team_id, user_id, role, added_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    team_id:
+      $ref: "./common.yaml#/TeamId"
+    user_id:
+      $ref: "./common.yaml#/UserId"
+    role:
+      type: string
+      enum: [manager, operator, moderator, analyst, admin]
+    added_at:
+      $ref: "./common.yaml#/Timestamp"

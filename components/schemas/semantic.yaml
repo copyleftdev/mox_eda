@@ -1,0 +1,46 @@
+# Semantic / AI domain schemas
+EmbeddingUpsertedData:
+  type: object
+  required: [org_id, owner_type, owner_id, model, chunk_index, embedded_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    owner_type:
+      $ref: "#/EmbeddingOwnerType"
+    owner_id:
+      $ref: "./common.yaml#/Id"
+    model:
+      type: string
+    chunk_index:
+      type: integer
+    dimensions:
+      type: integer
+    embedded_at:
+      $ref: "./common.yaml#/Timestamp"
+
+SemanticSummaryGeneratedData:
+  type: object
+  required: [org_id, owner_type, owner_id, period_start, period_end, summary_id, generated_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    owner_type:
+      $ref: "#/SummaryOwnerType"
+    owner_id:
+      $ref: "./common.yaml#/Id"
+    period_start:
+      $ref: "./common.yaml#/Timestamp"
+    period_end:
+      $ref: "./common.yaml#/Timestamp"
+    summary_id:
+      $ref: "./common.yaml#/Id"
+    generated_at:
+      $ref: "./common.yaml#/Timestamp"
+
+EmbeddingOwnerType:
+  type: string
+  enum: [talent_note, battle_note, issue, schedule_block]
+
+SummaryOwnerType:
+  type: string
+  enum: [talent, team, org]

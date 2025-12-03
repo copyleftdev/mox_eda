@@ -1,0 +1,548 @@
+# Integration & External Platform domain schemas
+ConnectionId:
+  allOf: [{ $ref: "./common.yaml#/Id" }]
+
+SyncJobId:
+  allOf: [{ $ref: "./common.yaml#/Id" }]
+
+WebhookId:
+  allOf: [{ $ref: "./common.yaml#/Id" }]
+
+# Platform Connection (OAuth tokens, API keys)
+PlatformConnectedData:
+  type: object
+  required: [org_id, connection_id, platform, entity_type, entity_id, connected_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    connection_id:
+      $ref: "#/ConnectionId"
+    platform:
+      $ref: "#/ExternalPlatform"
+    entity_type:
+      type: string
+      enum: [org, talent, user]
+      description: What entity this connection belongs to.
+    entity_id:
+      $ref: "./common.yaml#/Id"
+    external_account_id:
+      type: string
+      description: The account ID on the external platform.
+    external_username:
+      type: string
+      nullable: true
+    scopes:
+      type: array
+      items:
+        type: string
+      description: OAuth scopes granted.
+    token_expires_at:
+      $ref: "./common.yaml#/Timestamp"
+      nullable: true
+    connected_at:
+      $ref: "./common.yaml#/Timestamp"
+    connected_by:
+      $ref: "./common.yaml#/UserId"
+
+PlatformDisconnectedData:
+  type: object
+  required: [org_id, connection_id, platform, reason, disconnected_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    connection_id:
+      $ref: "#/ConnectionId"
+    platform:
+      $ref: "#/ExternalPlatform"
+    entity_type:
+      type: string
+      enum: [org, talent, user]
+    entity_id:
+      $ref: "./common.yaml#/Id"
+    reason:
+      $ref: "#/DisconnectReason"
+    disconnected_at:
+      $ref: "./common.yaml#/Timestamp"
+    disconnected_by:
+      $ref: "./common.yaml#/UserId"
+      nullable: true
+
+PlatformTokenRefreshedData:
+  type: object
+  required: [org_id, connection_id, platform, refreshed_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    connection_id:
+      $ref: "#/ConnectionId"
+    platform:
+      $ref: "#/ExternalPlatform"
+    new_expires_at:
+      $ref: "./common.yaml#/Timestamp"
+    refreshed_at:
+      $ref: "./common.yaml#/Timestamp"
+
+PlatformTokenExpiredData:
+  type: object
+  required: [org_id, connection_id, platform, expired_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    connection_id:
+      $ref: "#/ConnectionId"
+    platform:
+      $ref: "#/ExternalPlatform"
+    entity_type:
+      type: string
+      enum: [org, talent, user]
+    entity_id:
+      $ref: "./common.yaml#/Id"
+    refresh_attempted:
+      type: boolean
+      default: false
+    expired_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# Data Sync Events
+SyncJobStartedData:
+  type: object
+  required: [org_id, sync_job_id, platform, sync_type, started_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    sync_job_id:
+      $ref: "#/SyncJobId"
+    connection_id:
+      $ref: "#/ConnectionId"
+    platform:
+      $ref: "#/ExternalPlatform"
+    sync_type:
+      $ref: "#/SyncType"
+    entity_type:
+      type: string
+      enum: [org, talent, user]
+      nullable: true
+    entity_id:
+      $ref: "./common.yaml#/Id"
+      nullable: true
+    triggered_by:
+      type: string
+      enum: [scheduled, manual, webhook, system]
+    started_at:
+      $ref: "./common.yaml#/Timestamp"
+
+SyncJobCompletedData:
+  type: object
+  required: [org_id, sync_job_id, platform, status, completed_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    sync_job_id:
+      $ref: "#/SyncJobId"
+    platform:
+      $ref: "#/ExternalPlatform"
+    sync_type:
+      $ref: "#/SyncType"
+    status:
+      $ref: "#/SyncStatus"
+    records_fetched:
+      type: integer
+      default: 0
+    records_created:
+      type: integer
+      default: 0
+    records_updated:
+      type: integer
+      default: 0
+    records_failed:
+      type: integer
+      default: 0
+    error_message:
+      type: string
+      nullable: true
+    duration_ms:
+      type: integer
+    completed_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# TikTok-specific sync events
+TikTokProfileSyncedData:
+  type: object
+  required: [org_id, talent_id, tiktok_user_id, synced_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    connection_id:
+      $ref: "#/ConnectionId"
+    tiktok_user_id:
+      type: string
+    tiktok_username:
+      type: string
+    display_name:
+      type: string
+      nullable: true
+    bio:
+      type: string
+      nullable: true
+    avatar_url:
+      type: string
+      nullable: true
+    follower_count:
+      type: integer
+    following_count:
+      type: integer
+    likes_count:
+      type: integer
+    video_count:
+      type: integer
+    is_verified:
+      type: boolean
+      default: false
+    profile_deep_link:
+      type: string
+      nullable: true
+    synced_at:
+      $ref: "./common.yaml#/Timestamp"
+
+TikTokVideosSyncedData:
+  type: object
+  required: [org_id, talent_id, videos_synced, synced_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    connection_id:
+      $ref: "#/ConnectionId"
+    videos_synced:
+      type: integer
+    new_videos:
+      type: integer
+    updated_videos:
+      type: integer
+    date_range_start:
+      $ref: "./common.yaml#/Timestamp"
+      nullable: true
+    date_range_end:
+      $ref: "./common.yaml#/Timestamp"
+      nullable: true
+    synced_at:
+      $ref: "./common.yaml#/Timestamp"
+
+TikTokAnalyticsSyncedData:
+  type: object
+  required: [org_id, talent_id, period_start, period_end, synced_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    connection_id:
+      $ref: "#/ConnectionId"
+    period_start:
+      $ref: "./common.yaml#/Timestamp"
+    period_end:
+      $ref: "./common.yaml#/Timestamp"
+    metrics:
+      $ref: "#/TikTokAnalyticsMetrics"
+    synced_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# Instagram-specific sync events
+InstagramProfileSyncedData:
+  type: object
+  required: [org_id, talent_id, instagram_user_id, synced_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    connection_id:
+      $ref: "#/ConnectionId"
+    instagram_user_id:
+      type: string
+    instagram_username:
+      type: string
+    display_name:
+      type: string
+      nullable: true
+    bio:
+      type: string
+      nullable: true
+    avatar_url:
+      type: string
+      nullable: true
+    follower_count:
+      type: integer
+    following_count:
+      type: integer
+    media_count:
+      type: integer
+    is_verified:
+      type: boolean
+      default: false
+    is_business_account:
+      type: boolean
+      default: false
+    synced_at:
+      $ref: "./common.yaml#/Timestamp"
+
+InstagramMediaSyncedData:
+  type: object
+  required: [org_id, talent_id, media_synced, synced_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    connection_id:
+      $ref: "#/ConnectionId"
+    media_synced:
+      type: integer
+    reels_synced:
+      type: integer
+    stories_synced:
+      type: integer
+    synced_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# YouTube-specific sync events
+YouTubeChannelSyncedData:
+  type: object
+  required: [org_id, talent_id, youtube_channel_id, synced_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    connection_id:
+      $ref: "#/ConnectionId"
+    youtube_channel_id:
+      type: string
+    channel_title:
+      type: string
+    description:
+      type: string
+      nullable: true
+    thumbnail_url:
+      type: string
+      nullable: true
+    subscriber_count:
+      type: integer
+    video_count:
+      type: integer
+    view_count:
+      type: integer
+    custom_url:
+      type: string
+      nullable: true
+    synced_at:
+      $ref: "./common.yaml#/Timestamp"
+
+YouTubeVideosSyncedData:
+  type: object
+  required: [org_id, talent_id, videos_synced, synced_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    connection_id:
+      $ref: "#/ConnectionId"
+    videos_synced:
+      type: integer
+    shorts_synced:
+      type: integer
+    synced_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# Webhook Events (inbound from platforms)
+WebhookReceivedData:
+  type: object
+  required: [org_id, webhook_id, platform, event_type, received_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    webhook_id:
+      $ref: "#/WebhookId"
+    platform:
+      $ref: "#/ExternalPlatform"
+    event_type:
+      type: string
+      description: Platform-specific event type.
+    entity_type:
+      type: string
+      nullable: true
+    entity_id:
+      $ref: "./common.yaml#/Id"
+      nullable: true
+    external_event_id:
+      type: string
+      nullable: true
+    payload_hash:
+      type: string
+      description: SHA256 of payload for deduplication.
+    processed:
+      type: boolean
+      default: false
+    received_at:
+      $ref: "./common.yaml#/Timestamp"
+
+WebhookProcessedData:
+  type: object
+  required: [org_id, webhook_id, status, processed_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    webhook_id:
+      $ref: "#/WebhookId"
+    platform:
+      $ref: "#/ExternalPlatform"
+    status:
+      type: string
+      enum: [success, failed, ignored, duplicate]
+    actions_taken:
+      type: array
+      items:
+        type: string
+    error_message:
+      type: string
+      nullable: true
+    processing_time_ms:
+      type: integer
+    processed_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# API Rate Limiting
+ApiRateLimitApproachedData:
+  type: object
+  required: [org_id, platform, endpoint, current_usage, limit, detected_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    connection_id:
+      $ref: "#/ConnectionId"
+      nullable: true
+    platform:
+      $ref: "#/ExternalPlatform"
+    endpoint:
+      type: string
+    current_usage:
+      type: integer
+    limit:
+      type: integer
+    reset_at:
+      $ref: "./common.yaml#/Timestamp"
+    percentage_used:
+      type: number
+    detected_at:
+      $ref: "./common.yaml#/Timestamp"
+
+ApiRateLimitExceededData:
+  type: object
+  required: [org_id, platform, endpoint, exceeded_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    connection_id:
+      $ref: "#/ConnectionId"
+      nullable: true
+    platform:
+      $ref: "#/ExternalPlatform"
+    endpoint:
+      type: string
+    retry_after_seconds:
+      type: integer
+      nullable: true
+    reset_at:
+      $ref: "./common.yaml#/Timestamp"
+      nullable: true
+    exceeded_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# API Call Logging (for debugging/analytics)
+ApiCallLoggedData:
+  type: object
+  required: [org_id, platform, method, endpoint, status_code, logged_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    connection_id:
+      $ref: "#/ConnectionId"
+      nullable: true
+    platform:
+      $ref: "#/ExternalPlatform"
+    method:
+      type: string
+      enum: [GET, POST, PUT, PATCH, DELETE]
+    endpoint:
+      type: string
+    status_code:
+      type: integer
+    response_time_ms:
+      type: integer
+    error_code:
+      type: string
+      nullable: true
+    error_message:
+      type: string
+      nullable: true
+    request_id:
+      type: string
+      nullable: true
+    logged_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# Enums
+ExternalPlatform:
+  type: string
+  enum: [tiktok, instagram, youtube, twitter, twitch, facebook, linkedin, spotify, snapchat, pinterest, discord]
+
+DisconnectReason:
+  type: string
+  enum: [user_revoked, token_expired, api_error, user_requested, admin_action, account_deleted]
+
+SyncType:
+  type: string
+  enum: [full, incremental, profile, content, analytics, followers, comments, messages]
+
+SyncStatus:
+  type: string
+  enum: [success, partial, failed, rate_limited, auth_error]
+
+TikTokAnalyticsMetrics:
+  type: object
+  properties:
+    profile_views:
+      type: integer
+    video_views:
+      type: integer
+    likes:
+      type: integer
+    comments:
+      type: integer
+    shares:
+      type: integer
+    followers_gained:
+      type: integer
+    followers_lost:
+      type: integer
+    net_followers:
+      type: integer
+    average_watch_time_seconds:
+      type: number
+    audience_territories:
+      type: object
+      additionalProperties:
+        type: number
+        description: Percentage of audience from each country.
+    audience_genders:
+      type: object
+      additionalProperties:
+        type: number
+    audience_age_ranges:
+      type: object
+      additionalProperties:
+        type: number

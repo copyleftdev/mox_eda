@@ -1,0 +1,24 @@
+# Audit domain schemas
+AuditLogWrittenData:
+  type: object
+  required: [org_id, actor_id, action, object_type, object_id, written_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    actor_id:
+      $ref: "./common.yaml#/UserId"
+    action:
+      type: string
+    object_type:
+      $ref: "#/AuditObjectType"
+    object_id:
+      $ref: "./common.yaml#/Id"
+    meta_json:
+      type: object
+      additionalProperties: true
+    written_at:
+      $ref: "./common.yaml#/Timestamp"
+
+AuditObjectType:
+  type: string
+  enum: [user, team, talent, note, project, issue, schedule_block, battle]

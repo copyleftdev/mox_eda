@@ -1,0 +1,18 @@
+# Auth & Org domain channels
+auth.user.onboarded:
+  address: auth.user.onboarded
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    authUserOnboarded:
+      $ref: "../components/messages/auth.yaml#/AuthUserOnboarded"
+
+org.team.member.added:
+  address: org.team.member.added
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    orgTeamMemberAdded:
+      $ref: "../components/messages/auth.yaml#/OrgTeamMemberAdded"

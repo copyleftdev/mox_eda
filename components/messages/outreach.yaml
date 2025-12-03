@@ -1,0 +1,208 @@
+# Outreach & Communication domain messages
+OutreachCampaignCreated:
+  name: OutreachCampaignCreated
+  title: Outreach campaign created
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.outreach.campaign.created"
+          data:
+            $ref: "../schemas/outreach.yaml#/OutreachCampaignCreatedData"
+
+OutreachCampaignUpdated:
+  name: OutreachCampaignUpdated
+  title: Outreach campaign updated
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.outreach.campaign.updated"
+          data:
+            $ref: "../schemas/outreach.yaml#/OutreachCampaignUpdatedData"
+
+OutreachMessageSent:
+  name: OutreachMessageSent
+  title: Outreach message sent
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.outreach.message.sent"
+          data:
+            $ref: "../schemas/outreach.yaml#/OutreachMessageSentData"
+
+OutreachMessageDelivered:
+  name: OutreachMessageDelivered
+  title: Outreach message delivered
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.outreach.message.delivered"
+          data:
+            $ref: "../schemas/outreach.yaml#/OutreachMessageDeliveredData"
+
+OutreachMessageOpened:
+  name: OutreachMessageOpened
+  title: Outreach message opened
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.outreach.message.opened"
+          data:
+            $ref: "../schemas/outreach.yaml#/OutreachMessageOpenedData"
+
+OutreachMessageClicked:
+  name: OutreachMessageClicked
+  title: Outreach message link clicked
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.outreach.message.clicked"
+          data:
+            $ref: "../schemas/outreach.yaml#/OutreachMessageClickedData"
+
+OutreachResponseReceived:
+  name: OutreachResponseReceived
+  title: Outreach response received
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.outreach.response.received"
+          data:
+            $ref: "../schemas/outreach.yaml#/OutreachResponseReceivedData"
+
+ConversationCreated:
+  name: ConversationCreated
+  title: Conversation thread created
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.conversation.created"
+          data:
+            $ref: "../schemas/outreach.yaml#/ConversationCreatedData"
+
+ConversationStatusChanged:
+  name: ConversationStatusChanged
+  title: Conversation status changed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.conversation.status.changed"
+          data:
+            $ref: "../schemas/outreach.yaml#/ConversationStatusChangedData"
+
+MeetingScheduled:
+  name: MeetingScheduled
+  title: Meeting scheduled
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.meeting.scheduled"
+          data:
+            $ref: "../schemas/outreach.yaml#/MeetingScheduledData"
+
+MeetingUpdated:
+  name: MeetingUpdated
+  title: Meeting updated
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.meeting.updated"
+          data:
+            $ref: "../schemas/outreach.yaml#/MeetingUpdatedData"
+
+MeetingCancelled:
+  name: MeetingCancelled
+  title: Meeting cancelled
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.meeting.cancelled"
+          data:
+            $ref: "../schemas/outreach.yaml#/MeetingCancelledData"
+
+MeetingCompleted:
+  name: MeetingCompleted
+  title: Meeting completed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.meeting.completed"
+          data:
+            $ref: "../schemas/outreach.yaml#/MeetingCompletedData"
+
+CallLogged:
+  name: CallLogged
+  title: Call logged
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.call.logged"
+          data:
+            $ref: "../schemas/outreach.yaml#/CallLoggedData"
+
+FollowUpScheduled:
+  name: FollowUpScheduled
+  title: Follow-up scheduled
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.followup.scheduled"
+          data:
+            $ref: "../schemas/outreach.yaml#/FollowUpScheduledData"
+
+FollowUpCompleted:
+  name: FollowUpCompleted
+  title: Follow-up completed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.followup.completed"
+          data:
+            $ref: "../schemas/outreach.yaml#/FollowUpCompletedData"

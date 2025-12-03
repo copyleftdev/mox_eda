@@ -1,0 +1,10 @@
+# NATS server definitions for Mox EDA
+natsProd:
+  host: nats://nats-prod.mana.internal:4222
+  protocol: nats
+  description: Primary production event bus (subjects mirror channel addresses).
+
+natsDev:
+  host: nats://localhost:4222
+  protocol: nats
+  description: Local/dev bus.

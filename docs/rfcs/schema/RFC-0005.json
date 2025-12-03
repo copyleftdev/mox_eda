@@ -1,0 +1,292 @@
+{
+  "id": "RFC-0005",
+  "title": "Deterministic Simulation Testing",
+  "status": "draft",
+  "created": "2024-12-03",
+  "updated": "2024-12-03",
+  "authors": ["Platform Team"],
+  "summary": "Deterministic simulation harness for testing consensus, storage, and state machine under all failure modes. Simulate years of operation in minutes with reproducible seeds.",
+  "motivation": "Traditional testing cannot cover all interleavings and failure modes in distributed systems. DST proves correctness by exhaustively testing with deterministic fault injection.",
+  "dependencies": [
+    {"rfc_id": "RFC-0001", "relationship": "requires", "description": "IO trait abstraction enables simulation"},
+    {"rfc_id": "RFC-0002", "relationship": "requires", "description": "Storage must work with SimIO"},
+    {"rfc_id": "RFC-0003", "relationship": "requires", "description": "Consensus must work with SimIO"},
+    {"rfc_id": "RFC-0004", "relationship": "requires", "description": "State machine must be deterministic"}
+  ],
+  "components": [
+    {
+      "name": "Simulation Core",
+      "description": "Core simulation driver and event queue",
+      "path": "src/simulator/",
+      "modules": [
+        {
+          "name": "driver",
+          "description": "Main simulation driver",
+          "file": "src/simulator/driver.rs",
+          "interfaces": [
+            {
+              "name": "Simulator",
+              "type": "struct",
+              "description": "Main simulation harness",
+              "methods": [
+                {"name": "new", "signature": "fn new(seed: u64, num_nodes: usize) -> Self", "description": "Create simulator with seed", "async": false},
+                {"name": "run", "signature": "fn run(&mut self, ticks: u64) -> SimResult", "description": "Run for N ticks", "async": false},
+                {"name": "run_until", "signature": "fn run_until<F>(&mut self, pred: F, timeout: Duration) -> bool", "description": "Run until predicate true", "async": false},
+                {"name": "inject_fault", "signature": "fn inject_fault(&mut self, fault: Fault)", "description": "Inject a fault", "async": false},
+                {"name": "submit", "signature": "fn submit(&mut self, command: Command) -> Result<CommandResult>", "description": "Submit client command", "async": false}
+              ]
+            },
+            {
+              "name": "Fault",
+              "type": "enum",
+              "description": "Injectable faults: CrashNode, PartitionNetwork, SlowDisk, CorruptDisk",
+              "methods": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Simulated Network",
+      "description": "Deterministic network simulation",
+      "path": "src/simulator/",
+      "modules": [
+        {
+          "name": "network",
+          "description": "Network simulation with partitions and delays",
+          "file": "src/simulator/network.rs",
+          "interfaces": [
+            {
+              "name": "SimNetwork",
+              "type": "struct",
+              "description": "Simulated network",
+              "methods": [
+                {"name": "partition", "signature": "fn partition(&mut self, group_a: Vec<NodeId>, group_b: Vec<NodeId>)", "description": "Create network partition", "async": false},
+                {"name": "heal", "signature": "fn heal(&mut self)", "description": "Heal all partitions", "async": false},
+                {"name": "route_message", "signature": "fn route_message(&mut self, from: NodeId, to: NodeId) -> NetworkAction", "description": "Route message with faults", "async": false}
+              ]
+            },
+            {
+              "name": "NetworkAction",
+              "type": "enum",
+              "description": "Deliver, Drop, or Duplicate message",
+              "methods": []
+            },
+            {
+              "name": "NetworkFaultConfig",
+              "type": "struct",
+              "description": "Drop/duplicate/reorder probabilities",
+              "methods": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Simulated Disk",
+      "description": "Deterministic disk simulation",
+      "path": "src/simulator/",
+      "modules": [
+        {
+          "name": "disk",
+          "description": "Disk simulation with corruption and failures",
+          "file": "src/simulator/disk.rs",
+          "interfaces": [
+            {
+              "name": "SimDisk",
+              "type": "struct",
+              "description": "Simulated disk",
+              "methods": [
+                {"name": "write", "signature": "fn write(&mut self, fd: FileId, offset: u64, data: &[u8])", "description": "Write to simulated disk", "async": false},
+                {"name": "read", "signature": "fn read(&self, fd: FileId, offset: u64, len: usize) -> Vec<u8>", "description": "Read from simulated disk", "async": false},
+                {"name": "fsync", "signature": "fn fsync(&mut self, fd: FileId)", "description": "Fsync pending writes", "async": false},
+                {"name": "crash", "signature": "fn crash(&mut self)", "description": "Simulate crash, lose unfsynced writes", "async": false}
+              ]
+            },
+            {
+              "name": "DiskFaultConfig",
+              "type": "struct",
+              "description": "Write failure, read corruption probabilities",
+              "methods": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Invariant Checker",
+      "description": "Checks system invariants during simulation",
+      "path": "src/simulator/",
+      "modules": [
+        {
+          "name": "invariants",
+          "description": "Invariant checking",
+          "file": "src/simulator/invariants.rs",
+          "interfaces": [
+            {
+              "name": "InvariantChecker",
+              "type": "struct",
+              "description": "Checks all invariants",
+              "methods": [
+                {"name": "check_all", "signature": "fn check_all(&self, nodes: &[SimulatedNode]) -> Result<()>", "description": "Check all invariants", "async": false},
+                {"name": "check_single_leader", "signature": "fn check_single_leader(&self, nodes: &[SimulatedNode]) -> Result<()>", "description": "At most one leader per term", "async": false},
+                {"name": "check_log_consistency", "signature": "fn check_log_consistency(&self, nodes: &[SimulatedNode]) -> Result<()>", "description": "Logs match on committed entries", "async": false},
+                {"name": "check_linearizability", "signature": "fn check_linearizability(&self) -> Result<()>", "description": "Operations are linearizable", "async": false}
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "acceptance_criteria": [
+    {
+      "id": "AC-001",
+      "category": "correctness",
+      "criterion": "Same seed produces identical simulation results",
+      "verification": "Run simulation with seed=42 twice, verify identical event sequence and final state",
+      "priority": "must"
+    },
+    {
+      "id": "AC-002",
+      "category": "correctness",
+      "criterion": "Single leader invariant holds across 10,000 elections with faults",
+      "verification": "Run simulation with 10K elections, random crashes, verify never two leaders same term",
+      "priority": "must"
+    },
+    {
+      "id": "AC-003",
+      "category": "correctness",
+      "criterion": "Committed data survives any minority node failures",
+      "verification": "Commit 10K entries, crash 2/5 nodes, verify all committed entries readable",
+      "priority": "must"
+    },
+    {
+      "id": "AC-004",
+      "category": "correctness",
+      "criterion": "Nodes converge after network partition heals",
+      "verification": "Partition network, submit ops to both sides, heal, verify identical state",
+      "priority": "must"
+    },
+    {
+      "id": "AC-005",
+      "category": "correctness",
+      "criterion": "Checksums detect all simulated disk corruption",
+      "verification": "Inject corruption, verify read returns ChecksumMismatch error",
+      "priority": "must"
+    },
+    {
+      "id": "AC-006",
+      "category": "correctness",
+      "criterion": "Unfsynced writes lost on simulated crash",
+      "verification": "Write without fsync, crash, verify data not present after recovery",
+      "priority": "must"
+    },
+    {
+      "id": "AC-007",
+      "category": "performance",
+      "criterion": "Simulate 1 million operations in under 60 seconds",
+      "verification": "Benchmark 1M ops simulation on standard hardware",
+      "priority": "should"
+    },
+    {
+      "id": "AC-008",
+      "category": "functional",
+      "criterion": "Fault injection covers: node crash, network partition, slow disk, disk corruption",
+      "verification": "API supports all fault types, simulation tests use each type",
+      "priority": "must"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Implement SimIO struct",
+      "description": "Create SimIO implementing IO trait. Use deterministic RNG (Xoroshiro128++). Track simulated time. Route operations to SimNetwork and SimDisk.",
+      "component": "Simulation Core",
+      "acceptance_criteria_ids": ["AC-001"],
+      "depends_on": [],
+      "labels": ["simulation", "io"],
+      "estimate": "l"
+    },
+    {
+      "id": "TASK-002",
+      "title": "Implement SimNetwork",
+      "description": "Create SimNetwork with partition support. Implement message routing with configurable drop/duplicate/delay. Track message inboxes per node.",
+      "component": "Simulated Network",
+      "acceptance_criteria_ids": ["AC-004", "AC-008"],
+      "depends_on": ["TASK-001"],
+      "labels": ["simulation", "network"],
+      "estimate": "m"
+    },
+    {
+      "id": "TASK-003",
+      "title": "Implement SimDisk",
+      "description": "Create SimDisk with in-memory file storage. Track pending writes separately from committed. Implement crash() that loses pending writes.",
+      "component": "Simulated Disk",
+      "acceptance_criteria_ids": ["AC-005", "AC-006", "AC-008"],
+      "depends_on": ["TASK-001"],
+      "labels": ["simulation", "disk"],
+      "estimate": "m"
+    },
+    {
+      "id": "TASK-004",
+      "title": "Implement Simulator driver",
+      "description": "Create Simulator with event queue (BinaryHeap). Implement tick() that processes next event. Support run() and run_until().",
+      "component": "Simulation Core",
+      "acceptance_criteria_ids": ["AC-001", "AC-007"],
+      "depends_on": ["TASK-001", "TASK-002", "TASK-003"],
+      "labels": ["simulation", "driver"],
+      "estimate": "l"
+    },
+    {
+      "id": "TASK-005",
+      "title": "Implement fault injection API",
+      "description": "Create Fault enum with CrashNode, PartitionNetwork, HealNetwork, SlowDisk, CorruptDisk. Implement inject_fault() that modifies simulation state.",
+      "component": "Simulation Core",
+      "acceptance_criteria_ids": ["AC-008"],
+      "depends_on": ["TASK-004"],
+      "labels": ["simulation", "faults"],
+      "estimate": "m"
+    },
+    {
+      "id": "TASK-006",
+      "title": "Implement InvariantChecker",
+      "description": "Create InvariantChecker with check methods for single leader, log consistency, committed data persistence, state convergence.",
+      "component": "Invariant Checker",
+      "acceptance_criteria_ids": ["AC-002", "AC-003", "AC-004"],
+      "depends_on": ["TASK-004"],
+      "labels": ["simulation", "invariants"],
+      "estimate": "l"
+    },
+    {
+      "id": "TASK-007",
+      "title": "Implement linearizability checker",
+      "description": "Track operation history (invoke/response). Implement Wing-Gong or Lowe algorithm to verify linearizability.",
+      "component": "Invariant Checker",
+      "acceptance_criteria_ids": ["AC-002"],
+      "depends_on": ["TASK-006"],
+      "labels": ["simulation", "linearizability"],
+      "estimate": "xl"
+    },
+    {
+      "id": "TASK-008",
+      "title": "Create simulation test suite",
+      "description": "Write tests: leader_election, leader_failure_recovery, network_partition_heal, million_operations_chaos. Use multiple seeds.",
+      "component": "Simulation Core",
+      "acceptance_criteria_ids": ["AC-002", "AC-003", "AC-004", "AC-007"],
+      "depends_on": ["TASK-006"],
+      "labels": ["simulation", "tests"],
+      "estimate": "l"
+    }
+  ],
+  "metrics": [
+    {"name": "simulation_throughput", "target": "> 1M", "unit": "ops/min", "percentile": null},
+    {"name": "seeds_tested_per_ci", "target": "> 1000", "unit": "seeds", "percentile": null}
+  ],
+  "references": [
+    {"title": "FoundationDB Testing Talk", "url": "https://www.youtube.com/watch?v=4fFDFbi3toc"},
+    {"title": "TigerBeetle Simulation", "url": "https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/DESIGN.md#simulation"},
+    {"title": "Jepsen", "url": "https://jepsen.io/"},
+    {"title": "Linearizability Testing", "url": "https://www.anishathalye.com/2017/06/04/testing-distributed-systems-for-linearizability/"}
+  ]
+}

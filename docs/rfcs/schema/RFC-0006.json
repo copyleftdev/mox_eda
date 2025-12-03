@@ -1,0 +1,281 @@
+{
+  "id": "RFC-0006",
+  "title": "Network Protocol",
+  "status": "draft",
+  "created": "2024-12-03",
+  "updated": "2024-12-03",
+  "authors": ["Platform Team"],
+  "summary": "Binary network protocol for cluster communication (Raft RPCs) and client-to-cluster communication. Fixed-size headers, CRC32C checksums, optional compression.",
+  "motivation": "Efficient cluster communication requires a compact binary protocol with minimal parsing overhead. All messages must be checksummed for integrity.",
+  "dependencies": [
+    {"rfc_id": "RFC-0001", "relationship": "requires", "description": "Uses IO trait for network operations"},
+    {"rfc_id": "RFC-0003", "relationship": "related", "description": "Carries Raft RPC messages"}
+  ],
+  "components": [
+    {
+      "name": "Wire Protocol",
+      "description": "Message encoding and decoding",
+      "path": "src/network/",
+      "modules": [
+        {
+          "name": "protocol",
+          "description": "Wire protocol implementation",
+          "file": "src/network/protocol.rs",
+          "interfaces": [
+            {
+              "name": "WireProtocol",
+              "type": "struct",
+              "description": "Protocol encoder/decoder",
+              "methods": [
+                {"name": "encode", "signature": "fn encode(msg_type: MessageType, flags: u32, body: &[u8]) -> Vec<u8>", "description": "Encode message to wire format", "async": false},
+                {"name": "decode", "signature": "fn decode(buffer: &[u8]) -> Result<Message, ProtocolError>", "description": "Decode message from wire format", "async": false},
+                {"name": "encode_compressed", "signature": "fn encode_compressed(msg_type: MessageType, body: &[u8]) -> Vec<u8>", "description": "Encode with LZ4 compression", "async": false}
+              ]
+            },
+            {
+              "name": "Message",
+              "type": "struct",
+              "description": "Decoded message with type, flags, body",
+              "methods": []
+            }
+          ]
+        },
+        {
+          "name": "message",
+          "description": "Message type definitions",
+          "file": "src/network/message.rs",
+          "interfaces": [
+            {
+              "name": "MessageType",
+              "type": "enum",
+              "description": "All message types: AppendEntries, RequestVote, ClientRequest, etc.",
+              "methods": []
+            },
+            {
+              "name": "MessageFlags",
+              "type": "enum",
+              "description": "Flags: Compressed, Encrypted, Batched, Priority",
+              "methods": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Raft Messages",
+      "description": "Raft RPC message structs",
+      "path": "src/network/",
+      "modules": [
+        {
+          "name": "raft_messages",
+          "description": "Raft protocol messages",
+          "file": "src/network/raft_messages.rs",
+          "interfaces": [
+            {"name": "AppendEntriesHeader", "type": "struct", "description": "AppendEntries RPC header", "methods": []},
+            {"name": "AppendEntriesResponse", "type": "struct", "description": "AppendEntries response", "methods": []},
+            {"name": "RequestVote", "type": "struct", "description": "RequestVote RPC", "methods": []},
+            {"name": "RequestVoteResponse", "type": "struct", "description": "RequestVote response", "methods": []},
+            {"name": "InstallSnapshotHeader", "type": "struct", "description": "InstallSnapshot RPC header", "methods": []}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Client Messages",
+      "description": "Client protocol messages",
+      "path": "src/network/",
+      "modules": [
+        {
+          "name": "client_messages",
+          "description": "Client protocol messages",
+          "file": "src/network/client_messages.rs",
+          "interfaces": [
+            {"name": "ClientRequestHeader", "type": "struct", "description": "Client request with tenant, operation, timeout", "methods": []},
+            {"name": "ClientResponseHeader", "type": "struct", "description": "Response with status, error code", "methods": []},
+            {"name": "ClientRedirect", "type": "struct", "description": "Redirect to leader", "methods": []}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Connection Management",
+      "description": "TCP connection pooling and management",
+      "path": "src/network/",
+      "modules": [
+        {
+          "name": "connection",
+          "description": "Connection management",
+          "file": "src/network/connection.rs",
+          "interfaces": [
+            {
+              "name": "ConnectionManager",
+              "type": "struct",
+              "description": "Manages connections to peers",
+              "methods": [
+                {"name": "send", "signature": "async fn send(&self, to: NodeId, message: Message) -> Result<()>", "description": "Send message to peer", "async": true},
+                {"name": "send_recv", "signature": "async fn send_recv(&self, to: NodeId, message: Message) -> Result<Message>", "description": "Send and wait for response", "async": true}
+              ]
+            },
+            {
+              "name": "ConnectionConfig",
+              "type": "struct",
+              "description": "Timeouts, pool size, keepalive settings",
+              "methods": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "acceptance_criteria": [
+    {
+      "id": "AC-001",
+      "category": "correctness",
+      "criterion": "All messages have valid CRC32C checksum verified on receive",
+      "verification": "Corrupt a byte in transit, verify decode returns ChecksumMismatch error",
+      "priority": "must"
+    },
+    {
+      "id": "AC-002",
+      "category": "correctness",
+      "criterion": "Protocol version mismatch rejected with clear error",
+      "verification": "Send message with version=99, verify UnsupportedVersion error",
+      "priority": "must"
+    },
+    {
+      "id": "AC-003",
+      "category": "functional",
+      "criterion": "Message header is exactly 24 bytes",
+      "verification": "Assert sizeof(header) == 24, verify field offsets",
+      "priority": "must"
+    },
+    {
+      "id": "AC-004",
+      "category": "functional",
+      "criterion": "LZ4 compression applied when body > 1KB and compression reduces size",
+      "verification": "Send large compressible payload, verify Compressed flag set",
+      "priority": "should"
+    },
+    {
+      "id": "AC-005",
+      "category": "performance",
+      "criterion": "Encode/decode roundtrip < 1μs for typical message",
+      "verification": "Benchmark encode+decode of 1KB message",
+      "priority": "should"
+    },
+    {
+      "id": "AC-006",
+      "category": "reliability",
+      "criterion": "Connection pool reuses connections, limits per-peer connections",
+      "verification": "Send 1000 messages, verify connection count stays under limit",
+      "priority": "must"
+    },
+    {
+      "id": "AC-007",
+      "category": "reliability",
+      "criterion": "Connection timeout and retry with exponential backoff",
+      "verification": "Make peer unreachable, verify retry pattern in logs",
+      "priority": "must"
+    },
+    {
+      "id": "AC-008",
+      "category": "security",
+      "criterion": "TLS optional for cluster communication with mutual auth",
+      "verification": "Configure TLS, verify certificate validation",
+      "priority": "should"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Define message header format",
+      "description": "Create 24-byte header struct: magic (4), crc32 (4), version (2), type (2), flags (4), length (4), reserved (4). Define endianness (little-endian).",
+      "component": "Wire Protocol",
+      "acceptance_criteria_ids": ["AC-001", "AC-003"],
+      "depends_on": [],
+      "labels": ["network", "protocol"],
+      "estimate": "s"
+    },
+    {
+      "id": "TASK-002",
+      "title": "Implement encode/decode functions",
+      "description": "Create encode() that builds header + body with CRC32C. Create decode() that validates magic, version, checksum, parses body.",
+      "component": "Wire Protocol",
+      "acceptance_criteria_ids": ["AC-001", "AC-002", "AC-005"],
+      "depends_on": ["TASK-001"],
+      "labels": ["network", "protocol"],
+      "estimate": "m"
+    },
+    {
+      "id": "TASK-003",
+      "title": "Implement LZ4 compression",
+      "description": "Add encode_compressed() using lz4_flex. Only compress if result smaller than original. Set Compressed flag.",
+      "component": "Wire Protocol",
+      "acceptance_criteria_ids": ["AC-004"],
+      "depends_on": ["TASK-002"],
+      "labels": ["network", "compression"],
+      "estimate": "s"
+    },
+    {
+      "id": "TASK-004",
+      "title": "Define MessageType enum",
+      "description": "Create MessageType enum with all Raft RPCs (AppendEntries, RequestVote, InstallSnapshot) and client messages (Request, Response, Redirect).",
+      "component": "Wire Protocol",
+      "acceptance_criteria_ids": [],
+      "depends_on": ["TASK-001"],
+      "labels": ["network", "protocol"],
+      "estimate": "s"
+    },
+    {
+      "id": "TASK-005",
+      "title": "Implement Raft message structs",
+      "description": "Create packed repr(C) structs for AppendEntriesHeader, AppendEntriesResponse, RequestVote, RequestVoteResponse, InstallSnapshotHeader.",
+      "component": "Raft Messages",
+      "acceptance_criteria_ids": [],
+      "depends_on": ["TASK-004"],
+      "labels": ["network", "raft"],
+      "estimate": "m"
+    },
+    {
+      "id": "TASK-006",
+      "title": "Implement client message structs",
+      "description": "Create ClientRequestHeader (request_id, tenant_id, operation, consistency, timeout), ClientResponseHeader, ClientRedirect.",
+      "component": "Client Messages",
+      "acceptance_criteria_ids": [],
+      "depends_on": ["TASK-004"],
+      "labels": ["network", "client"],
+      "estimate": "m"
+    },
+    {
+      "id": "TASK-007",
+      "title": "Implement ConnectionManager",
+      "description": "Create connection pool per peer. Implement send() and send_recv(). Handle connection lifecycle, reconnection, timeouts.",
+      "component": "Connection Management",
+      "acceptance_criteria_ids": ["AC-006", "AC-007"],
+      "depends_on": ["TASK-002"],
+      "labels": ["network", "connections"],
+      "estimate": "l"
+    },
+    {
+      "id": "TASK-008",
+      "title": "Implement TLS support",
+      "description": "Add optional TLS using rustls. Support mutual TLS with client certificates. Configure via TlsConfig struct.",
+      "component": "Connection Management",
+      "acceptance_criteria_ids": ["AC-008"],
+      "depends_on": ["TASK-007"],
+      "labels": ["network", "security"],
+      "estimate": "m"
+    }
+  ],
+  "metrics": [
+    {"name": "encode_decode_latency", "target": "< 1", "unit": "μs", "percentile": "p99"},
+    {"name": "message_overhead", "target": "24", "unit": "bytes", "percentile": null},
+    {"name": "compression_ratio", "target": "> 2x", "unit": "ratio", "percentile": null}
+  ],
+  "references": [
+    {"title": "Protocol Buffers Wire Format", "url": "https://protobuf.dev/programming-guides/encoding/"},
+    {"title": "Cap'n Proto", "url": "https://capnproto.org/"},
+    {"title": "LZ4 Compression", "url": "https://github.com/lz4/lz4"},
+    {"title": "TigerBeetle Network Protocol", "url": "https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/DESIGN.md#network"}
+  ]
+}

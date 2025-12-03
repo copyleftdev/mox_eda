@@ -1,0 +1,324 @@
+{
+  "id": "RFC-0008",
+  "title": "API Layer",
+  "status": "draft",
+  "created": "2024-12-03",
+  "updated": "2024-12-03",
+  "authors": ["Platform Team"],
+  "summary": "HTTP API layer with REST endpoints, WebSocket subscriptions, webhook handling, authentication, and rate limiting. All API code runs within the single binary.",
+  "motivation": "Clients need a well-defined API to interact with the cluster. The API must handle authentication, route writes to leader, support real-time subscriptions, and receive webhooks from external platforms.",
+  "dependencies": [
+    {"rfc_id": "RFC-0003", "relationship": "requires", "description": "Writes submitted to Raft consensus"},
+    {"rfc_id": "RFC-0004", "relationship": "requires", "description": "Queries executed against state machine"},
+    {"rfc_id": "RFC-0007", "relationship": "requires", "description": "Domain types for request/response schemas"}
+  ],
+  "components": [
+    {
+      "name": "HTTP Router",
+      "description": "Axum router with all endpoints",
+      "path": "src/api/",
+      "modules": [
+        {
+          "name": "router",
+          "description": "Route definitions",
+          "file": "src/api/router.rs",
+          "interfaces": [
+            {
+              "name": "create_router",
+              "type": "function",
+              "description": "Creates Axum router with all routes and middleware",
+              "methods": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Middleware",
+      "description": "Request processing middleware",
+      "path": "src/api/middleware/",
+      "modules": [
+        {
+          "name": "auth",
+          "description": "Authentication middleware",
+          "file": "src/api/middleware/auth.rs",
+          "interfaces": [
+            {"name": "auth_middleware", "type": "function", "description": "JWT and API key validation", "methods": []},
+            {"name": "AuthContext", "type": "enum", "description": "User or ApiKey auth context", "methods": []},
+            {"name": "UserClaims", "type": "struct", "description": "JWT claims with tenant, role, permissions", "methods": []}
+          ]
+        },
+        {
+          "name": "rate_limit",
+          "description": "Rate limiting middleware",
+          "file": "src/api/middleware/rate_limit.rs",
+          "interfaces": [
+            {"name": "RateLimiter", "type": "struct", "description": "Token bucket rate limiter", "methods": []},
+            {"name": "rate_limit_middleware", "type": "function", "description": "Per-tenant rate limiting", "methods": []}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Handlers",
+      "description": "Request handlers for each domain",
+      "path": "src/api/handlers/",
+      "modules": [
+        {
+          "name": "talent",
+          "description": "Talent endpoints",
+          "file": "src/api/handlers/talent.rs",
+          "interfaces": [
+            {"name": "list_talents", "type": "function", "description": "GET /api/v1/talents", "methods": []},
+            {"name": "create_talent", "type": "function", "description": "POST /api/v1/talents", "methods": []},
+            {"name": "get_talent", "type": "function", "description": "GET /api/v1/talents/:id", "methods": []},
+            {"name": "update_talent", "type": "function", "description": "PUT /api/v1/talents/:id", "methods": []},
+            {"name": "change_talent_status", "type": "function", "description": "PUT /api/v1/talents/:id/status", "methods": []}
+          ]
+        },
+        {
+          "name": "campaign",
+          "description": "Campaign endpoints",
+          "file": "src/api/handlers/campaign.rs",
+          "interfaces": [
+            {"name": "list_campaigns", "type": "function", "description": "GET /api/v1/campaigns", "methods": []},
+            {"name": "create_campaign", "type": "function", "description": "POST /api/v1/campaigns", "methods": []},
+            {"name": "add_talent_to_campaign", "type": "function", "description": "POST /api/v1/campaigns/:id/talents", "methods": []}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "WebSocket",
+      "description": "Real-time event subscriptions",
+      "path": "src/api/",
+      "modules": [
+        {
+          "name": "websocket",
+          "description": "WebSocket handler",
+          "file": "src/api/websocket.rs",
+          "interfaces": [
+            {"name": "websocket_handler", "type": "function", "description": "WebSocket upgrade handler", "methods": []},
+            {"name": "SubscriptionFilter", "type": "struct", "description": "Event type and entity filters", "methods": []}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Webhooks",
+      "description": "Inbound webhook handling",
+      "path": "src/api/",
+      "modules": [
+        {
+          "name": "webhooks",
+          "description": "Webhook endpoint",
+          "file": "src/api/webhooks.rs",
+          "interfaces": [
+            {"name": "webhook_handler", "type": "function", "description": "POST /webhooks/:platform/:tenant_id", "methods": []},
+            {"name": "verify_webhook_signature", "type": "function", "description": "HMAC signature verification", "methods": []}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Error Handling",
+      "description": "API error types and responses",
+      "path": "src/api/",
+      "modules": [
+        {
+          "name": "error",
+          "description": "Error types",
+          "file": "src/api/error.rs",
+          "interfaces": [
+            {"name": "ApiError", "type": "enum", "description": "BadRequest, Unauthorized, NotFound, Conflict, RateLimited, Timeout, Redirect", "methods": []}
+          ]
+        }
+      ]
+    }
+  ],
+  "acceptance_criteria": [
+    {
+      "id": "AC-001",
+      "category": "functional",
+      "criterion": "All domain CRUD endpoints implemented (talents, campaigns, contracts, etc.)",
+      "verification": "API documentation shows all endpoints, integration tests cover each",
+      "priority": "must"
+    },
+    {
+      "id": "AC-002",
+      "category": "security",
+      "criterion": "All endpoints require valid JWT or API key (except health)",
+      "verification": "Request without auth returns 401 Unauthorized",
+      "priority": "must"
+    },
+    {
+      "id": "AC-003",
+      "category": "security",
+      "criterion": "API keys are validated against state machine",
+      "verification": "Request with invalid API key returns 401",
+      "priority": "must"
+    },
+    {
+      "id": "AC-004",
+      "category": "functional",
+      "criterion": "Write requests on follower return redirect to leader",
+      "verification": "POST to follower returns 307 with leader location",
+      "priority": "must"
+    },
+    {
+      "id": "AC-005",
+      "category": "functional",
+      "criterion": "WebSocket streams events matching subscription filter",
+      "verification": "Subscribe to talent.created, verify only talent events received",
+      "priority": "must"
+    },
+    {
+      "id": "AC-006",
+      "category": "security",
+      "criterion": "Webhook signatures verified using platform-specific algorithm",
+      "verification": "Send webhook with invalid signature, verify 401",
+      "priority": "must"
+    },
+    {
+      "id": "AC-007",
+      "category": "reliability",
+      "criterion": "Rate limiting enforces per-tenant request limits",
+      "verification": "Exceed limit, verify 429 Too Many Requests",
+      "priority": "must"
+    },
+    {
+      "id": "AC-008",
+      "category": "performance",
+      "criterion": "Read request latency < 5ms p50",
+      "verification": "Benchmark GET /talents/:id, verify < 5ms p50",
+      "priority": "should"
+    },
+    {
+      "id": "AC-009",
+      "category": "performance",
+      "criterion": "Write request latency < 50ms p99",
+      "verification": "Benchmark POST /talents, verify < 50ms p99",
+      "priority": "should"
+    },
+    {
+      "id": "AC-010",
+      "category": "functional",
+      "criterion": "OpenAPI spec generated and served at /openapi.json",
+      "verification": "curl /openapi.json returns valid OpenAPI 3.0 document",
+      "priority": "should"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Setup Axum router with middleware stack",
+      "description": "Create create_router() with middleware layers: request_id, tracing, auth, tenant, rate_limit, timeout. Mount health endpoints without auth.",
+      "component": "HTTP Router",
+      "acceptance_criteria_ids": ["AC-002"],
+      "depends_on": [],
+      "labels": ["api", "router"],
+      "estimate": "m"
+    },
+    {
+      "id": "TASK-002",
+      "title": "Implement auth middleware",
+      "description": "Create auth_middleware that validates JWT (Bearer token) or API key (mox_ prefix). Extract AuthContext with tenant_id, permissions.",
+      "component": "Middleware",
+      "acceptance_criteria_ids": ["AC-002", "AC-003"],
+      "depends_on": ["TASK-001"],
+      "labels": ["api", "auth"],
+      "estimate": "m"
+    },
+    {
+      "id": "TASK-003",
+      "title": "Implement rate limiting middleware",
+      "description": "Create RateLimiter with token bucket per tenant. Configure via RateLimitConfig. Return 429 when exceeded.",
+      "component": "Middleware",
+      "acceptance_criteria_ids": ["AC-007"],
+      "depends_on": ["TASK-002"],
+      "labels": ["api", "rate-limit"],
+      "estimate": "m"
+    },
+    {
+      "id": "TASK-004",
+      "title": "Implement talent handlers",
+      "description": "Create handlers for list, create, get, update, delete, change_status. Build commands, submit to Raft, return responses.",
+      "component": "Handlers",
+      "acceptance_criteria_ids": ["AC-001", "AC-004", "AC-008", "AC-009"],
+      "depends_on": ["TASK-002"],
+      "labels": ["api", "handlers", "talent"],
+      "estimate": "l"
+    },
+    {
+      "id": "TASK-005",
+      "title": "Implement campaign handlers",
+      "description": "Create handlers for campaigns CRUD, talent assignment, deliverables. Handle campaign lifecycle.",
+      "component": "Handlers",
+      "acceptance_criteria_ids": ["AC-001"],
+      "depends_on": ["TASK-004"],
+      "labels": ["api", "handlers", "campaign"],
+      "estimate": "l"
+    },
+    {
+      "id": "TASK-006",
+      "title": "Implement contract handlers",
+      "description": "Create handlers for contracts, invoices, payouts. Handle signing workflow.",
+      "component": "Handlers",
+      "acceptance_criteria_ids": ["AC-001"],
+      "depends_on": ["TASK-004"],
+      "labels": ["api", "handlers", "contract"],
+      "estimate": "l"
+    },
+    {
+      "id": "TASK-007",
+      "title": "Implement WebSocket handler",
+      "description": "Create websocket_handler with upgrade. Authenticate via query param token. Subscribe to event bus. Filter and stream events.",
+      "component": "WebSocket",
+      "acceptance_criteria_ids": ["AC-005"],
+      "depends_on": ["TASK-002"],
+      "labels": ["api", "websocket"],
+      "estimate": "l"
+    },
+    {
+      "id": "TASK-008",
+      "title": "Implement webhook handler",
+      "description": "Create webhook_handler at POST /webhooks/:platform/:tenant_id. Verify signature per platform. Submit ProcessWebhook command.",
+      "component": "Webhooks",
+      "acceptance_criteria_ids": ["AC-006"],
+      "depends_on": ["TASK-002"],
+      "labels": ["api", "webhooks"],
+      "estimate": "m"
+    },
+    {
+      "id": "TASK-009",
+      "title": "Implement error handling",
+      "description": "Create ApiError enum with variants. Implement IntoResponse for consistent JSON error format. Handle redirect to leader.",
+      "component": "Error Handling",
+      "acceptance_criteria_ids": ["AC-004"],
+      "depends_on": ["TASK-001"],
+      "labels": ["api", "errors"],
+      "estimate": "s"
+    },
+    {
+      "id": "TASK-010",
+      "title": "Generate OpenAPI specification",
+      "description": "Add utoipa annotations to all handlers. Generate OpenAPI 3.0 spec. Serve at /openapi.json.",
+      "component": "HTTP Router",
+      "acceptance_criteria_ids": ["AC-010"],
+      "depends_on": ["TASK-004", "TASK-005", "TASK-006"],
+      "labels": ["api", "openapi"],
+      "estimate": "m"
+    }
+  ],
+  "metrics": [
+    {"name": "read_latency", "target": "< 5", "unit": "ms", "percentile": "p50"},
+    {"name": "write_latency", "target": "< 50", "unit": "ms", "percentile": "p99"},
+    {"name": "websocket_connections", "target": "> 10K", "unit": "concurrent", "percentile": null},
+    {"name": "webhook_throughput", "target": "> 1K", "unit": "req/sec", "percentile": null}
+  ],
+  "references": [
+    {"title": "Axum Documentation", "url": "https://docs.rs/axum/latest/axum/"},
+    {"title": "utoipa OpenAPI", "url": "https://docs.rs/utoipa/latest/utoipa/"},
+    {"title": "Tower Middleware", "url": "https://docs.rs/tower/latest/tower/"}
+  ]
+}

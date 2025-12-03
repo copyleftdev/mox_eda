@@ -1,0 +1,134 @@
+{
+  "$schema": "./index-schema.json",
+  "version": "1.0.0",
+  "generated": "2024-12-03",
+  "rfcs": [
+    {
+      "id": "RFC-0001",
+      "title": "Architecture Overview",
+      "file": "RFC-0001.json",
+      "task_count": 5,
+      "acceptance_criteria_count": 8
+    },
+    {
+      "id": "RFC-0002",
+      "title": "Storage Engine",
+      "file": "RFC-0002.json",
+      "task_count": 8,
+      "acceptance_criteria_count": 9
+    },
+    {
+      "id": "RFC-0003",
+      "title": "Consensus & Replication",
+      "file": "RFC-0003.json",
+      "task_count": 10,
+      "acceptance_criteria_count": 9
+    },
+    {
+      "id": "RFC-0004",
+      "title": "State Machine",
+      "file": "RFC-0004.json",
+      "task_count": 10,
+      "acceptance_criteria_count": 9
+    },
+    {
+      "id": "RFC-0005",
+      "title": "Deterministic Simulation Testing",
+      "file": "RFC-0005.json",
+      "task_count": 8,
+      "acceptance_criteria_count": 8
+    },
+    {
+      "id": "RFC-0006",
+      "title": "Network Protocol",
+      "file": "RFC-0006.json",
+      "task_count": 8,
+      "acceptance_criteria_count": 8
+    },
+    {
+      "id": "RFC-0007",
+      "title": "Domain Model (Complete AsyncAPI Coverage)",
+      "file": "RFC-0007.json",
+      "task_count": 15,
+      "acceptance_criteria_count": 12,
+      "domains": 14,
+      "events": 122
+    },
+    {
+      "id": "RFC-0008",
+      "title": "API Layer",
+      "file": "RFC-0008.json",
+      "task_count": 10,
+      "acceptance_criteria_count": 10
+    }
+  ],
+  "totals": {
+    "rfcs": 8,
+    "tasks": 74,
+    "acceptance_criteria": 73,
+    "asyncapi_events": 122,
+    "domains": 14
+  },
+  "labels": [
+    "setup",
+    "infrastructure",
+    "core",
+    "io",
+    "config",
+    "cli",
+    "observability",
+    "metrics",
+    "storage",
+    "wal",
+    "lsm",
+    "performance",
+    "consensus",
+    "raft",
+    "vsr",
+    "membership",
+    "state-machine",
+    "commands",
+    "events",
+    "query",
+    "snapshot",
+    "domain",
+    "tenant",
+    "talent",
+    "campaign",
+    "contract",
+    "integration",
+    "analytics",
+    "simulation",
+    "network",
+    "faults",
+    "invariants",
+    "linearizability",
+    "tests",
+    "protocol",
+    "compression",
+    "client",
+    "connections",
+    "security",
+    "api",
+    "router",
+    "auth",
+    "rate-limit",
+    "handlers",
+    "websocket",
+    "webhooks",
+    "errors",
+    "openapi"
+  ],
+  "priority_distribution": {
+    "must": 52,
+    "should": 17,
+    "could": 0
+  },
+  "estimate_distribution": {
+    "xs": 0,
+    "s": 12,
+    "m": 33,
+    "l": 20,
+    "xl": 4
+  }
+}

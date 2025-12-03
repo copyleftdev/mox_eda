@@ -1,0 +1,156 @@
+# Multi-tenant & Billing domain messages
+TenantProvisioned:
+  name: TenantProvisioned
+  title: Tenant provisioned
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.tenant.provisioned"
+          data:
+            $ref: "../schemas/tenant.yaml#/TenantProvisionedData"
+
+TenantUpdated:
+  name: TenantUpdated
+  title: Tenant updated
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.tenant.updated"
+          data:
+            $ref: "../schemas/tenant.yaml#/TenantUpdatedData"
+
+TenantSuspended:
+  name: TenantSuspended
+  title: Tenant suspended
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.tenant.suspended"
+          data:
+            $ref: "../schemas/tenant.yaml#/TenantSuspendedData"
+
+TenantReactivated:
+  name: TenantReactivated
+  title: Tenant reactivated
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.tenant.reactivated"
+          data:
+            $ref: "../schemas/tenant.yaml#/TenantReactivatedData"
+
+SubscriptionCreated:
+  name: SubscriptionCreated
+  title: Subscription created
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.subscription.created"
+          data:
+            $ref: "../schemas/tenant.yaml#/SubscriptionCreatedData"
+
+SubscriptionChanged:
+  name: SubscriptionChanged
+  title: Subscription changed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.subscription.changed"
+          data:
+            $ref: "../schemas/tenant.yaml#/SubscriptionChangedData"
+
+SubscriptionCancelled:
+  name: SubscriptionCancelled
+  title: Subscription cancelled
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.subscription.cancelled"
+          data:
+            $ref: "../schemas/tenant.yaml#/SubscriptionCancelledData"
+
+SubscriptionRenewed:
+  name: SubscriptionRenewed
+  title: Subscription renewed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.subscription.renewed"
+          data:
+            $ref: "../schemas/tenant.yaml#/SubscriptionRenewedData"
+
+PaymentFailed:
+  name: PaymentFailed
+  title: Payment failed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.payment.failed"
+          data:
+            $ref: "../schemas/tenant.yaml#/PaymentFailedData"
+
+UsageRecorded:
+  name: UsageRecorded
+  title: Usage recorded
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.usage.recorded"
+          data:
+            $ref: "../schemas/tenant.yaml#/UsageRecordedData"
+
+QuotaExceeded:
+  name: QuotaExceeded
+  title: Quota exceeded
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.quota.exceeded"
+          data:
+            $ref: "../schemas/tenant.yaml#/QuotaExceededData"
+
+FeatureFlagToggled:
+  name: FeatureFlagToggled
+  title: Feature flag toggled
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.feature.toggled"
+          data:
+            $ref: "../schemas/tenant.yaml#/FeatureFlagToggledData"

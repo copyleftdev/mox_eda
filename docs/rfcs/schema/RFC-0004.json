@@ -1,0 +1,326 @@
+{
+  "id": "RFC-0004",
+  "title": "State Machine",
+  "status": "draft",
+  "created": "2024-12-03",
+  "updated": "2024-12-03",
+  "authors": ["Platform Team"],
+  "summary": "Command processing, event generation, state projection, and domain logic. All business rules enforced in a single deterministic state machine.",
+  "motivation": "Event sourcing requires a deterministic state machine that processes commands, produces events, and maintains current state. All domains must be isolated yet composable.",
+  "dependencies": [
+    {"rfc_id": "RFC-0003", "relationship": "requires", "description": "Consensus layer commits commands before state machine applies them"}
+  ],
+  "components": [
+    {
+      "name": "Command Processor",
+      "description": "Validates and executes commands",
+      "path": "src/state_machine/",
+      "modules": [
+        {
+          "name": "command",
+          "description": "Command types and envelopes",
+          "file": "src/state_machine/command.rs",
+          "interfaces": [
+            {
+              "name": "Command",
+              "type": "enum",
+              "description": "All commands that can modify state",
+              "methods": []
+            },
+            {
+              "name": "CommandEnvelope",
+              "type": "struct",
+              "description": "Command with id, tenant_id, actor, timestamp",
+              "methods": []
+            },
+            {
+              "name": "Actor",
+              "type": "enum",
+              "description": "Who issued command: User, ApiKey, System, Webhook",
+              "methods": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Event Store",
+      "description": "Event types and application",
+      "path": "src/state_machine/",
+      "modules": [
+        {
+          "name": "event",
+          "description": "Event types and envelopes",
+          "file": "src/state_machine/event.rs",
+          "interfaces": [
+            {
+              "name": "Event",
+              "type": "enum",
+              "description": "All events that modify state",
+              "methods": []
+            },
+            {
+              "name": "EventEnvelope",
+              "type": "struct",
+              "description": "Event with id, tenant_id, sequence, timestamp, causation_id, correlation_id",
+              "methods": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "State Machine",
+      "description": "Core state machine orchestration",
+      "path": "src/state_machine/",
+      "modules": [
+        {
+          "name": "mod",
+          "description": "State machine implementation",
+          "file": "src/state_machine/mod.rs",
+          "interfaces": [
+            {
+              "name": "StateMachine",
+              "type": "struct",
+              "description": "Central state machine",
+              "methods": [
+                {"name": "process", "signature": "fn process(&mut self, cmd: &CommandEnvelope) -> Result<Vec<EventEnvelope>>", "description": "Process command, return events", "async": false},
+                {"name": "apply", "signature": "fn apply(&mut self, event: &EventEnvelope) -> Result<()>", "description": "Apply committed event to state", "async": false},
+                {"name": "query", "signature": "fn query(&self, query: Query) -> Result<QueryResult>", "description": "Execute read-only query", "async": false},
+                {"name": "snapshot", "signature": "fn snapshot(&self) -> Result<Vec<u8>>", "description": "Serialize current state", "async": false},
+                {"name": "restore", "signature": "fn restore(&mut self, data: &[u8]) -> Result<()>", "description": "Restore state from snapshot", "async": false}
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Domains",
+      "description": "Business domain implementations",
+      "path": "src/domain/",
+      "modules": [
+        {
+          "name": "tenant",
+          "description": "Tenant, org, user management",
+          "file": "src/domain/tenant/mod.rs",
+          "interfaces": [
+            {"name": "TenantState", "type": "struct", "description": "Tenant domain state", "methods": []},
+            {"name": "Tenant", "type": "struct", "description": "Tenant aggregate", "methods": []},
+            {"name": "Organization", "type": "struct", "description": "Org within tenant", "methods": []},
+            {"name": "User", "type": "struct", "description": "User within tenant", "methods": []}
+          ]
+        },
+        {
+          "name": "talent",
+          "description": "Talent profile management",
+          "file": "src/domain/talent/mod.rs",
+          "interfaces": [
+            {"name": "TalentState", "type": "struct", "description": "Talent domain state", "methods": []},
+            {"name": "Talent", "type": "struct", "description": "Talent aggregate", "methods": []},
+            {"name": "TalentStatus", "type": "enum", "description": "Talent lifecycle states", "methods": []}
+          ]
+        },
+        {
+          "name": "campaign",
+          "description": "Campaign and deliverable management",
+          "file": "src/domain/campaign/mod.rs",
+          "interfaces": [
+            {"name": "CampaignState", "type": "struct", "description": "Campaign domain state", "methods": []},
+            {"name": "Campaign", "type": "struct", "description": "Campaign aggregate", "methods": []},
+            {"name": "Deliverable", "type": "struct", "description": "Campaign deliverable", "methods": []}
+          ]
+        },
+        {
+          "name": "contract",
+          "description": "Contracts, invoices, payouts",
+          "file": "src/domain/contract/mod.rs",
+          "interfaces": [
+            {"name": "ContractState", "type": "struct", "description": "Contract domain state", "methods": []},
+            {"name": "Contract", "type": "struct", "description": "Contract aggregate", "methods": []},
+            {"name": "Invoice", "type": "struct", "description": "Invoice entity", "methods": []},
+            {"name": "Payout", "type": "struct", "description": "Payout entity", "methods": []}
+          ]
+        }
+      ]
+    }
+  ],
+  "acceptance_criteria": [
+    {
+      "id": "AC-001",
+      "category": "correctness",
+      "criterion": "Same sequence of commands produces identical state on all nodes",
+      "verification": "Replay 10,000 commands on 3 nodes, compare state hashes",
+      "priority": "must"
+    },
+    {
+      "id": "AC-002",
+      "category": "correctness",
+      "criterion": "Commands are validated before producing events",
+      "verification": "Submit invalid command (e.g., delete non-existent entity), verify rejection without event",
+      "priority": "must"
+    },
+    {
+      "id": "AC-003",
+      "category": "correctness",
+      "criterion": "Tenant isolation: no cross-tenant data access",
+      "verification": "Query with tenant_id A cannot return data from tenant B",
+      "priority": "must"
+    },
+    {
+      "id": "AC-004",
+      "category": "correctness",
+      "criterion": "State transitions follow defined FSM rules",
+      "verification": "Attempt invalid status change (e.g., Prospect -> Active), verify rejection",
+      "priority": "must"
+    },
+    {
+      "id": "AC-005",
+      "category": "functional",
+      "criterion": "Snapshot captures complete state machine state",
+      "verification": "Take snapshot, restore to new instance, verify all queries return same results",
+      "priority": "must"
+    },
+    {
+      "id": "AC-006",
+      "category": "functional",
+      "criterion": "All 125+ event types from AsyncAPI spec implemented",
+      "verification": "Code coverage shows all event variants have apply handlers",
+      "priority": "must"
+    },
+    {
+      "id": "AC-007",
+      "category": "performance",
+      "criterion": "Command processing < 10μs excluding I/O",
+      "verification": "Benchmark process() with in-memory state, verify < 10μs p99",
+      "priority": "should"
+    },
+    {
+      "id": "AC-008",
+      "category": "performance",
+      "criterion": "Event application < 50μs",
+      "verification": "Benchmark apply() with various event types",
+      "priority": "should"
+    },
+    {
+      "id": "AC-009",
+      "category": "performance",
+      "criterion": "Snapshot creation < 1s per million entities",
+      "verification": "Load 1M entities, measure snapshot time",
+      "priority": "should"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Define Command enum with all variants",
+      "description": "Create Command enum with all 91 command types from AsyncAPI spec. Create CommandEnvelope with metadata. Implement Actor enum.",
+      "component": "Command Processor",
+      "acceptance_criteria_ids": ["AC-002"],
+      "depends_on": [],
+      "labels": ["state-machine", "commands"],
+      "estimate": "m"
+    },
+    {
+      "id": "TASK-002",
+      "title": "Define Event enum with all variants",
+      "description": "Create Event enum with all 125 event types. Create EventEnvelope with sequence, causation_id, correlation_id. Implement serialization.",
+      "component": "Event Store",
+      "acceptance_criteria_ids": ["AC-006"],
+      "depends_on": [],
+      "labels": ["state-machine", "events"],
+      "estimate": "m"
+    },
+    {
+      "id": "TASK-003",
+      "title": "Implement StateMachine process() method",
+      "description": "Route commands to domain handlers. Validate tenant, authorization. Return events on success, error on failure.",
+      "component": "State Machine",
+      "acceptance_criteria_ids": ["AC-001", "AC-002", "AC-003", "AC-007"],
+      "depends_on": ["TASK-001", "TASK-002"],
+      "labels": ["state-machine"],
+      "estimate": "l"
+    },
+    {
+      "id": "TASK-004",
+      "title": "Implement StateMachine apply() method",
+      "description": "Route events to domain handlers. Update state, indexes, counters. Ensure determinism.",
+      "component": "State Machine",
+      "acceptance_criteria_ids": ["AC-001", "AC-008"],
+      "depends_on": ["TASK-002"],
+      "labels": ["state-machine"],
+      "estimate": "l"
+    },
+    {
+      "id": "TASK-005",
+      "title": "Implement Tenant domain",
+      "description": "Create TenantState with tenants, orgs, users. Implement all tenant commands and events. Add quota tracking.",
+      "component": "Domains",
+      "acceptance_criteria_ids": ["AC-003", "AC-006"],
+      "depends_on": ["TASK-003", "TASK-004"],
+      "labels": ["domain", "tenant"],
+      "estimate": "l"
+    },
+    {
+      "id": "TASK-006",
+      "title": "Implement Talent domain",
+      "description": "Create TalentState with indexes by tenant, org, status, platform handle. Implement status FSM. All talent commands and events.",
+      "component": "Domains",
+      "acceptance_criteria_ids": ["AC-004", "AC-006"],
+      "depends_on": ["TASK-005"],
+      "labels": ["domain", "talent"],
+      "estimate": "l"
+    },
+    {
+      "id": "TASK-007",
+      "title": "Implement Campaign domain",
+      "description": "Create CampaignState with campaigns and deliverables. Implement campaign lifecycle. Link talents to campaigns.",
+      "component": "Domains",
+      "acceptance_criteria_ids": ["AC-004", "AC-006"],
+      "depends_on": ["TASK-006"],
+      "labels": ["domain", "campaign"],
+      "estimate": "l"
+    },
+    {
+      "id": "TASK-008",
+      "title": "Implement Contract domain",
+      "description": "Create ContractState with contracts, invoices, payouts. Implement signing workflow. Money type with currency.",
+      "component": "Domains",
+      "acceptance_criteria_ids": ["AC-004", "AC-006"],
+      "depends_on": ["TASK-006"],
+      "labels": ["domain", "contract"],
+      "estimate": "l"
+    },
+    {
+      "id": "TASK-009",
+      "title": "Implement snapshot and restore",
+      "description": "Serialize all domain states using MessagePack. Include metadata (events_applied, last_sequence). Restore atomically.",
+      "component": "State Machine",
+      "acceptance_criteria_ids": ["AC-005", "AC-009"],
+      "depends_on": ["TASK-005", "TASK-006", "TASK-007", "TASK-008"],
+      "labels": ["state-machine", "snapshot"],
+      "estimate": "m"
+    },
+    {
+      "id": "TASK-010",
+      "title": "Implement query interface",
+      "description": "Create Query enum with all read operations. Implement query routing and tenant filtering. Return QueryResult.",
+      "component": "State Machine",
+      "acceptance_criteria_ids": ["AC-003"],
+      "depends_on": ["TASK-005", "TASK-006", "TASK-007", "TASK-008"],
+      "labels": ["state-machine", "query"],
+      "estimate": "m"
+    }
+  ],
+  "metrics": [
+    {"name": "command_processing", "target": "< 10", "unit": "μs", "percentile": "p99"},
+    {"name": "event_application", "target": "< 50", "unit": "μs", "percentile": "p99"},
+    {"name": "snapshot_creation", "target": "< 1", "unit": "s/1M entities", "percentile": null},
+    {"name": "query_latency", "target": "< 100", "unit": "μs", "percentile": "p99"}
+  ],
+  "references": [
+    {"title": "Event Sourcing", "url": "https://martinfowler.com/eaaDev/EventSourcing.html"},
+    {"title": "CQRS", "url": "https://martinfowler.com/bliki/CQRS.html"},
+    {"title": "Mox AsyncAPI Spec", "url": "../../asyncapi.yaml"}
+  ]
+}

@@ -1,0 +1,152 @@
+# Stripe Integration domain channels
+
+# Raw webhook (all Stripe events for audit)
+stripe.webhook.received:
+  address: stripe.webhook.received
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    stripeWebhookReceived:
+      $ref: "../components/messages/stripe.yaml#/StripeWebhookReceived"
+
+# Customer events
+stripe.customer.created:
+  address: stripe.customer.created
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    stripeCustomerCreated:
+      $ref: "../components/messages/stripe.yaml#/StripeCustomerCreated"
+
+stripe.customer.updated:
+  address: stripe.customer.updated
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    stripeCustomerUpdated:
+      $ref: "../components/messages/stripe.yaml#/StripeCustomerUpdated"
+
+# Subscription events
+stripe.subscription.created:
+  address: stripe.subscription.created
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    stripeSubscriptionCreated:
+      $ref: "../components/messages/stripe.yaml#/StripeSubscriptionCreated"
+
+stripe.subscription.updated:
+  address: stripe.subscription.updated
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    stripeSubscriptionUpdated:
+      $ref: "../components/messages/stripe.yaml#/StripeSubscriptionUpdated"
+
+stripe.subscription.deleted:
+  address: stripe.subscription.deleted
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    stripeSubscriptionDeleted:
+      $ref: "../components/messages/stripe.yaml#/StripeSubscriptionDeleted"
+
+# Invoice events
+stripe.invoice.created:
+  address: stripe.invoice.created
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    stripeInvoiceCreated:
+      $ref: "../components/messages/stripe.yaml#/StripeInvoiceCreated"
+
+stripe.invoice.paid:
+  address: stripe.invoice.paid
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    stripeInvoicePaid:
+      $ref: "../components/messages/stripe.yaml#/StripeInvoicePaid"
+
+stripe.invoice.payment_failed:
+  address: stripe.invoice.payment_failed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    stripeInvoicePaymentFailed:
+      $ref: "../components/messages/stripe.yaml#/StripeInvoicePaymentFailed"
+
+# Connect events
+stripe.connect.account.created:
+  address: stripe.connect.account.created
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    stripeConnectAccountCreated:
+      $ref: "../components/messages/stripe.yaml#/StripeConnectAccountCreated"
+
+stripe.connect.account.updated:
+  address: stripe.connect.account.updated
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    stripeConnectAccountUpdated:
+      $ref: "../components/messages/stripe.yaml#/StripeConnectAccountUpdated"
+
+stripe.transfer.created:
+  address: stripe.transfer.created
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    stripeTransferCreated:
+      $ref: "../components/messages/stripe.yaml#/StripeTransferCreated"
+
+stripe.payout.created:
+  address: stripe.payout.created
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    stripePayoutCreated:
+      $ref: "../components/messages/stripe.yaml#/StripePayoutCreated"
+
+stripe.payout.failed:
+  address: stripe.payout.failed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    stripePayoutFailed:
+      $ref: "../components/messages/stripe.yaml#/StripePayoutFailed"
+
+# Usage reporting
+stripe.usage.reported:
+  address: stripe.usage.reported
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    stripeUsageReported:
+      $ref: "../components/messages/stripe.yaml#/StripeUsageReported"
+
+# Checkout
+stripe.checkout.completed:
+  address: stripe.checkout.completed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    stripeCheckoutCompleted:
+      $ref: "../components/messages/stripe.yaml#/StripeCheckoutCompleted"

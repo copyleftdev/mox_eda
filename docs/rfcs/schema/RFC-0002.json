@@ -1,0 +1,288 @@
+{
+  "id": "RFC-0002",
+  "title": "Storage Engine",
+  "status": "draft",
+  "created": "2024-12-03",
+  "updated": "2024-12-03",
+  "authors": ["Platform Team"],
+  "summary": "Append-only Write-Ahead Log (WAL) with checksums, LSM tree for state materialization, and io_uring for direct I/O. All data is checksummed at rest and verified on read.",
+  "motivation": "Storage is the foundation of correctness. Every byte must be checksummed, every write must be durable, and reads must verify integrity. No external database dependencies.",
+  "dependencies": [
+    {"rfc_id": "RFC-0001", "relationship": "requires", "description": "Depends on IO trait abstraction"}
+  ],
+  "components": [
+    {
+      "name": "Write-Ahead Log",
+      "description": "Append-only event log with segments and checksums",
+      "path": "src/storage/",
+      "modules": [
+        {
+          "name": "wal",
+          "description": "Write-ahead log implementation",
+          "file": "src/storage/wal.rs",
+          "interfaces": [
+            {
+              "name": "WriteAheadLog",
+              "type": "struct",
+              "description": "Append-only log for events",
+              "methods": [
+                {"name": "open", "signature": "async fn open(io: I, data_dir: PathBuf) -> Result<Self>", "description": "Open or create WAL", "async": true},
+                {"name": "append", "signature": "async fn append(&mut self, term: u64, data: &[u8]) -> Result<LogIndex>", "description": "Append entry to log", "async": true},
+                {"name": "sync", "signature": "async fn sync(&mut self) -> Result<()>", "description": "Fsync pending writes", "async": true},
+                {"name": "read", "signature": "async fn read(&self, index: LogIndex) -> Result<Option<LogEntry>>", "description": "Read entry by index", "async": true},
+                {"name": "read_range", "signature": "async fn read_range(&self, start: LogIndex, end: LogIndex) -> Result<Vec<LogEntry>>", "description": "Read range of entries", "async": true},
+                {"name": "truncate_after", "signature": "async fn truncate_after(&mut self, index: LogIndex) -> Result<()>", "description": "Truncate log after index", "async": true}
+              ]
+            },
+            {
+              "name": "LogEntry",
+              "type": "struct",
+              "description": "Single log entry with metadata",
+              "methods": []
+            },
+            {
+              "name": "EntryHeader",
+              "type": "struct",
+              "description": "40-byte fixed header: magic, crc32, term, index, timestamp, length",
+              "methods": []
+            }
+          ]
+        },
+        {
+          "name": "segment",
+          "description": "Log segment management",
+          "file": "src/storage/segment.rs",
+          "interfaces": [
+            {
+              "name": "Segment",
+              "type": "struct",
+              "description": "64MB log segment file",
+              "methods": [
+                {"name": "open_or_create", "signature": "async fn open_or_create(io: &I, dir: &Path, id: u64) -> Result<Self>", "description": "Open or create segment", "async": true},
+                {"name": "append", "signature": "async fn append(&mut self, data: &[u8]) -> Result<()>", "description": "Append data to segment", "async": true},
+                {"name": "seal", "signature": "async fn seal(&mut self) -> Result<()>", "description": "Mark segment as immutable", "async": true},
+                {"name": "size", "signature": "fn size(&self) -> usize", "description": "Current segment size", "async": false}
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LSM Tree",
+      "description": "Log-structured merge tree for current state",
+      "path": "src/storage/",
+      "modules": [
+        {
+          "name": "lsm",
+          "description": "LSM tree implementation",
+          "file": "src/storage/lsm.rs",
+          "interfaces": [
+            {
+              "name": "LsmTree",
+              "type": "struct",
+              "description": "LSM tree for key-value state",
+              "methods": [
+                {"name": "put", "signature": "fn put(&self, key: &[u8], value: &[u8]) -> Result<()>", "description": "Insert or update key", "async": false},
+                {"name": "get", "signature": "fn get(&self, key: &[u8]) -> Result<Option<Vec<u8>>>", "description": "Get value by key", "async": false},
+                {"name": "delete", "signature": "fn delete(&self, key: &[u8]) -> Result<()>", "description": "Delete key", "async": false},
+                {"name": "scan", "signature": "fn scan(&self, start: &[u8], end: &[u8], limit: usize) -> Result<Vec<(Vec<u8>, Vec<u8>)>>", "description": "Range scan", "async": false}
+              ]
+            },
+            {
+              "name": "MemTable",
+              "type": "struct",
+              "description": "In-memory sorted map (64MB limit)",
+              "methods": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Checksum",
+      "description": "CRC32C checksumming utilities",
+      "path": "src/storage/",
+      "modules": [
+        {
+          "name": "checksum",
+          "description": "Checksum calculation and verification",
+          "file": "src/storage/checksum.rs",
+          "interfaces": [
+            {
+              "name": "checksum",
+              "type": "function",
+              "description": "Calculate CRC32C checksum",
+              "methods": []
+            },
+            {
+              "name": "verify",
+              "type": "function",
+              "description": "Verify data against checksum",
+              "methods": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "acceptance_criteria": [
+    {
+      "id": "AC-001",
+      "category": "correctness",
+      "criterion": "Every WAL entry has a valid CRC32C checksum verified on read",
+      "verification": "Corrupt a single byte in a WAL file and verify read returns ChecksumMismatch error",
+      "priority": "must"
+    },
+    {
+      "id": "AC-002",
+      "category": "reliability",
+      "criterion": "Committed entries survive process crash and restart",
+      "verification": "Append 1000 entries, sync, kill -9 process, restart, verify all entries readable",
+      "priority": "must"
+    },
+    {
+      "id": "AC-003",
+      "category": "reliability",
+      "criterion": "WAL segment rotation occurs at 64MB boundary",
+      "verification": "Write more than 64MB of data, verify new segment file created",
+      "priority": "must"
+    },
+    {
+      "id": "AC-004",
+      "category": "performance",
+      "criterion": "Single append operation completes in less than 1ms (p50)",
+      "verification": "Benchmark append latency over 10,000 operations",
+      "priority": "must"
+    },
+    {
+      "id": "AC-005",
+      "category": "performance",
+      "criterion": "Sequential read throughput exceeds 500MB/s",
+      "verification": "Benchmark reading 1GB of entries sequentially",
+      "priority": "should"
+    },
+    {
+      "id": "AC-006",
+      "category": "functional",
+      "criterion": "LSM tree get operation returns most recent value for key",
+      "verification": "Put same key 10 times with different values, get returns last value",
+      "priority": "must"
+    },
+    {
+      "id": "AC-007",
+      "category": "functional",
+      "criterion": "LSM tree compaction merges overlapping SSTables",
+      "verification": "Fill memtable 10 times, trigger compaction, verify reduced file count",
+      "priority": "must"
+    },
+    {
+      "id": "AC-008",
+      "category": "functional",
+      "criterion": "io_uring used for all disk operations on Linux",
+      "verification": "strace shows io_uring_enter syscalls, no read/write syscalls",
+      "priority": "must"
+    },
+    {
+      "id": "AC-009",
+      "category": "functional",
+      "criterion": "Direct I/O bypasses page cache (O_DIRECT)",
+      "verification": "Drop caches before read, verify no increase in page cache usage",
+      "priority": "should"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Implement WAL entry header format",
+      "description": "Define 40-byte EntryHeader struct with magic (u32), crc32 (u32), term (u64), index (u64), timestamp (u64), length (u32). Implement serialization/deserialization with endianness handling.",
+      "component": "Write-Ahead Log",
+      "acceptance_criteria_ids": ["AC-001"],
+      "depends_on": [],
+      "labels": ["storage", "wal"],
+      "estimate": "s"
+    },
+    {
+      "id": "TASK-002",
+      "title": "Implement WAL append and sync",
+      "description": "Implement append() that builds entry with CRC32C checksum and writes to active segment. Implement sync() that calls fsync through IO trait.",
+      "component": "Write-Ahead Log",
+      "acceptance_criteria_ids": ["AC-001", "AC-002", "AC-004"],
+      "depends_on": ["TASK-001"],
+      "labels": ["storage", "wal"],
+      "estimate": "m"
+    },
+    {
+      "id": "TASK-003",
+      "title": "Implement WAL segment management",
+      "description": "Create Segment struct managing 64MB files. Implement rotation when size limit reached. Handle segment discovery on startup for recovery.",
+      "component": "Write-Ahead Log",
+      "acceptance_criteria_ids": ["AC-002", "AC-003"],
+      "depends_on": ["TASK-002"],
+      "labels": ["storage", "wal"],
+      "estimate": "m"
+    },
+    {
+      "id": "TASK-004",
+      "title": "Implement WAL read and recovery",
+      "description": "Implement read() and read_range() with checksum verification. Implement recovery that replays from last known good entry.",
+      "component": "Write-Ahead Log",
+      "acceptance_criteria_ids": ["AC-001", "AC-002", "AC-005"],
+      "depends_on": ["TASK-003"],
+      "labels": ["storage", "wal"],
+      "estimate": "m"
+    },
+    {
+      "id": "TASK-005",
+      "title": "Implement io_uring backend",
+      "description": "Implement UringIO using io_uring crate. Support write, read, fsync operations. Enable SQPOLL for reduced syscalls. Use O_DIRECT flag.",
+      "component": "Write-Ahead Log",
+      "acceptance_criteria_ids": ["AC-008", "AC-009"],
+      "depends_on": ["TASK-002"],
+      "labels": ["storage", "io", "performance"],
+      "estimate": "l"
+    },
+    {
+      "id": "TASK-006",
+      "title": "Implement LSM MemTable",
+      "description": "Create MemTable using BTreeMap with 64MB size limit. Implement put, get, delete, scan operations. Add rotation to immutable memtable.",
+      "component": "LSM Tree",
+      "acceptance_criteria_ids": ["AC-006"],
+      "depends_on": ["TASK-001"],
+      "labels": ["storage", "lsm"],
+      "estimate": "m"
+    },
+    {
+      "id": "TASK-007",
+      "title": "Implement LSM SSTable format",
+      "description": "Define SSTable file format with data blocks, index block, bloom filter. Implement writer and reader with checksums per block.",
+      "component": "LSM Tree",
+      "acceptance_criteria_ids": ["AC-006"],
+      "depends_on": ["TASK-006"],
+      "labels": ["storage", "lsm"],
+      "estimate": "l"
+    },
+    {
+      "id": "TASK-008",
+      "title": "Implement LSM compaction",
+      "description": "Implement leveled compaction strategy. Merge overlapping SSTables. Update manifest atomically. Run compaction in background.",
+      "component": "LSM Tree",
+      "acceptance_criteria_ids": ["AC-007"],
+      "depends_on": ["TASK-007"],
+      "labels": ["storage", "lsm"],
+      "estimate": "xl"
+    }
+  ],
+  "metrics": [
+    {"name": "append_latency", "target": "< 1", "unit": "ms", "percentile": "p50"},
+    {"name": "append_latency", "target": "< 10", "unit": "ms", "percentile": "p99"},
+    {"name": "read_throughput", "target": "> 500", "unit": "MB/s", "percentile": null},
+    {"name": "write_throughput", "target": "> 200", "unit": "MB/s", "percentile": null}
+  ],
+  "references": [
+    {"title": "TigerBeetle Storage", "url": "https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/DESIGN.md#storage"},
+    {"title": "RocksDB Architecture", "url": "https://github.com/facebook/rocksdb/wiki/RocksDB-Overview"},
+    {"title": "io_uring Documentation", "url": "https://kernel.dk/io_uring.pdf"},
+    {"title": "CRC32C Intel Intrinsics", "url": "https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#text=crc32"}
+  ]
+}

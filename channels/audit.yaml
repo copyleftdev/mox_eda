@@ -1,0 +1,9 @@
+# Audit domain channels
+audit.written:
+  address: audit.written
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    auditLogWritten:
+      $ref: "../components/messages/audit.yaml#/AuditLogWritten"

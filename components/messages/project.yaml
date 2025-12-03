@@ -1,0 +1,52 @@
+# Project & Issue domain messages
+ProjectCreated:
+  name: ProjectCreated
+  title: Project created
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.project.created"
+          data:
+            $ref: "../schemas/project.yaml#/ProjectCreatedData"
+
+IssueCreated:
+  name: IssueCreated
+  title: Issue created
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.issue.created"
+          data:
+            $ref: "../schemas/project.yaml#/IssueCreatedData"
+
+IssueUpdated:
+  name: IssueUpdated
+  title: Issue updated
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.issue.updated"
+          data:
+            $ref: "../schemas/project.yaml#/IssueUpdatedData"
+
+ChecklistItemCompleted:
+  name: ChecklistItemCompleted
+  title: Checklist item completed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.issue.checklist.item.completed"
+          data:
+            $ref: "../schemas/project.yaml#/ChecklistItemCompletedData"

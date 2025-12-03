@@ -1,0 +1,144 @@
+# Outreach & Communication domain channels
+outreach.campaign.created:
+  address: outreach.campaign.created
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    outreachCampaignCreated:
+      $ref: "../components/messages/outreach.yaml#/OutreachCampaignCreated"
+
+outreach.campaign.updated:
+  address: outreach.campaign.updated
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    outreachCampaignUpdated:
+      $ref: "../components/messages/outreach.yaml#/OutreachCampaignUpdated"
+
+outreach.message.sent:
+  address: outreach.message.sent
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    outreachMessageSent:
+      $ref: "../components/messages/outreach.yaml#/OutreachMessageSent"
+
+outreach.message.delivered:
+  address: outreach.message.delivered
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    outreachMessageDelivered:
+      $ref: "../components/messages/outreach.yaml#/OutreachMessageDelivered"
+
+outreach.message.opened:
+  address: outreach.message.opened
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    outreachMessageOpened:
+      $ref: "../components/messages/outreach.yaml#/OutreachMessageOpened"
+
+outreach.message.clicked:
+  address: outreach.message.clicked
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    outreachMessageClicked:
+      $ref: "../components/messages/outreach.yaml#/OutreachMessageClicked"
+
+outreach.response.received:
+  address: outreach.response.received
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    outreachResponseReceived:
+      $ref: "../components/messages/outreach.yaml#/OutreachResponseReceived"
+
+conversation.created:
+  address: conversation.created
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    conversationCreated:
+      $ref: "../components/messages/outreach.yaml#/ConversationCreated"
+
+conversation.status.changed:
+  address: conversation.status.changed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    conversationStatusChanged:
+      $ref: "../components/messages/outreach.yaml#/ConversationStatusChanged"
+
+meeting.scheduled:
+  address: meeting.scheduled
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    meetingScheduled:
+      $ref: "../components/messages/outreach.yaml#/MeetingScheduled"
+
+meeting.updated:
+  address: meeting.updated
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    meetingUpdated:
+      $ref: "../components/messages/outreach.yaml#/MeetingUpdated"
+
+meeting.cancelled:
+  address: meeting.cancelled
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    meetingCancelled:
+      $ref: "../components/messages/outreach.yaml#/MeetingCancelled"
+
+meeting.completed:
+  address: meeting.completed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    meetingCompleted:
+      $ref: "../components/messages/outreach.yaml#/MeetingCompleted"
+
+call.logged:
+  address: call.logged
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    callLogged:
+      $ref: "../components/messages/outreach.yaml#/CallLogged"
+
+followup.scheduled:
+  address: followup.scheduled
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    followUpScheduled:
+      $ref: "../components/messages/outreach.yaml#/FollowUpScheduled"
+
+followup.completed:
+  address: followup.completed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    followUpCompleted:
+      $ref: "../components/messages/outreach.yaml#/FollowUpCompleted"

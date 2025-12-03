@@ -1,0 +1,319 @@
+# Multi-tenant & Billing domain schemas
+TenantId:
+  allOf: [{ $ref: "./common.yaml#/Id" }]
+
+SubscriptionId:
+  allOf: [{ $ref: "./common.yaml#/Id" }]
+
+TenantProvisionedData:
+  type: object
+  required: [tenant_id, org_id, plan, provisioned_at]
+  properties:
+    tenant_id:
+      $ref: "#/TenantId"
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    name:
+      type: string
+    slug:
+      type: string
+      description: URL-safe tenant identifier.
+    plan:
+      $ref: "#/PricingPlan"
+    region:
+      type: string
+      enum: [us-east, us-west, eu-west, ap-southeast]
+      default: us-east
+    settings:
+      $ref: "#/TenantSettings"
+    provisioned_at:
+      $ref: "./common.yaml#/Timestamp"
+    provisioned_by:
+      $ref: "./common.yaml#/UserId"
+
+TenantUpdatedData:
+  type: object
+  required: [tenant_id, patch, updated_at]
+  properties:
+    tenant_id:
+      $ref: "#/TenantId"
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    patch:
+      type: object
+      additionalProperties: true
+    updated_at:
+      $ref: "./common.yaml#/Timestamp"
+    updated_by:
+      $ref: "./common.yaml#/UserId"
+
+TenantSuspendedData:
+  type: object
+  required: [tenant_id, reason, suspended_at]
+  properties:
+    tenant_id:
+      $ref: "#/TenantId"
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    reason:
+      $ref: "#/SuspensionReason"
+    details:
+      type: string
+      nullable: true
+    grace_period_ends_at:
+      $ref: "./common.yaml#/Timestamp"
+      nullable: true
+    suspended_at:
+      $ref: "./common.yaml#/Timestamp"
+    suspended_by:
+      $ref: "./common.yaml#/UserId"
+      nullable: true
+
+TenantReactivatedData:
+  type: object
+  required: [tenant_id, reactivated_at]
+  properties:
+    tenant_id:
+      $ref: "#/TenantId"
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    reason:
+      type: string
+      nullable: true
+    reactivated_at:
+      $ref: "./common.yaml#/Timestamp"
+    reactivated_by:
+      $ref: "./common.yaml#/UserId"
+
+SubscriptionCreatedData:
+  type: object
+  required: [tenant_id, subscription_id, plan, billing_cycle, started_at]
+  properties:
+    tenant_id:
+      $ref: "#/TenantId"
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    subscription_id:
+      $ref: "#/SubscriptionId"
+    plan:
+      $ref: "#/PricingPlan"
+    billing_cycle:
+      $ref: "#/BillingCycle"
+    price_cents:
+      type: integer
+    currency:
+      type: string
+      default: "USD"
+    trial_ends_at:
+      $ref: "./common.yaml#/Timestamp"
+      nullable: true
+    started_at:
+      $ref: "./common.yaml#/Timestamp"
+    external_subscription_id:
+      type: string
+      nullable: true
+      description: Stripe/Paddle subscription ID.
+
+SubscriptionChangedData:
+  type: object
+  required: [tenant_id, subscription_id, from_plan, to_plan, changed_at]
+  properties:
+    tenant_id:
+      $ref: "#/TenantId"
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    subscription_id:
+      $ref: "#/SubscriptionId"
+    from_plan:
+      $ref: "#/PricingPlan"
+    to_plan:
+      $ref: "#/PricingPlan"
+    change_type:
+      type: string
+      enum: [upgrade, downgrade, addon_added, addon_removed]
+    effective_at:
+      $ref: "./common.yaml#/Timestamp"
+    prorated_amount_cents:
+      type: integer
+      nullable: true
+    changed_at:
+      $ref: "./common.yaml#/Timestamp"
+    changed_by:
+      $ref: "./common.yaml#/UserId"
+
+SubscriptionCancelledData:
+  type: object
+  required: [tenant_id, subscription_id, reason, cancelled_at]
+  properties:
+    tenant_id:
+      $ref: "#/TenantId"
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    subscription_id:
+      $ref: "#/SubscriptionId"
+    reason:
+      type: string
+      enum: [user_requested, payment_failed, violation, migrated, other]
+    feedback:
+      type: string
+      nullable: true
+    effective_end_at:
+      $ref: "./common.yaml#/Timestamp"
+    cancelled_at:
+      $ref: "./common.yaml#/Timestamp"
+    cancelled_by:
+      $ref: "./common.yaml#/UserId"
+      nullable: true
+
+SubscriptionRenewedData:
+  type: object
+  required: [tenant_id, subscription_id, period_start, period_end, renewed_at]
+  properties:
+    tenant_id:
+      $ref: "#/TenantId"
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    subscription_id:
+      $ref: "#/SubscriptionId"
+    period_start:
+      $ref: "./common.yaml#/Timestamp"
+    period_end:
+      $ref: "./common.yaml#/Timestamp"
+    amount_cents:
+      type: integer
+    renewed_at:
+      $ref: "./common.yaml#/Timestamp"
+
+PaymentFailedData:
+  type: object
+  required: [tenant_id, subscription_id, amount_cents, failure_reason, failed_at]
+  properties:
+    tenant_id:
+      $ref: "#/TenantId"
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    subscription_id:
+      $ref: "#/SubscriptionId"
+    amount_cents:
+      type: integer
+    currency:
+      type: string
+    failure_reason:
+      type: string
+      enum: [card_declined, insufficient_funds, expired_card, invalid_card, fraud_suspected, other]
+    retry_count:
+      type: integer
+      default: 0
+    next_retry_at:
+      $ref: "./common.yaml#/Timestamp"
+      nullable: true
+    failed_at:
+      $ref: "./common.yaml#/Timestamp"
+
+UsageRecordedData:
+  type: object
+  required: [tenant_id, metric, quantity, recorded_at]
+  properties:
+    tenant_id:
+      $ref: "#/TenantId"
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    metric:
+      $ref: "#/UsageMetric"
+    quantity:
+      type: integer
+    period_start:
+      $ref: "./common.yaml#/Timestamp"
+    period_end:
+      $ref: "./common.yaml#/Timestamp"
+    recorded_at:
+      $ref: "./common.yaml#/Timestamp"
+
+QuotaExceededData:
+  type: object
+  required: [tenant_id, quota_type, limit, current, exceeded_at]
+  properties:
+    tenant_id:
+      $ref: "#/TenantId"
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    quota_type:
+      $ref: "#/QuotaType"
+    limit:
+      type: integer
+    current:
+      type: integer
+    action_taken:
+      type: string
+      enum: [warned, throttled, blocked, none]
+    exceeded_at:
+      $ref: "./common.yaml#/Timestamp"
+
+FeatureFlagToggledData:
+  type: object
+  required: [tenant_id, feature_key, enabled, toggled_at]
+  properties:
+    tenant_id:
+      $ref: "#/TenantId"
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    feature_key:
+      type: string
+    enabled:
+      type: boolean
+    variant:
+      type: string
+      nullable: true
+      description: A/B test variant if applicable.
+    toggled_at:
+      $ref: "./common.yaml#/Timestamp"
+    toggled_by:
+      $ref: "./common.yaml#/UserId"
+      nullable: true
+
+# Enums & Objects
+PricingPlan:
+  type: string
+  enum: [free, starter, professional, enterprise, custom]
+
+BillingCycle:
+  type: string
+  enum: [monthly, quarterly, annual]
+
+SuspensionReason:
+  type: string
+  enum: [payment_overdue, terms_violation, abuse_detected, user_requested, admin_action]
+
+UsageMetric:
+  type: string
+  enum: [talents_count, users_count, campaigns_count, api_calls, storage_bytes, ai_tokens, battles_recorded, notifications_sent]
+
+QuotaType:
+  type: string
+  enum: [talents, users, campaigns, api_rate, storage, ai_usage]
+
+TenantSettings:
+  type: object
+  properties:
+    max_talents:
+      type: integer
+      nullable: true
+    max_users:
+      type: integer
+      nullable: true
+    max_campaigns:
+      type: integer
+      nullable: true
+    features_enabled:
+      type: array
+      items:
+        type: string
+    custom_domain:
+      type: string
+      nullable: true
+    sso_enabled:
+      type: boolean
+      default: false
+    data_retention_days:
+      type: integer
+      default: 365

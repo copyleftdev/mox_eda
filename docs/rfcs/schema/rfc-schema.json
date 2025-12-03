@@ -1,0 +1,231 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://mox.dev/schemas/rfc-v1.json",
+  "title": "Mox RFC Schema",
+  "description": "Schema for Mox TigerBeetle-style architecture RFCs, designed for GitHub issue generation",
+  "type": "object",
+  "required": ["id", "title", "status", "summary", "components", "acceptance_criteria", "tasks"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^RFC-[0-9]{4}$",
+      "description": "RFC identifier (e.g., RFC-0001)"
+    },
+    "title": {
+      "type": "string",
+      "description": "RFC title"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "review", "accepted", "implemented", "deprecated"],
+      "description": "Current RFC status"
+    },
+    "created": {
+      "type": "string",
+      "format": "date",
+      "description": "Creation date (YYYY-MM-DD)"
+    },
+    "updated": {
+      "type": "string",
+      "format": "date",
+      "description": "Last updated date (YYYY-MM-DD)"
+    },
+    "authors": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "List of authors"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Brief summary of the RFC"
+    },
+    "motivation": {
+      "type": "string",
+      "description": "Why this RFC exists"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["rfc_id", "relationship"],
+        "properties": {
+          "rfc_id": { "type": "string" },
+          "relationship": {
+            "type": "string",
+            "enum": ["requires", "extends", "replaces", "related"]
+          },
+          "description": { "type": "string" }
+        }
+      },
+      "description": "Dependencies on other RFCs"
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "description", "modules"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Component name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Component description"
+          },
+          "path": {
+            "type": "string",
+            "description": "Source code path (e.g., src/storage/)"
+          },
+          "modules": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "description", "interfaces"],
+              "properties": {
+                "name": { "type": "string" },
+                "description": { "type": "string" },
+                "file": { "type": "string" },
+                "interfaces": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["name", "type"],
+                    "properties": {
+                      "name": { "type": "string" },
+                      "type": {
+                        "type": "string",
+                        "enum": ["struct", "trait", "enum", "function", "const"]
+                      },
+                      "description": { "type": "string" },
+                      "methods": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": ["name", "signature"],
+                          "properties": {
+                            "name": { "type": "string" },
+                            "signature": { "type": "string" },
+                            "description": { "type": "string" },
+                            "async": { "type": "boolean" }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "description": "System components defined by this RFC"
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "category", "criterion", "verification"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^AC-[0-9]{3}$",
+            "description": "Acceptance criteria ID"
+          },
+          "category": {
+            "type": "string",
+            "enum": ["functional", "performance", "security", "reliability", "correctness", "observability"],
+            "description": "Category of acceptance criteria"
+          },
+          "criterion": {
+            "type": "string",
+            "description": "The acceptance criterion statement"
+          },
+          "verification": {
+            "type": "string",
+            "description": "How to verify this criterion is met"
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["must", "should", "could"],
+            "description": "MoSCoW priority"
+          }
+        }
+      },
+      "description": "Acceptance criteria for the RFC"
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "description", "acceptance_criteria_ids", "estimate"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^TASK-[0-9]{3}$",
+            "description": "Task ID"
+          },
+          "title": {
+            "type": "string",
+            "description": "Task title (GitHub issue title)"
+          },
+          "description": {
+            "type": "string",
+            "description": "Task description (GitHub issue body)"
+          },
+          "component": {
+            "type": "string",
+            "description": "Related component name"
+          },
+          "acceptance_criteria_ids": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "IDs of acceptance criteria this task addresses"
+          },
+          "depends_on": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Task IDs this task depends on"
+          },
+          "labels": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "GitHub labels"
+          },
+          "estimate": {
+            "type": "string",
+            "enum": ["xs", "s", "m", "l", "xl"],
+            "description": "T-shirt size estimate"
+          }
+        }
+      },
+      "description": "Implementation tasks (map to GitHub issues)"
+    },
+    "metrics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "target", "unit"],
+        "properties": {
+          "name": { "type": "string" },
+          "target": { "type": "string" },
+          "unit": { "type": "string" },
+          "percentile": { "type": "string" }
+        }
+      },
+      "description": "Performance targets and SLOs"
+    },
+    "references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["title", "url"],
+        "properties": {
+          "title": { "type": "string" },
+          "url": { "type": "string", "format": "uri" }
+        }
+      },
+      "description": "External references"
+    }
+  }
+}

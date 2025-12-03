@@ -1,0 +1,108 @@
+# Project & Issue (Jira-ish) domain schemas
+ProjectCreatedData:
+  type: object
+  required: [org_id, project_id, name, created_at, created_by]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    project_id:
+      $ref: "./common.yaml#/ProjectId"
+    name:
+      type: string
+    status:
+      $ref: "#/ProjectStatus"
+    start_at:
+      $ref: "./common.yaml#/Timestamp"
+      nullable: true
+    end_at:
+      $ref: "./common.yaml#/Timestamp"
+      nullable: true
+    created_at:
+      $ref: "./common.yaml#/Timestamp"
+    created_by:
+      $ref: "./common.yaml#/UserId"
+
+ProjectStatus:
+  type: string
+  enum: [planned, active, completed, archived]
+  default: planned
+
+IssueCreatedData:
+  type: object
+  required: [org_id, project_id, issue_id, type, title, created_at, created_by]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    project_id:
+      $ref: "./common.yaml#/ProjectId"
+    issue_id:
+      $ref: "./common.yaml#/IssueId"
+    type:
+      $ref: "#/IssueType"
+    title:
+      type: string
+    description_md:
+      type: string
+      nullable: true
+    status:
+      $ref: "#/IssueStatus"
+    priority:
+      $ref: "#/IssuePriority"
+    due_at:
+      $ref: "./common.yaml#/Timestamp"
+      nullable: true
+    assignees:
+      type: array
+      items:
+        $ref: "./common.yaml#/UserId"
+    created_at:
+      $ref: "./common.yaml#/Timestamp"
+    created_by:
+      $ref: "./common.yaml#/UserId"
+
+IssueUpdatedData:
+  type: object
+  required: [org_id, project_id, issue_id, patch, updated_at, updated_by]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    project_id:
+      $ref: "./common.yaml#/ProjectId"
+    issue_id:
+      $ref: "./common.yaml#/IssueId"
+    patch:
+      type: object
+      additionalProperties: true
+    updated_at:
+      $ref: "./common.yaml#/Timestamp"
+    updated_by:
+      $ref: "./common.yaml#/UserId"
+
+ChecklistItemCompletedData:
+  type: object
+  required: [org_id, issue_id, checklist_item_id, completed_at, completed_by]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    issue_id:
+      $ref: "./common.yaml#/IssueId"
+    checklist_item_id:
+      $ref: "./common.yaml#/Id"
+    completed_at:
+      $ref: "./common.yaml#/Timestamp"
+    completed_by:
+      $ref: "./common.yaml#/UserId"
+
+IssueType:
+  type: string
+  enum: [task, live_event, battle_event, content_post, onboarding_step]
+
+IssueStatus:
+  type: string
+  enum: [todo, in_progress, blocked, done, canceled]
+  default: todo
+
+IssuePriority:
+  type: string
+  enum: [p0, p1, p2, p3]
+  default: p2

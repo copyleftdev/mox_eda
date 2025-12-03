@@ -1,0 +1,27 @@
+# Schedule domain channels
+schedule.block.created:
+  address: schedule.block.created
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    scheduleBlockCreated:
+      $ref: "../components/messages/schedule.yaml#/ScheduleBlockCreated"
+
+schedule.block.updated:
+  address: schedule.block.updated
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    scheduleBlockUpdated:
+      $ref: "../components/messages/schedule.yaml#/ScheduleBlockUpdated"
+
+schedule.conflicted:
+  address: schedule.conflicted
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    scheduleConflicted:
+      $ref: "../components/messages/schedule.yaml#/ScheduleConflicted"

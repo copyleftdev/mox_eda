@@ -1,0 +1,76 @@
+# Battle & Performance domain schemas
+BattleRecordedData:
+  type: object
+  required: [org_id, battle_id, talent_id, opponent_handle, start_at, duration_s, outcome, recorded_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    battle_id:
+      $ref: "./common.yaml#/BattleId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    opponent_handle:
+      type: string
+    start_at:
+      $ref: "./common.yaml#/Timestamp"
+    duration_s:
+      type: integer
+    points_for:
+      type: integer
+      nullable: true
+    points_against:
+      type: integer
+      nullable: true
+    outcome:
+      $ref: "#/BattleOutcome"
+    meta_json:
+      type: object
+      additionalProperties: true
+    recorded_at:
+      $ref: "./common.yaml#/Timestamp"
+    recorded_by:
+      $ref: "./common.yaml#/UserId"
+
+BattleUpdatedData:
+  type: object
+  required: [org_id, battle_id, patch, updated_at, updated_by]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    battle_id:
+      $ref: "./common.yaml#/BattleId"
+    patch:
+      type: object
+      additionalProperties: true
+    updated_at:
+      $ref: "./common.yaml#/Timestamp"
+    updated_by:
+      $ref: "./common.yaml#/UserId"
+
+PerformanceSnapshotCapturedData:
+  type: object
+  required: [org_id, talent_id, period_start, period_end, kpi_json, captured_at, source]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    period_start:
+      $ref: "./common.yaml#/Timestamp"
+    period_end:
+      $ref: "./common.yaml#/Timestamp"
+    kpi_json:
+      type: object
+      additionalProperties: true
+    source:
+      $ref: "#/PerformanceSource"
+    captured_at:
+      $ref: "./common.yaml#/Timestamp"
+
+BattleOutcome:
+  type: string
+  enum: [win, loss, draw, canceled]
+
+PerformanceSource:
+  type: string
+  enum: [manual, tiktok_api, import]

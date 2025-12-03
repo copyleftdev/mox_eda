@@ -1,0 +1,495 @@
+# Outreach & Communication domain schemas
+OutreachCampaignId:
+  allOf: [{ $ref: "./common.yaml#/Id" }]
+
+OutreachMessageId:
+  allOf: [{ $ref: "./common.yaml#/Id" }]
+
+ConversationId:
+  allOf: [{ $ref: "./common.yaml#/Id" }]
+
+MeetingId:
+  allOf: [{ $ref: "./common.yaml#/Id" }]
+
+CallLogId:
+  allOf: [{ $ref: "./common.yaml#/Id" }]
+
+# Outreach Campaign (sequences for prospect outreach)
+OutreachCampaignCreatedData:
+  type: object
+  required: [org_id, outreach_campaign_id, name, channel, created_at, created_by]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    outreach_campaign_id:
+      $ref: "#/OutreachCampaignId"
+    name:
+      type: string
+    description:
+      type: string
+      nullable: true
+    channel:
+      $ref: "#/OutreachChannel"
+    status:
+      $ref: "#/OutreachCampaignStatus"
+    target_criteria:
+      type: object
+      properties:
+        min_followers:
+          type: integer
+          nullable: true
+        max_followers:
+          type: integer
+          nullable: true
+        niches:
+          type: array
+          items:
+            type: string
+        platforms:
+          type: array
+          items:
+            $ref: "./campaign.yaml#/Platform"
+        locations:
+          type: array
+          items:
+            type: string
+    sequence_steps:
+      type: array
+      items:
+        $ref: "#/OutreachSequenceStep"
+    created_at:
+      $ref: "./common.yaml#/Timestamp"
+    created_by:
+      $ref: "./common.yaml#/UserId"
+
+OutreachCampaignUpdatedData:
+  type: object
+  required: [org_id, outreach_campaign_id, patch, updated_at, updated_by]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    outreach_campaign_id:
+      $ref: "#/OutreachCampaignId"
+    patch:
+      type: object
+      additionalProperties: true
+    updated_at:
+      $ref: "./common.yaml#/Timestamp"
+    updated_by:
+      $ref: "./common.yaml#/UserId"
+
+# Individual outreach message
+OutreachMessageSentData:
+  type: object
+  required: [org_id, outreach_message_id, talent_id, channel, sent_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    outreach_message_id:
+      $ref: "#/OutreachMessageId"
+    outreach_campaign_id:
+      $ref: "#/OutreachCampaignId"
+      nullable: true
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    conversation_id:
+      $ref: "#/ConversationId"
+      nullable: true
+    channel:
+      $ref: "#/OutreachChannel"
+    message_type:
+      $ref: "#/OutreachMessageType"
+    subject:
+      type: string
+      nullable: true
+    body_preview:
+      type: string
+      description: First 200 chars of message body.
+    template_id:
+      type: string
+      nullable: true
+    sequence_step:
+      type: integer
+      nullable: true
+    sent_at:
+      $ref: "./common.yaml#/Timestamp"
+    sent_by:
+      $ref: "./common.yaml#/UserId"
+
+OutreachMessageDeliveredData:
+  type: object
+  required: [org_id, outreach_message_id, delivered_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    outreach_message_id:
+      $ref: "#/OutreachMessageId"
+    channel:
+      $ref: "#/OutreachChannel"
+    delivery_status:
+      type: string
+      enum: [delivered, bounced, failed, blocked]
+    external_message_id:
+      type: string
+      nullable: true
+    delivered_at:
+      $ref: "./common.yaml#/Timestamp"
+
+OutreachMessageOpenedData:
+  type: object
+  required: [org_id, outreach_message_id, opened_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    outreach_message_id:
+      $ref: "#/OutreachMessageId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    open_count:
+      type: integer
+      default: 1
+    opened_at:
+      $ref: "./common.yaml#/Timestamp"
+
+OutreachMessageClickedData:
+  type: object
+  required: [org_id, outreach_message_id, link_url, clicked_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    outreach_message_id:
+      $ref: "#/OutreachMessageId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    link_url:
+      type: string
+    link_label:
+      type: string
+      nullable: true
+    clicked_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# Response/Reply tracking
+OutreachResponseReceivedData:
+  type: object
+  required: [org_id, talent_id, channel, response_type, received_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    outreach_message_id:
+      $ref: "#/OutreachMessageId"
+      nullable: true
+    conversation_id:
+      $ref: "#/ConversationId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    channel:
+      $ref: "#/OutreachChannel"
+    response_type:
+      $ref: "#/ResponseType"
+    sentiment:
+      $ref: "#/ResponseSentiment"
+    body_preview:
+      type: string
+      nullable: true
+    external_message_id:
+      type: string
+      nullable: true
+    received_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# Conversation thread
+ConversationCreatedData:
+  type: object
+  required: [org_id, conversation_id, talent_id, channel, created_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    conversation_id:
+      $ref: "#/ConversationId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    channel:
+      $ref: "#/OutreachChannel"
+    subject:
+      type: string
+      nullable: true
+    status:
+      $ref: "#/ConversationStatus"
+    assigned_to:
+      $ref: "./common.yaml#/UserId"
+      nullable: true
+    created_at:
+      $ref: "./common.yaml#/Timestamp"
+
+ConversationStatusChangedData:
+  type: object
+  required: [org_id, conversation_id, from_status, to_status, changed_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    conversation_id:
+      $ref: "#/ConversationId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    from_status:
+      $ref: "#/ConversationStatus"
+    to_status:
+      $ref: "#/ConversationStatus"
+    changed_at:
+      $ref: "./common.yaml#/Timestamp"
+    changed_by:
+      $ref: "./common.yaml#/UserId"
+
+# Meeting scheduling
+MeetingScheduledData:
+  type: object
+  required: [org_id, meeting_id, talent_id, meeting_type, start_at, end_at, scheduled_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    meeting_id:
+      $ref: "#/MeetingId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    conversation_id:
+      $ref: "#/ConversationId"
+      nullable: true
+    meeting_type:
+      $ref: "#/MeetingType"
+    title:
+      type: string
+    description:
+      type: string
+      nullable: true
+    start_at:
+      $ref: "./common.yaml#/Timestamp"
+    end_at:
+      $ref: "./common.yaml#/Timestamp"
+    timezone:
+      type: string
+    location:
+      type: string
+      nullable: true
+      description: Physical location or video call URL.
+    video_provider:
+      type: string
+      enum: [zoom, google_meet, teams, discord, other]
+      nullable: true
+    attendees:
+      type: array
+      items:
+        $ref: "./common.yaml#/UserId"
+    external_calendar_id:
+      type: string
+      nullable: true
+    scheduled_at:
+      $ref: "./common.yaml#/Timestamp"
+    scheduled_by:
+      $ref: "./common.yaml#/UserId"
+
+MeetingUpdatedData:
+  type: object
+  required: [org_id, meeting_id, patch, updated_at, updated_by]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    meeting_id:
+      $ref: "#/MeetingId"
+    patch:
+      type: object
+      additionalProperties: true
+    updated_at:
+      $ref: "./common.yaml#/Timestamp"
+    updated_by:
+      $ref: "./common.yaml#/UserId"
+
+MeetingCancelledData:
+  type: object
+  required: [org_id, meeting_id, reason, cancelled_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    meeting_id:
+      $ref: "#/MeetingId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    reason:
+      type: string
+    cancelled_by_talent:
+      type: boolean
+      default: false
+    cancelled_at:
+      $ref: "./common.yaml#/Timestamp"
+    cancelled_by:
+      $ref: "./common.yaml#/UserId"
+      nullable: true
+
+MeetingCompletedData:
+  type: object
+  required: [org_id, meeting_id, outcome, completed_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    meeting_id:
+      $ref: "#/MeetingId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    outcome:
+      $ref: "#/MeetingOutcome"
+    duration_minutes:
+      type: integer
+    notes_md:
+      type: string
+      nullable: true
+    next_steps:
+      type: array
+      items:
+        type: string
+    recording_url:
+      type: string
+      nullable: true
+    completed_at:
+      $ref: "./common.yaml#/Timestamp"
+    completed_by:
+      $ref: "./common.yaml#/UserId"
+
+# Call logging
+CallLoggedData:
+  type: object
+  required: [org_id, call_log_id, talent_id, direction, outcome, logged_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    call_log_id:
+      $ref: "#/CallLogId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    conversation_id:
+      $ref: "#/ConversationId"
+      nullable: true
+    direction:
+      type: string
+      enum: [inbound, outbound]
+    call_type:
+      type: string
+      enum: [phone, video, voice_note]
+    outcome:
+      $ref: "#/CallOutcome"
+    duration_seconds:
+      type: integer
+      nullable: true
+    notes_md:
+      type: string
+      nullable: true
+    recording_url:
+      type: string
+      nullable: true
+    started_at:
+      $ref: "./common.yaml#/Timestamp"
+    logged_at:
+      $ref: "./common.yaml#/Timestamp"
+    logged_by:
+      $ref: "./common.yaml#/UserId"
+
+# Follow-up reminders
+FollowUpScheduledData:
+  type: object
+  required: [org_id, talent_id, due_at, reason, scheduled_at, scheduled_by]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    follow_up_id:
+      $ref: "./common.yaml#/Id"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    conversation_id:
+      $ref: "#/ConversationId"
+      nullable: true
+    due_at:
+      $ref: "./common.yaml#/Timestamp"
+    reason:
+      type: string
+    priority:
+      type: string
+      enum: [low, medium, high, urgent]
+      default: medium
+    assigned_to:
+      $ref: "./common.yaml#/UserId"
+    scheduled_at:
+      $ref: "./common.yaml#/Timestamp"
+    scheduled_by:
+      $ref: "./common.yaml#/UserId"
+
+FollowUpCompletedData:
+  type: object
+  required: [org_id, follow_up_id, completed_at, completed_by]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    follow_up_id:
+      $ref: "./common.yaml#/Id"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    outcome:
+      type: string
+      nullable: true
+    completed_at:
+      $ref: "./common.yaml#/Timestamp"
+    completed_by:
+      $ref: "./common.yaml#/UserId"
+
+# Enums
+OutreachChannel:
+  type: string
+  enum: [email, tiktok_dm, instagram_dm, twitter_dm, linkedin, discord, sms, whatsapp, other]
+
+OutreachCampaignStatus:
+  type: string
+  enum: [draft, active, paused, completed, archived]
+
+OutreachMessageType:
+  type: string
+  enum: [initial_outreach, follow_up, reply, introduction, proposal, contract_offer]
+
+ResponseType:
+  type: string
+  enum: [reply, auto_reply, out_of_office, interest, decline, question, referral]
+
+ResponseSentiment:
+  type: string
+  enum: [positive, neutral, negative, unknown]
+
+ConversationStatus:
+  type: string
+  enum: [new, active, waiting_response, follow_up_needed, negotiating, closed_won, closed_lost, unresponsive]
+
+MeetingType:
+  type: string
+  enum: [discovery_call, intro_call, negotiation, onboarding, check_in, strategy, review, other]
+
+MeetingOutcome:
+  type: string
+  enum: [successful, no_show, rescheduled, partial, cancelled]
+
+CallOutcome:
+  type: string
+  enum: [connected, voicemail, no_answer, busy, wrong_number, callback_requested]
+
+OutreachSequenceStep:
+  type: object
+  required: [step_number, delay_days, message_type]
+  properties:
+    step_number:
+      type: integer
+    delay_days:
+      type: integer
+      description: Days to wait after previous step.
+    message_type:
+      $ref: "#/OutreachMessageType"
+    template_id:
+      type: string
+      nullable: true
+    channel:
+      $ref: "#/OutreachChannel"
+      nullable: true

@@ -1,0 +1,27 @@
+# Battle & Performance domain channels
+battle.recorded:
+  address: battle.recorded
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    battleRecorded:
+      $ref: "../components/messages/battle.yaml#/BattleRecorded"
+
+battle.updated:
+  address: battle.updated
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    battleUpdated:
+      $ref: "../components/messages/battle.yaml#/BattleUpdated"
+
+performance.snapshot.captured:
+  address: performance.snapshot.captured
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    performanceSnapshotCaptured:
+      $ref: "../components/messages/battle.yaml#/PerformanceSnapshotCaptured"

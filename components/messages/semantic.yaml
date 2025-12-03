@@ -1,0 +1,26 @@
+# Semantic / AI domain messages
+EmbeddingUpserted:
+  name: EmbeddingUpserted
+  title: Embedding upserted
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.semantic.embedding.upserted"
+          data:
+            $ref: "../schemas/semantic.yaml#/EmbeddingUpsertedData"
+
+SemanticSummaryGenerated:
+  name: SemanticSummaryGenerated
+  title: Semantic summary generated
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.semantic.summary.generated"
+          data:
+            $ref: "../schemas/semantic.yaml#/SemanticSummaryGeneratedData"

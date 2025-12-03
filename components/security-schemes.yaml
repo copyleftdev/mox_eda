@@ -1,0 +1,18 @@
+# Security schemes for Mox EDA
+internalJwt:
+  type: httpApiKey
+  name: Authorization
+  in: header
+  description: Service-to-service auth via internal JWT.
+
+oauthTikTok:
+  type: oauth2
+  description: TikTok OAuth2 for user-level actions via auth-service.
+  flows:
+    authorizationCode:
+      authorizationUrl: https://www.tiktok.com/v2/auth/authorize/
+      tokenUrl: https://open.tiktokapis.com/v2/oauth/token/
+      availableScopes:
+        user.info.basic: Read basic TikTok user info
+        video.list: Read creator videos
+        video.publish: Publish content drafts

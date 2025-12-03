@@ -1,0 +1,489 @@
+# Stripe Integration domain schemas
+# These events represent Stripe webhook events translated to CloudEvents
+
+StripeCustomerId:
+  type: string
+  description: Stripe Customer ID (cus_xxx)
+
+StripeSubscriptionId:
+  type: string
+  description: Stripe Subscription ID (sub_xxx)
+
+StripeInvoiceId:
+  type: string
+  description: Stripe Invoice ID (in_xxx)
+
+StripePaymentIntentId:
+  type: string
+  description: Stripe PaymentIntent ID (pi_xxx)
+
+StripeConnectedAccountId:
+  type: string
+  description: Stripe Connect Account ID (acct_xxx)
+
+StripeTransferId:
+  type: string
+  description: Stripe Transfer ID (tr_xxx)
+
+# Webhook event received (raw, for audit/replay)
+StripeWebhookReceivedData:
+  type: object
+  required: [org_id, stripe_event_id, stripe_event_type, received_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+      nullable: true
+    tenant_id:
+      $ref: "./tenant.yaml#/TenantId"
+      nullable: true
+    stripe_event_id:
+      type: string
+      description: Stripe event ID (evt_xxx)
+    stripe_event_type:
+      type: string
+      description: e.g., customer.subscription.created
+    stripe_api_version:
+      type: string
+    livemode:
+      type: boolean
+    idempotency_key:
+      type: string
+      nullable: true
+    payload_hash:
+      type: string
+      description: SHA256 of raw payload for deduplication
+    received_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# Customer events (tenant mapping)
+StripeCustomerCreatedData:
+  type: object
+  required: [tenant_id, stripe_customer_id, email, created_at]
+  properties:
+    tenant_id:
+      $ref: "./tenant.yaml#/TenantId"
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    stripe_customer_id:
+      $ref: "#/StripeCustomerId"
+    email:
+      type: string
+    name:
+      type: string
+      nullable: true
+    metadata:
+      type: object
+      additionalProperties: true
+    created_at:
+      $ref: "./common.yaml#/Timestamp"
+
+StripeCustomerUpdatedData:
+  type: object
+  required: [tenant_id, stripe_customer_id, updated_at]
+  properties:
+    tenant_id:
+      $ref: "./tenant.yaml#/TenantId"
+    stripe_customer_id:
+      $ref: "#/StripeCustomerId"
+    changes:
+      type: object
+      additionalProperties: true
+    updated_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# Subscription events
+StripeSubscriptionCreatedData:
+  type: object
+  required: [tenant_id, stripe_subscription_id, stripe_customer_id, status, plan_id, created_at]
+  properties:
+    tenant_id:
+      $ref: "./tenant.yaml#/TenantId"
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    stripe_subscription_id:
+      $ref: "#/StripeSubscriptionId"
+    stripe_customer_id:
+      $ref: "#/StripeCustomerId"
+    status:
+      $ref: "#/StripeSubscriptionStatus"
+    plan_id:
+      type: string
+      description: Internal plan mapping (free, starter, professional, enterprise)
+    stripe_price_id:
+      type: string
+    quantity:
+      type: integer
+      default: 1
+    current_period_start:
+      $ref: "./common.yaml#/Timestamp"
+    current_period_end:
+      $ref: "./common.yaml#/Timestamp"
+    trial_start:
+      $ref: "./common.yaml#/Timestamp"
+      nullable: true
+    trial_end:
+      $ref: "./common.yaml#/Timestamp"
+      nullable: true
+    cancel_at_period_end:
+      type: boolean
+      default: false
+    created_at:
+      $ref: "./common.yaml#/Timestamp"
+
+StripeSubscriptionUpdatedData:
+  type: object
+  required: [tenant_id, stripe_subscription_id, updated_at]
+  properties:
+    tenant_id:
+      $ref: "./tenant.yaml#/TenantId"
+    stripe_subscription_id:
+      $ref: "#/StripeSubscriptionId"
+    previous_status:
+      $ref: "#/StripeSubscriptionStatus"
+      nullable: true
+    new_status:
+      $ref: "#/StripeSubscriptionStatus"
+    previous_plan_id:
+      type: string
+      nullable: true
+    new_plan_id:
+      type: string
+      nullable: true
+    cancel_at_period_end:
+      type: boolean
+    current_period_end:
+      $ref: "./common.yaml#/Timestamp"
+    updated_at:
+      $ref: "./common.yaml#/Timestamp"
+
+StripeSubscriptionDeletedData:
+  type: object
+  required: [tenant_id, stripe_subscription_id, deleted_at]
+  properties:
+    tenant_id:
+      $ref: "./tenant.yaml#/TenantId"
+    stripe_subscription_id:
+      $ref: "#/StripeSubscriptionId"
+    cancellation_reason:
+      type: string
+      nullable: true
+    deleted_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# Invoice events
+StripeInvoiceCreatedData:
+  type: object
+  required: [tenant_id, stripe_invoice_id, stripe_customer_id, amount_due_cents, currency, created_at]
+  properties:
+    tenant_id:
+      $ref: "./tenant.yaml#/TenantId"
+    stripe_invoice_id:
+      $ref: "#/StripeInvoiceId"
+    stripe_subscription_id:
+      $ref: "#/StripeSubscriptionId"
+      nullable: true
+    stripe_customer_id:
+      $ref: "#/StripeCustomerId"
+    invoice_number:
+      type: string
+      nullable: true
+    amount_due_cents:
+      type: integer
+    subtotal_cents:
+      type: integer
+    tax_cents:
+      type: integer
+      nullable: true
+    total_cents:
+      type: integer
+    currency:
+      type: string
+    status:
+      $ref: "#/StripeInvoiceStatus"
+    billing_reason:
+      type: string
+      enum: [subscription_create, subscription_cycle, subscription_update, manual, upcoming]
+    period_start:
+      $ref: "./common.yaml#/Timestamp"
+    period_end:
+      $ref: "./common.yaml#/Timestamp"
+    due_date:
+      $ref: "./common.yaml#/Timestamp"
+      nullable: true
+    hosted_invoice_url:
+      type: string
+      nullable: true
+    invoice_pdf:
+      type: string
+      nullable: true
+    created_at:
+      $ref: "./common.yaml#/Timestamp"
+
+StripeInvoicePaidData:
+  type: object
+  required: [tenant_id, stripe_invoice_id, amount_paid_cents, paid_at]
+  properties:
+    tenant_id:
+      $ref: "./tenant.yaml#/TenantId"
+    stripe_invoice_id:
+      $ref: "#/StripeInvoiceId"
+    stripe_subscription_id:
+      $ref: "#/StripeSubscriptionId"
+      nullable: true
+    stripe_payment_intent_id:
+      $ref: "#/StripePaymentIntentId"
+      nullable: true
+    amount_paid_cents:
+      type: integer
+    currency:
+      type: string
+    payment_method_type:
+      type: string
+      enum: [card, bank_transfer, sepa_debit, us_bank_account, other]
+    paid_at:
+      $ref: "./common.yaml#/Timestamp"
+
+StripeInvoicePaymentFailedData:
+  type: object
+  required: [tenant_id, stripe_invoice_id, amount_due_cents, failure_reason, failed_at]
+  properties:
+    tenant_id:
+      $ref: "./tenant.yaml#/TenantId"
+    stripe_invoice_id:
+      $ref: "#/StripeInvoiceId"
+    stripe_subscription_id:
+      $ref: "#/StripeSubscriptionId"
+      nullable: true
+    stripe_payment_intent_id:
+      $ref: "#/StripePaymentIntentId"
+      nullable: true
+    amount_due_cents:
+      type: integer
+    currency:
+      type: string
+    failure_reason:
+      type: string
+    failure_code:
+      type: string
+      nullable: true
+    next_payment_attempt:
+      $ref: "./common.yaml#/Timestamp"
+      nullable: true
+    attempt_count:
+      type: integer
+    failed_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# Stripe Connect events (talent payouts)
+StripeConnectAccountCreatedData:
+  type: object
+  required: [org_id, talent_id, stripe_account_id, created_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    stripe_account_id:
+      $ref: "#/StripeConnectedAccountId"
+    account_type:
+      type: string
+      enum: [express, custom, standard]
+    country:
+      type: string
+    email:
+      type: string
+      nullable: true
+    capabilities_requested:
+      type: array
+      items:
+        type: string
+    created_at:
+      $ref: "./common.yaml#/Timestamp"
+
+StripeConnectAccountUpdatedData:
+  type: object
+  required: [org_id, stripe_account_id, updated_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    stripe_account_id:
+      $ref: "#/StripeConnectedAccountId"
+    charges_enabled:
+      type: boolean
+    payouts_enabled:
+      type: boolean
+    details_submitted:
+      type: boolean
+    requirements:
+      type: object
+      properties:
+        currently_due:
+          type: array
+          items:
+            type: string
+        eventually_due:
+          type: array
+          items:
+            type: string
+        past_due:
+          type: array
+          items:
+            type: string
+        disabled_reason:
+          type: string
+          nullable: true
+    updated_at:
+      $ref: "./common.yaml#/Timestamp"
+
+StripeTransferCreatedData:
+  type: object
+  required: [org_id, stripe_transfer_id, stripe_account_id, amount_cents, currency, created_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    payout_id:
+      $ref: "./contract.yaml#/PayoutId"
+      nullable: true
+    stripe_transfer_id:
+      $ref: "#/StripeTransferId"
+    stripe_account_id:
+      $ref: "#/StripeConnectedAccountId"
+    amount_cents:
+      type: integer
+    currency:
+      type: string
+    description:
+      type: string
+      nullable: true
+    source_transaction:
+      type: string
+      nullable: true
+      description: Charge ID that funded the transfer
+    created_at:
+      $ref: "./common.yaml#/Timestamp"
+
+StripePayoutCreatedData:
+  type: object
+  required: [org_id, stripe_payout_id, stripe_account_id, amount_cents, currency, arrival_date, created_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    stripe_payout_id:
+      type: string
+    stripe_account_id:
+      $ref: "#/StripeConnectedAccountId"
+    amount_cents:
+      type: integer
+    currency:
+      type: string
+    status:
+      type: string
+      enum: [pending, in_transit, paid, failed, canceled]
+    arrival_date:
+      $ref: "./common.yaml#/Timestamp"
+    method:
+      type: string
+      enum: [standard, instant]
+    created_at:
+      $ref: "./common.yaml#/Timestamp"
+
+StripePayoutFailedData:
+  type: object
+  required: [org_id, stripe_payout_id, stripe_account_id, failure_code, failed_at]
+  properties:
+    org_id:
+      $ref: "./common.yaml#/OrgId"
+    talent_id:
+      $ref: "./common.yaml#/TalentId"
+    stripe_payout_id:
+      type: string
+    stripe_account_id:
+      $ref: "#/StripeConnectedAccountId"
+    amount_cents:
+      type: integer
+    failure_code:
+      type: string
+    failure_message:
+      type: string
+      nullable: true
+    failed_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# Usage/Meter reporting (outbound to Stripe)
+StripeUsageReportedData:
+  type: object
+  required: [tenant_id, meter_id, quantity, reported_at]
+  properties:
+    tenant_id:
+      $ref: "./tenant.yaml#/TenantId"
+    stripe_subscription_item_id:
+      type: string
+    meter_id:
+      type: string
+      description: Stripe Meter ID
+    metric:
+      $ref: "./tenant.yaml#/UsageMetric"
+    quantity:
+      type: integer
+    timestamp:
+      $ref: "./common.yaml#/Timestamp"
+      description: Usage timestamp
+    action:
+      type: string
+      enum: [increment, set]
+      default: increment
+    idempotency_key:
+      type: string
+    reported_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# Checkout session (for self-serve signup)
+StripeCheckoutCompletedData:
+  type: object
+  required: [stripe_session_id, stripe_customer_id, mode, completed_at]
+  properties:
+    tenant_id:
+      $ref: "./tenant.yaml#/TenantId"
+      nullable: true
+    stripe_session_id:
+      type: string
+    stripe_customer_id:
+      $ref: "#/StripeCustomerId"
+    stripe_subscription_id:
+      $ref: "#/StripeSubscriptionId"
+      nullable: true
+    mode:
+      type: string
+      enum: [payment, setup, subscription]
+    payment_status:
+      type: string
+      enum: [paid, unpaid, no_payment_required]
+    amount_total_cents:
+      type: integer
+      nullable: true
+    currency:
+      type: string
+      nullable: true
+    customer_email:
+      type: string
+      nullable: true
+    metadata:
+      type: object
+      additionalProperties: true
+    completed_at:
+      $ref: "./common.yaml#/Timestamp"
+
+# Enums
+StripeSubscriptionStatus:
+  type: string
+  enum: [trialing, active, incomplete, incomplete_expired, past_due, canceled, unpaid, paused]
+
+StripeInvoiceStatus:
+  type: string
+  enum: [draft, open, paid, void, uncollectible]

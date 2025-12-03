@@ -1,0 +1,39 @@
+# Schedule domain messages
+ScheduleBlockCreated:
+  name: ScheduleBlockCreated
+  title: Schedule block created
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.schedule.block.created"
+          data:
+            $ref: "../schemas/schedule.yaml#/ScheduleBlockCreatedData"
+
+ScheduleBlockUpdated:
+  name: ScheduleBlockUpdated
+  title: Schedule block updated
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.schedule.block.updated"
+          data:
+            $ref: "../schemas/schedule.yaml#/ScheduleBlockUpdatedData"
+
+ScheduleConflicted:
+  name: ScheduleConflicted
+  title: Schedule conflict detected
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.schedule.conflicted"
+          data:
+            $ref: "../schemas/schedule.yaml#/ScheduleConflictedData"

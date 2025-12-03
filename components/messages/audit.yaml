@@ -1,0 +1,13 @@
+# Audit domain messages
+AuditLogWritten:
+  name: AuditLogWritten
+  title: Audit log written
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.audit.written"
+          data:
+            $ref: "../schemas/audit.yaml#/AuditLogWrittenData"

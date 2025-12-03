@@ -1,0 +1,18 @@
+# Notification domain channels
+notification.requested:
+  address: notification.requested
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    notificationRequested:
+      $ref: "../components/messages/notification.yaml#/NotificationRequested"
+
+notification.delivered:
+  address: notification.delivered
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    notificationDelivered:
+      $ref: "../components/messages/notification.yaml#/NotificationDelivered"

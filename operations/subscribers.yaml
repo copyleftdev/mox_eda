@@ -1,0 +1,499 @@
+# All subscriber (receive) operations
+# SEMANTIC consumers
+semanticServiceConsumesNotes:
+  action: receive
+  channel:
+    $ref: "../channels/talent.yaml#/talent.note.created"
+  summary: semantic-service embeds new notes.
+
+semanticServiceConsumesBattles:
+  action: receive
+  channel:
+    $ref: "../channels/battle.yaml#/battle.recorded"
+  summary: semantic-service embeds battle notes and updates summaries.
+
+# SCHEDULE consumers
+scheduleServiceConsumesTalentStatus:
+  action: receive
+  channel:
+    $ref: "../channels/talent.yaml#/talent.status.changed"
+  summary: schedule-service adjusts availability when status changes.
+
+# DASHBOARD consumers
+dashboardReadModelConsumesPerformance:
+  action: receive
+  channel:
+    $ref: "../channels/battle.yaml#/performance.snapshot.captured"
+  summary: read-model worker updates dashboards.
+
+# NOTIFICATION consumers
+notificationServiceConsumesConflicts:
+  action: receive
+  channel:
+    $ref: "../channels/schedule.yaml#/schedule.conflicted"
+  summary: notification-service sends alerts on schedule conflicts.
+
+notificationServiceConsumesRequests:
+  action: receive
+  channel:
+    $ref: "../channels/notification.yaml#/notification.requested"
+  summary: notification-service processes notification requests.
+
+# AUDIT consumers
+auditServiceConsumesTalentCreated:
+  action: receive
+  channel:
+    $ref: "../channels/talent.yaml#/talent.created"
+  summary: audit-service logs talent creation events.
+
+# Add more audit subscriptions as needed for comprehensive auditing
+auditServiceConsumesTalentUpdated:
+  action: receive
+  channel:
+    $ref: "../channels/talent.yaml#/talent.updated"
+  summary: audit-service logs talent update events.
+
+auditServiceConsumesIssueCreated:
+  action: receive
+  channel:
+    $ref: "../channels/project.yaml#/issue.created"
+  summary: audit-service logs issue creation events.
+
+auditServiceConsumesScheduleBlockCreated:
+  action: receive
+  channel:
+    $ref: "../channels/schedule.yaml#/schedule.block.created"
+  summary: audit-service logs schedule block creation events.
+
+auditServiceConsumesBattleRecorded:
+  action: receive
+  channel:
+    $ref: "../channels/battle.yaml#/battle.recorded"
+  summary: audit-service logs battle recording events.
+
+# CONTRACT consumers
+notificationServiceConsumesContractExpired:
+  action: receive
+  channel:
+    $ref: "../channels/contract.yaml#/contract.expired"
+  summary: notification-service alerts on contract expirations.
+
+notificationServiceConsumesContractSigned:
+  action: receive
+  channel:
+    $ref: "../channels/contract.yaml#/contract.signed"
+  summary: notification-service confirms contract signatures.
+
+billingServiceConsumesInvoicePaid:
+  action: receive
+  channel:
+    $ref: "../channels/contract.yaml#/invoice.paid"
+  summary: billing-service triggers payout calculation on invoice payment.
+
+auditServiceConsumesContractCreated:
+  action: receive
+  channel:
+    $ref: "../channels/contract.yaml#/contract.created"
+  summary: audit-service logs contract creation.
+
+auditServiceConsumesPayoutProcessed:
+  action: receive
+  channel:
+    $ref: "../channels/contract.yaml#/payout.processed"
+  summary: audit-service logs payout events.
+
+# CAMPAIGN consumers
+notificationServiceConsumesDeliverableSubmitted:
+  action: receive
+  channel:
+    $ref: "../channels/campaign.yaml#/deliverable.submitted"
+  summary: notification-service alerts managers on deliverable submissions.
+
+notificationServiceConsumesDeliverableRejected:
+  action: receive
+  channel:
+    $ref: "../channels/campaign.yaml#/deliverable.rejected"
+  summary: notification-service alerts talent on deliverable rejections.
+
+notificationServiceConsumesDeliverableApproved:
+  action: receive
+  channel:
+    $ref: "../channels/campaign.yaml#/deliverable.approved"
+  summary: notification-service alerts talent on deliverable approvals.
+
+billingServiceConsumesCampaignCompleted:
+  action: receive
+  channel:
+    $ref: "../channels/campaign.yaml#/campaign.status.changed"
+  summary: billing-service triggers invoicing when campaigns complete.
+
+dashboardReadModelConsumesCampaignPerformance:
+  action: receive
+  channel:
+    $ref: "../channels/campaign.yaml#/campaign.performance.snapshot"
+  summary: read-model updates campaign dashboards.
+
+auditServiceConsumesCampaignCreated:
+  action: receive
+  channel:
+    $ref: "../channels/campaign.yaml#/campaign.created"
+  summary: audit-service logs campaign creation.
+
+auditServiceConsumesDeliverableStatusChanged:
+  action: receive
+  channel:
+    $ref: "../channels/campaign.yaml#/deliverable.status.changed"
+  summary: audit-service logs deliverable status changes.
+
+# TENANT consumers
+notificationServiceConsumesTenantSuspended:
+  action: receive
+  channel:
+    $ref: "../channels/tenant.yaml#/tenant.suspended"
+  summary: notification-service alerts admins on tenant suspension.
+
+notificationServiceConsumesPaymentFailed:
+  action: receive
+  channel:
+    $ref: "../channels/tenant.yaml#/payment.failed"
+  summary: notification-service alerts on payment failures.
+
+notificationServiceConsumesQuotaExceeded:
+  action: receive
+  channel:
+    $ref: "../channels/tenant.yaml#/quota.exceeded"
+  summary: notification-service alerts on quota exceeded.
+
+provisioningServiceConsumesSubscriptionCreated:
+  action: receive
+  channel:
+    $ref: "../channels/tenant.yaml#/subscription.created"
+  summary: provisioning-service sets up tenant resources on subscription.
+
+provisioningServiceConsumesSubscriptionCancelled:
+  action: receive
+  channel:
+    $ref: "../channels/tenant.yaml#/subscription.cancelled"
+  summary: provisioning-service schedules tenant teardown on cancellation.
+
+featureServiceConsumesSubscriptionChanged:
+  action: receive
+  channel:
+    $ref: "../channels/tenant.yaml#/subscription.changed"
+  summary: feature-service updates feature flags on plan changes.
+
+auditServiceConsumesTenantProvisioned:
+  action: receive
+  channel:
+    $ref: "../channels/tenant.yaml#/tenant.provisioned"
+  summary: audit-service logs tenant provisioning.
+
+auditServiceConsumesSubscriptionChanged:
+  action: receive
+  channel:
+    $ref: "../channels/tenant.yaml#/subscription.changed"
+  summary: audit-service logs subscription changes.
+
+analyticsServiceConsumesUsageRecorded:
+  action: receive
+  channel:
+    $ref: "../channels/tenant.yaml#/usage.recorded"
+  summary: analytics-service aggregates usage data for reporting.
+
+# OUTREACH consumers
+notificationServiceConsumesResponseReceived:
+  action: receive
+  channel:
+    $ref: "../channels/outreach.yaml#/outreach.response.received"
+  summary: notification-service alerts team when a prospect responds.
+
+notificationServiceConsumesMeetingScheduled:
+  action: receive
+  channel:
+    $ref: "../channels/outreach.yaml#/meeting.scheduled"
+  summary: notification-service sends calendar invites and reminders.
+
+notificationServiceConsumesFollowUpScheduled:
+  action: receive
+  channel:
+    $ref: "../channels/outreach.yaml#/followup.scheduled"
+  summary: notification-service sends follow-up reminders.
+
+talentServiceConsumesConversationStatusChanged:
+  action: receive
+  channel:
+    $ref: "../channels/outreach.yaml#/conversation.status.changed"
+  summary: talent-service updates talent status based on conversation outcomes.
+
+analyticsServiceConsumesMessageOpened:
+  action: receive
+  channel:
+    $ref: "../channels/outreach.yaml#/outreach.message.opened"
+  summary: analytics-service tracks email open rates.
+
+analyticsServiceConsumesMessageClicked:
+  action: receive
+  channel:
+    $ref: "../channels/outreach.yaml#/outreach.message.clicked"
+  summary: analytics-service tracks click-through rates.
+
+semanticServiceConsumesMeetingCompleted:
+  action: receive
+  channel:
+    $ref: "../channels/outreach.yaml#/meeting.completed"
+  summary: semantic-service indexes meeting notes for search.
+
+auditServiceConsumesOutreachMessageSent:
+  action: receive
+  channel:
+    $ref: "../channels/outreach.yaml#/outreach.message.sent"
+  summary: audit-service logs outreach activity.
+
+auditServiceConsumesCallLogged:
+  action: receive
+  channel:
+    $ref: "../channels/outreach.yaml#/call.logged"
+  summary: audit-service logs call activity.
+
+# INTEGRATION consumers
+notificationServiceConsumesTokenExpired:
+  action: receive
+  channel:
+    $ref: "../channels/integration.yaml#/platform.token.expired"
+  summary: notification-service alerts users to reconnect expired platforms.
+
+notificationServiceConsumesRateLimitApproached:
+  action: receive
+  channel:
+    $ref: "../channels/integration.yaml#/api.ratelimit.approached"
+  summary: notification-service warns admins about rate limits.
+
+notificationServiceConsumesRateLimitExceeded:
+  action: receive
+  channel:
+    $ref: "../channels/integration.yaml#/api.ratelimit.exceeded"
+  summary: notification-service alerts on rate limit breaches.
+
+notificationServiceConsumesSyncJobCompleted:
+  action: receive
+  channel:
+    $ref: "../channels/integration.yaml#/sync.job.completed"
+  summary: notification-service alerts on sync failures.
+
+talentServiceConsumesTikTokProfileSynced:
+  action: receive
+  channel:
+    $ref: "../channels/integration.yaml#/tiktok.profile.synced"
+  summary: talent-service updates talent records with TikTok data.
+
+talentServiceConsumesInstagramProfileSynced:
+  action: receive
+  channel:
+    $ref: "../channels/integration.yaml#/instagram.profile.synced"
+  summary: talent-service updates talent records with Instagram data.
+
+talentServiceConsumesYouTubeChannelSynced:
+  action: receive
+  channel:
+    $ref: "../channels/integration.yaml#/youtube.channel.synced"
+  summary: talent-service updates talent records with YouTube data.
+
+analyticsServiceConsumesTikTokAnalyticsSynced:
+  action: receive
+  channel:
+    $ref: "../channels/integration.yaml#/tiktok.analytics.synced"
+  summary: analytics-service processes TikTok analytics for dashboards.
+
+dashboardReadModelConsumesPlatformSyncs:
+  action: receive
+  channel:
+    $ref: "../channels/integration.yaml#/sync.job.completed"
+  summary: read-model updates dashboards with fresh platform data.
+
+webhookProcessorConsumesWebhookReceived:
+  action: receive
+  channel:
+    $ref: "../channels/integration.yaml#/webhook.received"
+  summary: webhook-processor handles inbound platform webhooks.
+
+auditServiceConsumesPlatformConnected:
+  action: receive
+  channel:
+    $ref: "../channels/integration.yaml#/platform.connected"
+  summary: audit-service logs platform connections.
+
+auditServiceConsumesPlatformDisconnected:
+  action: receive
+  channel:
+    $ref: "../channels/integration.yaml#/platform.disconnected"
+  summary: audit-service logs platform disconnections.
+
+monitoringServiceConsumesApiCallLogged:
+  action: receive
+  channel:
+    $ref: "../channels/integration.yaml#/api.call.logged"
+  summary: monitoring-service tracks API health and performance.
+
+# STRIPE consumers
+tenantServiceConsumesStripeSubscriptionCreated:
+  action: receive
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.subscription.created"
+  summary: tenant-service provisions tenant on subscription creation.
+
+tenantServiceConsumesStripeSubscriptionUpdated:
+  action: receive
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.subscription.updated"
+  summary: tenant-service updates plan/features on subscription change.
+
+tenantServiceConsumesStripeSubscriptionDeleted:
+  action: receive
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.subscription.deleted"
+  summary: tenant-service handles subscription cancellation.
+
+tenantServiceConsumesStripeInvoicePaid:
+  action: receive
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.invoice.paid"
+  summary: tenant-service confirms payment and extends service.
+
+tenantServiceConsumesStripeInvoicePaymentFailed:
+  action: receive
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.invoice.payment_failed"
+  summary: tenant-service handles failed payments (grace period, dunning).
+
+notificationServiceConsumesStripeInvoicePaymentFailed:
+  action: receive
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.invoice.payment_failed"
+  summary: notification-service alerts admins on payment failures.
+
+notificationServiceConsumesStripePayoutFailed:
+  action: receive
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.payout.failed"
+  summary: notification-service alerts on talent payout failures.
+
+talentServiceConsumesStripeConnectAccountCreated:
+  action: receive
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.connect.account.created"
+  summary: talent-service links Connect account to talent record.
+
+talentServiceConsumesStripeConnectAccountUpdated:
+  action: receive
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.connect.account.updated"
+  summary: talent-service updates payout eligibility based on Connect status.
+
+contractServiceConsumesStripeTransferCreated:
+  action: receive
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.transfer.created"
+  summary: contract-service records transfer for payout reconciliation.
+
+contractServiceConsumesStripePayoutCreated:
+  action: receive
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.payout.created"
+  summary: contract-service updates payout status.
+
+provisioningServiceConsumesStripeCheckoutCompleted:
+  action: receive
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.checkout.completed"
+  summary: provisioning-service creates tenant on self-serve signup.
+
+auditServiceConsumesStripeWebhookReceived:
+  action: receive
+  channel:
+    $ref: "../channels/stripe.yaml#/stripe.webhook.received"
+  summary: audit-service logs all Stripe webhook events for compliance.
+
+# ANALYTICS consumers
+dashboardServiceConsumesMetricRecorded:
+  action: receive
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.metric.recorded"
+  summary: dashboard-service updates real-time dashboards.
+
+dashboardServiceConsumesAggregationComputed:
+  action: receive
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.aggregation.computed"
+  summary: dashboard-service updates aggregated views.
+
+dashboardServiceConsumesTalentPerformanceComputed:
+  action: receive
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.talent.performance.computed"
+  summary: dashboard-service updates talent leaderboards.
+
+dashboardServiceConsumesCampaignAnalyticsComputed:
+  action: receive
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.campaign.computed"
+  summary: dashboard-service updates campaign dashboards.
+
+dashboardServiceConsumesRevenueAnalyticsComputed:
+  action: receive
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.revenue.computed"
+  summary: dashboard-service updates revenue dashboards.
+
+notificationServiceConsumesAlertTriggered:
+  action: receive
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.alert.triggered"
+  summary: notification-service sends alert notifications.
+
+notificationServiceConsumesAnomalyDetected:
+  action: receive
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.anomaly.detected"
+  summary: notification-service alerts on anomalies.
+
+notificationServiceConsumesChurnRiskAssessed:
+  action: receive
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.churn.risk.assessed"
+  summary: notification-service alerts on high churn risk.
+
+notificationServiceConsumesReportGenerated:
+  action: receive
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.report.generated"
+  summary: notification-service delivers generated reports.
+
+emailServiceConsumesDataExportCompleted:
+  action: receive
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.export.completed"
+  summary: email-service sends export download links.
+
+cacheServiceConsumesAggregationComputed:
+  action: receive
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.aggregation.computed"
+  summary: cache-service updates analytics cache.
+
+searchServiceConsumesTalentRankingsComputed:
+  action: receive
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.talent.rankings.computed"
+  summary: search-service updates talent search rankings.
+
+customerSuccessServiceConsumesChurnRiskAssessed:
+  action: receive
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.churn.risk.assessed"
+  summary: CS team gets churn risk alerts for intervention.
+
+dataWarehouseConsumesAllAnalytics:
+  action: receive
+  channel:
+    $ref: "../channels/analytics.yaml#/analytics.aggregation.computed"
+  summary: data-warehouse syncs analytics for BI tools.

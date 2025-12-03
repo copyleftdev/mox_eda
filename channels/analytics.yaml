@@ -1,0 +1,234 @@
+# Analytics domain channels - Expert Level
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# REAL-TIME METRICS (high throughput)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+analytics.metric.recorded:
+  address: analytics.metric.recorded
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    metricRecorded:
+      $ref: "../components/messages/analytics.yaml#/MetricRecorded"
+
+analytics.counter.incremented:
+  address: analytics.counter.incremented
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    counterIncremented:
+      $ref: "../components/messages/analytics.yaml#/CounterIncremented"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# AGGREGATIONS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+analytics.aggregation.computed:
+  address: analytics.aggregation.computed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    aggregationComputed:
+      $ref: "../components/messages/analytics.yaml#/AggregationComputed"
+
+analytics.trend.analyzed:
+  address: analytics.trend.analyzed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    trendAnalyzed:
+      $ref: "../components/messages/analytics.yaml#/TrendAnalyzed"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# TALENT ANALYTICS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+analytics.talent.performance.computed:
+  address: analytics.talent.performance.computed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    talentPerformanceComputed:
+      $ref: "../components/messages/analytics.yaml#/TalentPerformanceComputed"
+
+analytics.talent.rankings.computed:
+  address: analytics.talent.rankings.computed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    talentRankingsComputed:
+      $ref: "../components/messages/analytics.yaml#/TalentRankingsComputed"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# CAMPAIGN ANALYTICS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+analytics.campaign.computed:
+  address: analytics.campaign.computed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    campaignAnalyticsComputed:
+      $ref: "../components/messages/analytics.yaml#/CampaignAnalyticsComputed"
+
+analytics.campaign.attribution.computed:
+  address: analytics.campaign.attribution.computed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    campaignAttributionComputed:
+      $ref: "../components/messages/analytics.yaml#/CampaignAttributionComputed"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# OUTREACH ANALYTICS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+analytics.outreach.computed:
+  address: analytics.outreach.computed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    outreachAnalyticsComputed:
+      $ref: "../components/messages/analytics.yaml#/OutreachAnalyticsComputed"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# REVENUE ANALYTICS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+analytics.revenue.computed:
+  address: analytics.revenue.computed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    revenueAnalyticsComputed:
+      $ref: "../components/messages/analytics.yaml#/RevenueAnalyticsComputed"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# FUNNEL & COHORT
+# ═══════════════════════════════════════════════════════════════════════════════
+
+analytics.funnel.analyzed:
+  address: analytics.funnel.analyzed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    funnelAnalyzed:
+      $ref: "../components/messages/analytics.yaml#/FunnelAnalyzed"
+
+analytics.cohort.analyzed:
+  address: analytics.cohort.analyzed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    cohortAnalyzed:
+      $ref: "../components/messages/analytics.yaml#/CohortAnalyzed"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PREDICTIVE / ML
+# ═══════════════════════════════════════════════════════════════════════════════
+
+analytics.prediction.generated:
+  address: analytics.prediction.generated
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    predictionGenerated:
+      $ref: "../components/messages/analytics.yaml#/PredictionGenerated"
+
+analytics.anomaly.detected:
+  address: analytics.anomaly.detected
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    anomalyDetected:
+      $ref: "../components/messages/analytics.yaml#/AnomalyDetected"
+
+analytics.churn.risk.assessed:
+  address: analytics.churn.risk.assessed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    churnRiskAssessed:
+      $ref: "../components/messages/analytics.yaml#/ChurnRiskAssessed"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# REPORTING
+# ═══════════════════════════════════════════════════════════════════════════════
+
+analytics.report.generated:
+  address: analytics.report.generated
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    reportGenerated:
+      $ref: "../components/messages/analytics.yaml#/ReportGenerated"
+
+analytics.report.scheduled:
+  address: analytics.report.scheduled
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    reportScheduled:
+      $ref: "../components/messages/analytics.yaml#/ReportScheduled"
+
+analytics.export.completed:
+  address: analytics.export.completed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    dataExportCompleted:
+      $ref: "../components/messages/analytics.yaml#/DataExportCompleted"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ALERTING
+# ═══════════════════════════════════════════════════════════════════════════════
+
+analytics.alert.triggered:
+  address: analytics.alert.triggered
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    alertTriggered:
+      $ref: "../components/messages/analytics.yaml#/AlertTriggered"
+
+analytics.alert.resolved:
+  address: analytics.alert.resolved
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    alertResolved:
+      $ref: "../components/messages/analytics.yaml#/AlertResolved"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# DASHBOARD
+# ═══════════════════════════════════════════════════════════════════════════════
+
+analytics.dashboard.refreshed:
+  address: analytics.dashboard.refreshed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    dashboardRefreshed:
+      $ref: "../components/messages/analytics.yaml#/DashboardRefreshed"

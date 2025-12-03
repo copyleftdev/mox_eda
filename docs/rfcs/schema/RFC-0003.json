@@ -1,0 +1,357 @@
+{
+  "id": "RFC-0003",
+  "title": "Consensus & Replication",
+  "status": "draft",
+  "created": "2024-12-03",
+  "updated": "2024-12-03",
+  "authors": ["Platform Team"],
+  "summary": "Raft consensus with Viewstamped Replication extensions for leader election, log replication, view changes, and state transfer. Cluster-first design with no single-node mode.",
+  "motivation": "Strong consistency requires consensus. Raft provides understandable leader election and log replication. VR extensions add efficient view changes and state transfer for lagging replicas.",
+  "dependencies": [
+    {"rfc_id": "RFC-0001", "relationship": "requires", "description": "Depends on IO trait abstraction"},
+    {"rfc_id": "RFC-0002", "relationship": "requires", "description": "Depends on WAL for log persistence"}
+  ],
+  "components": [
+    {
+      "name": "Raft Core",
+      "description": "Core Raft consensus implementation",
+      "path": "src/consensus/",
+      "modules": [
+        {
+          "name": "raft",
+          "description": "Raft state machine",
+          "file": "src/consensus/raft.rs",
+          "interfaces": [
+            {
+              "name": "RaftNode",
+              "type": "struct",
+              "description": "Raft node implementation",
+              "methods": [
+                {"name": "new", "signature": "fn new(id: NodeId, cluster: ClusterConfig, io: I, state_machine: S) -> Self", "description": "Create new Raft node", "async": false},
+                {"name": "run", "signature": "async fn run(&mut self) -> Result<()>", "description": "Main event loop", "async": true},
+                {"name": "submit_command", "signature": "async fn submit_command(&self, cmd: Command) -> Result<Vec<Event>>", "description": "Submit command (leader only)", "async": true},
+                {"name": "is_leader", "signature": "fn is_leader(&self) -> bool", "description": "Check if this node is leader", "async": false},
+                {"name": "current_leader", "signature": "fn current_leader(&self) -> Option<NodeId>", "description": "Get current leader ID", "async": false}
+              ]
+            },
+            {
+              "name": "State",
+              "type": "enum",
+              "description": "Raft node states: Follower, Candidate, Leader, Learner",
+              "methods": []
+            },
+            {
+              "name": "PersistentState",
+              "type": "struct",
+              "description": "State that must survive restarts: current_term, voted_for, log",
+              "methods": []
+            }
+          ]
+        },
+        {
+          "name": "election",
+          "description": "Leader election logic",
+          "file": "src/consensus/election.rs",
+          "interfaces": [
+            {
+              "name": "handle_request_vote",
+              "type": "function",
+              "description": "Handle RequestVote RPC",
+              "methods": []
+            },
+            {
+              "name": "start_election",
+              "type": "function",
+              "description": "Initiate leader election",
+              "methods": []
+            }
+          ]
+        },
+        {
+          "name": "replication",
+          "description": "Log replication logic",
+          "file": "src/consensus/replication.rs",
+          "interfaces": [
+            {
+              "name": "handle_append_entries",
+              "type": "function",
+              "description": "Handle AppendEntries RPC",
+              "methods": []
+            },
+            {
+              "name": "replicate_entries",
+              "type": "function",
+              "description": "Replicate entries to followers",
+              "methods": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Viewstamped Replication",
+      "description": "VR extensions for view changes and state transfer",
+      "path": "src/vsr/",
+      "modules": [
+        {
+          "name": "view_change",
+          "description": "View change protocol",
+          "file": "src/vsr/view_change.rs",
+          "interfaces": [
+            {
+              "name": "start_view_change",
+              "type": "function",
+              "description": "Initiate view change on leader failure",
+              "methods": []
+            },
+            {
+              "name": "handle_do_view_change",
+              "type": "function",
+              "description": "Handle DoViewChange message",
+              "methods": []
+            },
+            {
+              "name": "handle_start_view",
+              "type": "function",
+              "description": "Handle StartView from new leader",
+              "methods": []
+            }
+          ]
+        },
+        {
+          "name": "state_transfer",
+          "description": "Snapshot-based state transfer",
+          "file": "src/vsr/state_transfer.rs",
+          "interfaces": [
+            {
+              "name": "create_snapshot",
+              "type": "function",
+              "description": "Create snapshot of current state",
+              "methods": []
+            },
+            {
+              "name": "handle_install_snapshot",
+              "type": "function",
+              "description": "Install snapshot from leader",
+              "methods": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Membership",
+      "description": "Cluster membership management",
+      "path": "src/consensus/",
+      "modules": [
+        {
+          "name": "membership",
+          "description": "Dynamic membership changes",
+          "file": "src/consensus/membership.rs",
+          "interfaces": [
+            {
+              "name": "ClusterConfig",
+              "type": "struct",
+              "description": "Cluster configuration with voters and learners",
+              "methods": [
+                {"name": "quorum_size", "signature": "fn quorum_size(&self) -> usize", "description": "Get quorum size", "async": false},
+                {"name": "is_voter", "signature": "fn is_voter(&self, node: NodeId) -> bool", "description": "Check if node is voter", "async": false}
+              ]
+            },
+            {
+              "name": "add_node",
+              "type": "function",
+              "description": "Add node to cluster using joint consensus",
+              "methods": []
+            },
+            {
+              "name": "remove_node",
+              "type": "function",
+              "description": "Remove node from cluster",
+              "methods": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "acceptance_criteria": [
+    {
+      "id": "AC-001",
+      "category": "correctness",
+      "criterion": "At most one leader exists per term",
+      "verification": "Simulation test with 1000 elections verifies single leader per term invariant",
+      "priority": "must"
+    },
+    {
+      "id": "AC-002",
+      "category": "correctness",
+      "criterion": "Leader never overwrites or deletes committed log entries",
+      "verification": "Simulation test with partitions and leader changes verifies committed entries persist",
+      "priority": "must"
+    },
+    {
+      "id": "AC-003",
+      "category": "correctness",
+      "criterion": "If two logs have entry at same index and term, all preceding entries are identical",
+      "verification": "Simulation test compares logs across all nodes after convergence",
+      "priority": "must"
+    },
+    {
+      "id": "AC-004",
+      "category": "reliability",
+      "criterion": "Leader election completes within 2 election timeouts after leader failure",
+      "verification": "Crash leader, measure time to new leader election (< 600ms with 150-300ms timeout)",
+      "priority": "must"
+    },
+    {
+      "id": "AC-005",
+      "category": "reliability",
+      "criterion": "Follower catches up via snapshot when more than 10,000 entries behind",
+      "verification": "Stop follower for 10K entries, restart, verify snapshot transfer triggers",
+      "priority": "must"
+    },
+    {
+      "id": "AC-006",
+      "category": "functional",
+      "criterion": "New node joins cluster as learner, then promoted to voter",
+      "verification": "Add 4th node to 3-node cluster, verify it syncs and votes in next election",
+      "priority": "must"
+    },
+    {
+      "id": "AC-007",
+      "category": "functional",
+      "criterion": "Node removal uses joint consensus for safety",
+      "verification": "Remove node from 5-node cluster, verify majority requirement from both configs",
+      "priority": "must"
+    },
+    {
+      "id": "AC-008",
+      "category": "performance",
+      "criterion": "Commit latency < 10ms with 3 nodes on same network",
+      "verification": "Benchmark 10,000 commits, verify p99 < 10ms",
+      "priority": "should"
+    },
+    {
+      "id": "AC-009",
+      "category": "performance",
+      "criterion": "Replication lag < 100ms under normal operation",
+      "verification": "Measure time from leader commit to follower apply under load",
+      "priority": "should"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Implement Raft persistent state",
+      "description": "Create PersistentState struct with current_term, voted_for, log. Implement persistence to disk with atomic writes. Load state on startup.",
+      "component": "Raft Core",
+      "acceptance_criteria_ids": ["AC-002"],
+      "depends_on": [],
+      "labels": ["consensus", "raft"],
+      "estimate": "m"
+    },
+    {
+      "id": "TASK-002",
+      "title": "Implement Raft state machine transitions",
+      "description": "Implement Follower, Candidate, Leader, Learner states. Define valid transitions. Create main event loop dispatching to state handlers.",
+      "component": "Raft Core",
+      "acceptance_criteria_ids": ["AC-001"],
+      "depends_on": ["TASK-001"],
+      "labels": ["consensus", "raft"],
+      "estimate": "m"
+    },
+    {
+      "id": "TASK-003",
+      "title": "Implement RequestVote RPC",
+      "description": "Implement RequestVote request and response. Check term, log up-to-date-ness, and vote granting rules per Raft spec.",
+      "component": "Raft Core",
+      "acceptance_criteria_ids": ["AC-001"],
+      "depends_on": ["TASK-002"],
+      "labels": ["consensus", "raft"],
+      "estimate": "m"
+    },
+    {
+      "id": "TASK-004",
+      "title": "Implement leader election",
+      "description": "Implement randomized election timeout. On timeout, transition to Candidate, increment term, vote for self, send RequestVote to all peers. Handle responses.",
+      "component": "Raft Core",
+      "acceptance_criteria_ids": ["AC-001", "AC-004"],
+      "depends_on": ["TASK-003"],
+      "labels": ["consensus", "raft"],
+      "estimate": "l"
+    },
+    {
+      "id": "TASK-005",
+      "title": "Implement AppendEntries RPC",
+      "description": "Implement AppendEntries request and response. Verify term, prevLogIndex, prevLogTerm. Append entries, update commitIndex.",
+      "component": "Raft Core",
+      "acceptance_criteria_ids": ["AC-002", "AC-003"],
+      "depends_on": ["TASK-002"],
+      "labels": ["consensus", "raft"],
+      "estimate": "m"
+    },
+    {
+      "id": "TASK-006",
+      "title": "Implement log replication (leader)",
+      "description": "Leader tracks nextIndex and matchIndex per follower. Send AppendEntries with batched entries. Handle responses, update commit index when quorum reached.",
+      "component": "Raft Core",
+      "acceptance_criteria_ids": ["AC-002", "AC-008", "AC-009"],
+      "depends_on": ["TASK-005"],
+      "labels": ["consensus", "raft"],
+      "estimate": "l"
+    },
+    {
+      "id": "TASK-007",
+      "title": "Implement view change protocol",
+      "description": "Implement StartViewChange, DoViewChange, StartView messages. Handle view number tracking. Collect DoViewChange messages from quorum.",
+      "component": "Viewstamped Replication",
+      "acceptance_criteria_ids": ["AC-004"],
+      "depends_on": ["TASK-004"],
+      "labels": ["consensus", "vsr"],
+      "estimate": "l"
+    },
+    {
+      "id": "TASK-008",
+      "title": "Implement snapshot creation",
+      "description": "Create snapshot of state machine with lastIncludedIndex and lastIncludedTerm. Serialize to bytes with XXHash64 checksum.",
+      "component": "Viewstamped Replication",
+      "acceptance_criteria_ids": ["AC-005"],
+      "depends_on": ["TASK-001"],
+      "labels": ["consensus", "vsr"],
+      "estimate": "m"
+    },
+    {
+      "id": "TASK-009",
+      "title": "Implement InstallSnapshot RPC",
+      "description": "Leader sends snapshot in chunks to lagging follower. Follower verifies checksum, installs state, discards covered log entries.",
+      "component": "Viewstamped Replication",
+      "acceptance_criteria_ids": ["AC-005"],
+      "depends_on": ["TASK-008"],
+      "labels": ["consensus", "vsr"],
+      "estimate": "l"
+    },
+    {
+      "id": "TASK-010",
+      "title": "Implement joint consensus for membership changes",
+      "description": "Implement add_node and remove_node using joint consensus. Enter C_old,new configuration, wait for commit, exit to C_new.",
+      "component": "Membership",
+      "acceptance_criteria_ids": ["AC-006", "AC-007"],
+      "depends_on": ["TASK-006"],
+      "labels": ["consensus", "membership"],
+      "estimate": "xl"
+    }
+  ],
+  "metrics": [
+    {"name": "election_time", "target": "< 600", "unit": "ms", "percentile": "p99"},
+    {"name": "commit_latency", "target": "< 10", "unit": "ms", "percentile": "p99"},
+    {"name": "replication_lag", "target": "< 100", "unit": "ms", "percentile": "p99"},
+    {"name": "snapshot_transfer_throughput", "target": "> 100", "unit": "MB/s", "percentile": null}
+  ],
+  "references": [
+    {"title": "Raft Paper", "url": "https://raft.github.io/raft.pdf"},
+    {"title": "Viewstamped Replication Revisited", "url": "https://pmg.csail.mit.edu/papers/vr-revisited.pdf"},
+    {"title": "Raft Membership Changes", "url": "https://web.stanford.edu/~ouster/cgi-bin/papers/OngaroPhD.pdf"},
+    {"title": "TigerBeetle Consensus", "url": "https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/DESIGN.md#consensus"}
+  ]
+}

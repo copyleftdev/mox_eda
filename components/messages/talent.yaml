@@ -1,0 +1,65 @@
+# Talent CRM domain messages
+TalentCreated:
+  name: TalentCreated
+  title: Talent created
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.talent.created"
+          data:
+            $ref: "../schemas/talent.yaml#/TalentCreatedData"
+
+TalentUpdated:
+  name: TalentUpdated
+  title: Talent updated
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.talent.updated"
+          data:
+            $ref: "../schemas/talent.yaml#/TalentUpdatedData"
+
+TalentStatusChanged:
+  name: TalentStatusChanged
+  title: Talent status changed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.talent.status.changed"
+          data:
+            $ref: "../schemas/talent.yaml#/TalentStatusChangedData"
+
+TalentNoteCreated:
+  name: TalentNoteCreated
+  title: Talent note created
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.talent.note.created"
+          data:
+            $ref: "../schemas/talent.yaml#/TalentNoteCreatedData"
+
+TalentNoteUpdated:
+  name: TalentNoteUpdated
+  title: Talent note updated
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.talent.note.updated"
+          data:
+            $ref: "../schemas/talent.yaml#/TalentNoteUpdatedData"

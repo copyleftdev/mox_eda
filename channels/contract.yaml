@@ -1,0 +1,63 @@
+# Contract & Payment domain channels
+contract.created:
+  address: contract.created
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    contractCreated:
+      $ref: "../components/messages/contract.yaml#/ContractCreated"
+
+contract.signed:
+  address: contract.signed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    contractSigned:
+      $ref: "../components/messages/contract.yaml#/ContractSigned"
+
+contract.status.changed:
+  address: contract.status.changed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    contractStatusChanged:
+      $ref: "../components/messages/contract.yaml#/ContractStatusChanged"
+
+contract.expired:
+  address: contract.expired
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    contractExpired:
+      $ref: "../components/messages/contract.yaml#/ContractExpired"
+
+invoice.generated:
+  address: invoice.generated
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    invoiceGenerated:
+      $ref: "../components/messages/contract.yaml#/InvoiceGenerated"
+
+invoice.paid:
+  address: invoice.paid
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    invoicePaid:
+      $ref: "../components/messages/contract.yaml#/InvoicePaid"
+
+payout.processed:
+  address: payout.processed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    payoutProcessed:
+      $ref: "../components/messages/contract.yaml#/PayoutProcessed"

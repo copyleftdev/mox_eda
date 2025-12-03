@@ -1,0 +1,162 @@
+# Integration & External Platform domain channels
+platform.connected:
+  address: platform.connected
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    platformConnected:
+      $ref: "../components/messages/integration.yaml#/PlatformConnected"
+
+platform.disconnected:
+  address: platform.disconnected
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    platformDisconnected:
+      $ref: "../components/messages/integration.yaml#/PlatformDisconnected"
+
+platform.token.refreshed:
+  address: platform.token.refreshed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    platformTokenRefreshed:
+      $ref: "../components/messages/integration.yaml#/PlatformTokenRefreshed"
+
+platform.token.expired:
+  address: platform.token.expired
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    platformTokenExpired:
+      $ref: "../components/messages/integration.yaml#/PlatformTokenExpired"
+
+sync.job.started:
+  address: sync.job.started
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    syncJobStarted:
+      $ref: "../components/messages/integration.yaml#/SyncJobStarted"
+
+sync.job.completed:
+  address: sync.job.completed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    syncJobCompleted:
+      $ref: "../components/messages/integration.yaml#/SyncJobCompleted"
+
+tiktok.profile.synced:
+  address: tiktok.profile.synced
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    tikTokProfileSynced:
+      $ref: "../components/messages/integration.yaml#/TikTokProfileSynced"
+
+tiktok.videos.synced:
+  address: tiktok.videos.synced
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    tikTokVideosSynced:
+      $ref: "../components/messages/integration.yaml#/TikTokVideosSynced"
+
+tiktok.analytics.synced:
+  address: tiktok.analytics.synced
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    tikTokAnalyticsSynced:
+      $ref: "../components/messages/integration.yaml#/TikTokAnalyticsSynced"
+
+instagram.profile.synced:
+  address: instagram.profile.synced
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    instagramProfileSynced:
+      $ref: "../components/messages/integration.yaml#/InstagramProfileSynced"
+
+instagram.media.synced:
+  address: instagram.media.synced
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    instagramMediaSynced:
+      $ref: "../components/messages/integration.yaml#/InstagramMediaSynced"
+
+youtube.channel.synced:
+  address: youtube.channel.synced
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    youTubeChannelSynced:
+      $ref: "../components/messages/integration.yaml#/YouTubeChannelSynced"
+
+youtube.videos.synced:
+  address: youtube.videos.synced
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    youTubeVideosSynced:
+      $ref: "../components/messages/integration.yaml#/YouTubeVideosSynced"
+
+webhook.received:
+  address: webhook.received
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    webhookReceived:
+      $ref: "../components/messages/integration.yaml#/WebhookReceived"
+
+webhook.processed:
+  address: webhook.processed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    webhookProcessed:
+      $ref: "../components/messages/integration.yaml#/WebhookProcessed"
+
+api.ratelimit.approached:
+  address: api.ratelimit.approached
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    apiRateLimitApproached:
+      $ref: "../components/messages/integration.yaml#/ApiRateLimitApproached"
+
+api.ratelimit.exceeded:
+  address: api.ratelimit.exceeded
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    apiRateLimitExceeded:
+      $ref: "../components/messages/integration.yaml#/ApiRateLimitExceeded"
+
+api.call.logged:
+  address: api.call.logged
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    apiCallLogged:
+      $ref: "../components/messages/integration.yaml#/ApiCallLogged"

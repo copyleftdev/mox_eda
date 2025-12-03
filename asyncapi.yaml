@@ -1,0 +1,1314 @@
+asyncapi: 3.0.0
+info:
+  title: Mox TikTok Ops EDA
+  version: 1.0.0
+  description: |
+    Event-driven contracts for the TikTok-first talent CRM + scheduling + battle analytics platform.
+    All domain events are emitted as CloudEvents v1.0 envelopes.
+  contact:
+    name: Mana Collective Engineering
+  license:
+    name: Apache-2.0
+
+defaultContentType: application/json
+
+servers:
+  natsProd:
+    $ref: "./servers.yaml#/natsProd"
+  natsDev:
+    $ref: "./servers.yaml#/natsDev"
+
+components:
+  securitySchemes:
+    internalJwt:
+      $ref: "./components/security-schemes.yaml#/internalJwt"
+    oauthTikTok:
+      $ref: "./components/security-schemes.yaml#/oauthTikTok"
+
+  schemas:
+    # Common
+    Id:
+      $ref: "./components/schemas/common.yaml#/Id"
+    OrgId:
+      $ref: "./components/schemas/common.yaml#/OrgId"
+    UserId:
+      $ref: "./components/schemas/common.yaml#/UserId"
+    TeamId:
+      $ref: "./components/schemas/common.yaml#/TeamId"
+    TalentId:
+      $ref: "./components/schemas/common.yaml#/TalentId"
+    ProjectId:
+      $ref: "./components/schemas/common.yaml#/ProjectId"
+    IssueId:
+      $ref: "./components/schemas/common.yaml#/IssueId"
+    ScheduleBlockId:
+      $ref: "./components/schemas/common.yaml#/ScheduleBlockId"
+    BattleId:
+      $ref: "./components/schemas/common.yaml#/BattleId"
+    NoteId:
+      $ref: "./components/schemas/common.yaml#/NoteId"
+    Timestamp:
+      $ref: "./components/schemas/common.yaml#/Timestamp"
+    CloudEvent:
+      $ref: "./components/schemas/common.yaml#/CloudEvent"
+
+    # Auth
+    AuthUserOnboardedData:
+      $ref: "./components/schemas/auth.yaml#/AuthUserOnboardedData"
+    OrgTeamMemberAddedData:
+      $ref: "./components/schemas/auth.yaml#/OrgTeamMemberAddedData"
+
+    # Talent
+    TalentCreatedData:
+      $ref: "./components/schemas/talent.yaml#/TalentCreatedData"
+    TalentUpdatedData:
+      $ref: "./components/schemas/talent.yaml#/TalentUpdatedData"
+    TalentStatusChangedData:
+      $ref: "./components/schemas/talent.yaml#/TalentStatusChangedData"
+    TalentNoteCreatedData:
+      $ref: "./components/schemas/talent.yaml#/TalentNoteCreatedData"
+    TalentNoteUpdatedData:
+      $ref: "./components/schemas/talent.yaml#/TalentNoteUpdatedData"
+
+    # Project
+    ProjectCreatedData:
+      $ref: "./components/schemas/project.yaml#/ProjectCreatedData"
+    IssueCreatedData:
+      $ref: "./components/schemas/project.yaml#/IssueCreatedData"
+    IssueUpdatedData:
+      $ref: "./components/schemas/project.yaml#/IssueUpdatedData"
+    ChecklistItemCompletedData:
+      $ref: "./components/schemas/project.yaml#/ChecklistItemCompletedData"
+
+    # Schedule
+    ScheduleBlockCreatedData:
+      $ref: "./components/schemas/schedule.yaml#/ScheduleBlockCreatedData"
+    ScheduleBlockUpdatedData:
+      $ref: "./components/schemas/schedule.yaml#/ScheduleBlockUpdatedData"
+    ScheduleConflictedData:
+      $ref: "./components/schemas/schedule.yaml#/ScheduleConflictedData"
+
+    # Battle
+    BattleRecordedData:
+      $ref: "./components/schemas/battle.yaml#/BattleRecordedData"
+    BattleUpdatedData:
+      $ref: "./components/schemas/battle.yaml#/BattleUpdatedData"
+    PerformanceSnapshotCapturedData:
+      $ref: "./components/schemas/battle.yaml#/PerformanceSnapshotCapturedData"
+
+    # Semantic
+    EmbeddingUpsertedData:
+      $ref: "./components/schemas/semantic.yaml#/EmbeddingUpsertedData"
+    SemanticSummaryGeneratedData:
+      $ref: "./components/schemas/semantic.yaml#/SemanticSummaryGeneratedData"
+
+    # Notification
+    NotificationRequestedData:
+      $ref: "./components/schemas/notification.yaml#/NotificationRequestedData"
+    NotificationDeliveredData:
+      $ref: "./components/schemas/notification.yaml#/NotificationDeliveredData"
+
+    # Audit
+    AuditLogWrittenData:
+      $ref: "./components/schemas/audit.yaml#/AuditLogWrittenData"
+
+    # Contract
+    ContractCreatedData:
+      $ref: "./components/schemas/contract.yaml#/ContractCreatedData"
+    ContractSignedData:
+      $ref: "./components/schemas/contract.yaml#/ContractSignedData"
+    ContractStatusChangedData:
+      $ref: "./components/schemas/contract.yaml#/ContractStatusChangedData"
+    ContractExpiredData:
+      $ref: "./components/schemas/contract.yaml#/ContractExpiredData"
+    InvoiceGeneratedData:
+      $ref: "./components/schemas/contract.yaml#/InvoiceGeneratedData"
+    InvoicePaidData:
+      $ref: "./components/schemas/contract.yaml#/InvoicePaidData"
+    PayoutProcessedData:
+      $ref: "./components/schemas/contract.yaml#/PayoutProcessedData"
+
+    # Campaign
+    CampaignCreatedData:
+      $ref: "./components/schemas/campaign.yaml#/CampaignCreatedData"
+    CampaignUpdatedData:
+      $ref: "./components/schemas/campaign.yaml#/CampaignUpdatedData"
+    CampaignStatusChangedData:
+      $ref: "./components/schemas/campaign.yaml#/CampaignStatusChangedData"
+    TalentAddedToCampaignData:
+      $ref: "./components/schemas/campaign.yaml#/TalentAddedToCampaignData"
+    DeliverableCreatedData:
+      $ref: "./components/schemas/campaign.yaml#/DeliverableCreatedData"
+    DeliverableStatusChangedData:
+      $ref: "./components/schemas/campaign.yaml#/DeliverableStatusChangedData"
+    DeliverableSubmittedData:
+      $ref: "./components/schemas/campaign.yaml#/DeliverableSubmittedData"
+    DeliverableApprovedData:
+      $ref: "./components/schemas/campaign.yaml#/DeliverableApprovedData"
+    DeliverableRejectedData:
+      $ref: "./components/schemas/campaign.yaml#/DeliverableRejectedData"
+    CampaignPerformanceSnapshotData:
+      $ref: "./components/schemas/campaign.yaml#/CampaignPerformanceSnapshotData"
+
+    # Tenant
+    TenantProvisionedData:
+      $ref: "./components/schemas/tenant.yaml#/TenantProvisionedData"
+    TenantUpdatedData:
+      $ref: "./components/schemas/tenant.yaml#/TenantUpdatedData"
+    TenantSuspendedData:
+      $ref: "./components/schemas/tenant.yaml#/TenantSuspendedData"
+    TenantReactivatedData:
+      $ref: "./components/schemas/tenant.yaml#/TenantReactivatedData"
+    SubscriptionCreatedData:
+      $ref: "./components/schemas/tenant.yaml#/SubscriptionCreatedData"
+    SubscriptionChangedData:
+      $ref: "./components/schemas/tenant.yaml#/SubscriptionChangedData"
+    SubscriptionCancelledData:
+      $ref: "./components/schemas/tenant.yaml#/SubscriptionCancelledData"
+    SubscriptionRenewedData:
+      $ref: "./components/schemas/tenant.yaml#/SubscriptionRenewedData"
+    PaymentFailedData:
+      $ref: "./components/schemas/tenant.yaml#/PaymentFailedData"
+    UsageRecordedData:
+      $ref: "./components/schemas/tenant.yaml#/UsageRecordedData"
+    QuotaExceededData:
+      $ref: "./components/schemas/tenant.yaml#/QuotaExceededData"
+    FeatureFlagToggledData:
+      $ref: "./components/schemas/tenant.yaml#/FeatureFlagToggledData"
+
+    # Outreach
+    OutreachCampaignCreatedData:
+      $ref: "./components/schemas/outreach.yaml#/OutreachCampaignCreatedData"
+    OutreachCampaignUpdatedData:
+      $ref: "./components/schemas/outreach.yaml#/OutreachCampaignUpdatedData"
+    OutreachMessageSentData:
+      $ref: "./components/schemas/outreach.yaml#/OutreachMessageSentData"
+    OutreachMessageDeliveredData:
+      $ref: "./components/schemas/outreach.yaml#/OutreachMessageDeliveredData"
+    OutreachMessageOpenedData:
+      $ref: "./components/schemas/outreach.yaml#/OutreachMessageOpenedData"
+    OutreachMessageClickedData:
+      $ref: "./components/schemas/outreach.yaml#/OutreachMessageClickedData"
+    OutreachResponseReceivedData:
+      $ref: "./components/schemas/outreach.yaml#/OutreachResponseReceivedData"
+    ConversationCreatedData:
+      $ref: "./components/schemas/outreach.yaml#/ConversationCreatedData"
+    ConversationStatusChangedData:
+      $ref: "./components/schemas/outreach.yaml#/ConversationStatusChangedData"
+    MeetingScheduledData:
+      $ref: "./components/schemas/outreach.yaml#/MeetingScheduledData"
+    MeetingUpdatedData:
+      $ref: "./components/schemas/outreach.yaml#/MeetingUpdatedData"
+    MeetingCancelledData:
+      $ref: "./components/schemas/outreach.yaml#/MeetingCancelledData"
+    MeetingCompletedData:
+      $ref: "./components/schemas/outreach.yaml#/MeetingCompletedData"
+    CallLoggedData:
+      $ref: "./components/schemas/outreach.yaml#/CallLoggedData"
+    FollowUpScheduledData:
+      $ref: "./components/schemas/outreach.yaml#/FollowUpScheduledData"
+    FollowUpCompletedData:
+      $ref: "./components/schemas/outreach.yaml#/FollowUpCompletedData"
+
+    # Integration
+    PlatformConnectedData:
+      $ref: "./components/schemas/integration.yaml#/PlatformConnectedData"
+    PlatformDisconnectedData:
+      $ref: "./components/schemas/integration.yaml#/PlatformDisconnectedData"
+    PlatformTokenRefreshedData:
+      $ref: "./components/schemas/integration.yaml#/PlatformTokenRefreshedData"
+    PlatformTokenExpiredData:
+      $ref: "./components/schemas/integration.yaml#/PlatformTokenExpiredData"
+    SyncJobStartedData:
+      $ref: "./components/schemas/integration.yaml#/SyncJobStartedData"
+    SyncJobCompletedData:
+      $ref: "./components/schemas/integration.yaml#/SyncJobCompletedData"
+    TikTokProfileSyncedData:
+      $ref: "./components/schemas/integration.yaml#/TikTokProfileSyncedData"
+    TikTokVideosSyncedData:
+      $ref: "./components/schemas/integration.yaml#/TikTokVideosSyncedData"
+    TikTokAnalyticsSyncedData:
+      $ref: "./components/schemas/integration.yaml#/TikTokAnalyticsSyncedData"
+    InstagramProfileSyncedData:
+      $ref: "./components/schemas/integration.yaml#/InstagramProfileSyncedData"
+    InstagramMediaSyncedData:
+      $ref: "./components/schemas/integration.yaml#/InstagramMediaSyncedData"
+    YouTubeChannelSyncedData:
+      $ref: "./components/schemas/integration.yaml#/YouTubeChannelSyncedData"
+    YouTubeVideosSyncedData:
+      $ref: "./components/schemas/integration.yaml#/YouTubeVideosSyncedData"
+    WebhookReceivedData:
+      $ref: "./components/schemas/integration.yaml#/WebhookReceivedData"
+    WebhookProcessedData:
+      $ref: "./components/schemas/integration.yaml#/WebhookProcessedData"
+    ApiRateLimitApproachedData:
+      $ref: "./components/schemas/integration.yaml#/ApiRateLimitApproachedData"
+    ApiRateLimitExceededData:
+      $ref: "./components/schemas/integration.yaml#/ApiRateLimitExceededData"
+    ApiCallLoggedData:
+      $ref: "./components/schemas/integration.yaml#/ApiCallLoggedData"
+
+    # Stripe
+    StripeWebhookReceivedData:
+      $ref: "./components/schemas/stripe.yaml#/StripeWebhookReceivedData"
+    StripeCustomerCreatedData:
+      $ref: "./components/schemas/stripe.yaml#/StripeCustomerCreatedData"
+    StripeCustomerUpdatedData:
+      $ref: "./components/schemas/stripe.yaml#/StripeCustomerUpdatedData"
+    StripeSubscriptionCreatedData:
+      $ref: "./components/schemas/stripe.yaml#/StripeSubscriptionCreatedData"
+    StripeSubscriptionUpdatedData:
+      $ref: "./components/schemas/stripe.yaml#/StripeSubscriptionUpdatedData"
+    StripeSubscriptionDeletedData:
+      $ref: "./components/schemas/stripe.yaml#/StripeSubscriptionDeletedData"
+    StripeInvoiceCreatedData:
+      $ref: "./components/schemas/stripe.yaml#/StripeInvoiceCreatedData"
+    StripeInvoicePaidData:
+      $ref: "./components/schemas/stripe.yaml#/StripeInvoicePaidData"
+    StripeInvoicePaymentFailedData:
+      $ref: "./components/schemas/stripe.yaml#/StripeInvoicePaymentFailedData"
+    StripeConnectAccountCreatedData:
+      $ref: "./components/schemas/stripe.yaml#/StripeConnectAccountCreatedData"
+    StripeConnectAccountUpdatedData:
+      $ref: "./components/schemas/stripe.yaml#/StripeConnectAccountUpdatedData"
+    StripeTransferCreatedData:
+      $ref: "./components/schemas/stripe.yaml#/StripeTransferCreatedData"
+    StripePayoutCreatedData:
+      $ref: "./components/schemas/stripe.yaml#/StripePayoutCreatedData"
+    StripePayoutFailedData:
+      $ref: "./components/schemas/stripe.yaml#/StripePayoutFailedData"
+    StripeUsageReportedData:
+      $ref: "./components/schemas/stripe.yaml#/StripeUsageReportedData"
+    StripeCheckoutCompletedData:
+      $ref: "./components/schemas/stripe.yaml#/StripeCheckoutCompletedData"
+
+    # Analytics
+    MetricRecordedData:
+      $ref: "./components/schemas/analytics.yaml#/MetricRecordedData"
+    CounterIncrementedData:
+      $ref: "./components/schemas/analytics.yaml#/CounterIncrementedData"
+    AggregationComputedData:
+      $ref: "./components/schemas/analytics.yaml#/AggregationComputedData"
+    TrendAnalyzedData:
+      $ref: "./components/schemas/analytics.yaml#/TrendAnalyzedData"
+    TalentPerformanceComputedData:
+      $ref: "./components/schemas/analytics.yaml#/TalentPerformanceComputedData"
+    TalentRankingsComputedData:
+      $ref: "./components/schemas/analytics.yaml#/TalentRankingsComputedData"
+    CampaignAnalyticsComputedData:
+      $ref: "./components/schemas/analytics.yaml#/CampaignAnalyticsComputedData"
+    CampaignAttributionComputedData:
+      $ref: "./components/schemas/analytics.yaml#/CampaignAttributionComputedData"
+    OutreachAnalyticsComputedData:
+      $ref: "./components/schemas/analytics.yaml#/OutreachAnalyticsComputedData"
+    RevenueAnalyticsComputedData:
+      $ref: "./components/schemas/analytics.yaml#/RevenueAnalyticsComputedData"
+    FunnelAnalyzedData:
+      $ref: "./components/schemas/analytics.yaml#/FunnelAnalyzedData"
+    CohortAnalyzedData:
+      $ref: "./components/schemas/analytics.yaml#/CohortAnalyzedData"
+    PredictionGeneratedData:
+      $ref: "./components/schemas/analytics.yaml#/PredictionGeneratedData"
+    AnomalyDetectedData:
+      $ref: "./components/schemas/analytics.yaml#/AnomalyDetectedData"
+    ChurnRiskAssessedData:
+      $ref: "./components/schemas/analytics.yaml#/ChurnRiskAssessedData"
+    ReportGeneratedData:
+      $ref: "./components/schemas/analytics.yaml#/ReportGeneratedData"
+    ReportScheduledData:
+      $ref: "./components/schemas/analytics.yaml#/ReportScheduledData"
+    DataExportCompletedData:
+      $ref: "./components/schemas/analytics.yaml#/DataExportCompletedData"
+    AlertTriggeredData:
+      $ref: "./components/schemas/analytics.yaml#/AlertTriggeredData"
+    AlertResolvedData:
+      $ref: "./components/schemas/analytics.yaml#/AlertResolvedData"
+    DashboardRefreshedData:
+      $ref: "./components/schemas/analytics.yaml#/DashboardRefreshedData"
+
+  messages:
+    # Auth
+    AuthUserOnboarded:
+      $ref: "./components/messages/auth.yaml#/AuthUserOnboarded"
+    OrgTeamMemberAdded:
+      $ref: "./components/messages/auth.yaml#/OrgTeamMemberAdded"
+
+    # Talent
+    TalentCreated:
+      $ref: "./components/messages/talent.yaml#/TalentCreated"
+    TalentUpdated:
+      $ref: "./components/messages/talent.yaml#/TalentUpdated"
+    TalentStatusChanged:
+      $ref: "./components/messages/talent.yaml#/TalentStatusChanged"
+    TalentNoteCreated:
+      $ref: "./components/messages/talent.yaml#/TalentNoteCreated"
+    TalentNoteUpdated:
+      $ref: "./components/messages/talent.yaml#/TalentNoteUpdated"
+
+    # Project
+    ProjectCreated:
+      $ref: "./components/messages/project.yaml#/ProjectCreated"
+    IssueCreated:
+      $ref: "./components/messages/project.yaml#/IssueCreated"
+    IssueUpdated:
+      $ref: "./components/messages/project.yaml#/IssueUpdated"
+    ChecklistItemCompleted:
+      $ref: "./components/messages/project.yaml#/ChecklistItemCompleted"
+
+    # Schedule
+    ScheduleBlockCreated:
+      $ref: "./components/messages/schedule.yaml#/ScheduleBlockCreated"
+    ScheduleBlockUpdated:
+      $ref: "./components/messages/schedule.yaml#/ScheduleBlockUpdated"
+    ScheduleConflicted:
+      $ref: "./components/messages/schedule.yaml#/ScheduleConflicted"
+
+    # Battle
+    BattleRecorded:
+      $ref: "./components/messages/battle.yaml#/BattleRecorded"
+    BattleUpdated:
+      $ref: "./components/messages/battle.yaml#/BattleUpdated"
+    PerformanceSnapshotCaptured:
+      $ref: "./components/messages/battle.yaml#/PerformanceSnapshotCaptured"
+
+    # Semantic
+    EmbeddingUpserted:
+      $ref: "./components/messages/semantic.yaml#/EmbeddingUpserted"
+    SemanticSummaryGenerated:
+      $ref: "./components/messages/semantic.yaml#/SemanticSummaryGenerated"
+
+    # Notification
+    NotificationRequested:
+      $ref: "./components/messages/notification.yaml#/NotificationRequested"
+    NotificationDelivered:
+      $ref: "./components/messages/notification.yaml#/NotificationDelivered"
+
+    # Audit
+    AuditLogWritten:
+      $ref: "./components/messages/audit.yaml#/AuditLogWritten"
+
+    # Contract
+    ContractCreated:
+      $ref: "./components/messages/contract.yaml#/ContractCreated"
+    ContractSigned:
+      $ref: "./components/messages/contract.yaml#/ContractSigned"
+    ContractStatusChanged:
+      $ref: "./components/messages/contract.yaml#/ContractStatusChanged"
+    ContractExpired:
+      $ref: "./components/messages/contract.yaml#/ContractExpired"
+    InvoiceGenerated:
+      $ref: "./components/messages/contract.yaml#/InvoiceGenerated"
+    InvoicePaid:
+      $ref: "./components/messages/contract.yaml#/InvoicePaid"
+    PayoutProcessed:
+      $ref: "./components/messages/contract.yaml#/PayoutProcessed"
+
+    # Campaign
+    CampaignCreated:
+      $ref: "./components/messages/campaign.yaml#/CampaignCreated"
+    CampaignUpdated:
+      $ref: "./components/messages/campaign.yaml#/CampaignUpdated"
+    CampaignStatusChanged:
+      $ref: "./components/messages/campaign.yaml#/CampaignStatusChanged"
+    TalentAddedToCampaign:
+      $ref: "./components/messages/campaign.yaml#/TalentAddedToCampaign"
+    DeliverableCreated:
+      $ref: "./components/messages/campaign.yaml#/DeliverableCreated"
+    DeliverableStatusChanged:
+      $ref: "./components/messages/campaign.yaml#/DeliverableStatusChanged"
+    DeliverableSubmitted:
+      $ref: "./components/messages/campaign.yaml#/DeliverableSubmitted"
+    DeliverableApproved:
+      $ref: "./components/messages/campaign.yaml#/DeliverableApproved"
+    DeliverableRejected:
+      $ref: "./components/messages/campaign.yaml#/DeliverableRejected"
+    CampaignPerformanceSnapshot:
+      $ref: "./components/messages/campaign.yaml#/CampaignPerformanceSnapshot"
+
+    # Tenant
+    TenantProvisioned:
+      $ref: "./components/messages/tenant.yaml#/TenantProvisioned"
+    TenantUpdated:
+      $ref: "./components/messages/tenant.yaml#/TenantUpdated"
+    TenantSuspended:
+      $ref: "./components/messages/tenant.yaml#/TenantSuspended"
+    TenantReactivated:
+      $ref: "./components/messages/tenant.yaml#/TenantReactivated"
+    SubscriptionCreated:
+      $ref: "./components/messages/tenant.yaml#/SubscriptionCreated"
+    SubscriptionChanged:
+      $ref: "./components/messages/tenant.yaml#/SubscriptionChanged"
+    SubscriptionCancelled:
+      $ref: "./components/messages/tenant.yaml#/SubscriptionCancelled"
+    SubscriptionRenewed:
+      $ref: "./components/messages/tenant.yaml#/SubscriptionRenewed"
+    PaymentFailed:
+      $ref: "./components/messages/tenant.yaml#/PaymentFailed"
+    UsageRecorded:
+      $ref: "./components/messages/tenant.yaml#/UsageRecorded"
+    QuotaExceeded:
+      $ref: "./components/messages/tenant.yaml#/QuotaExceeded"
+    FeatureFlagToggled:
+      $ref: "./components/messages/tenant.yaml#/FeatureFlagToggled"
+
+    # Outreach
+    OutreachCampaignCreated:
+      $ref: "./components/messages/outreach.yaml#/OutreachCampaignCreated"
+    OutreachCampaignUpdated:
+      $ref: "./components/messages/outreach.yaml#/OutreachCampaignUpdated"
+    OutreachMessageSent:
+      $ref: "./components/messages/outreach.yaml#/OutreachMessageSent"
+    OutreachMessageDelivered:
+      $ref: "./components/messages/outreach.yaml#/OutreachMessageDelivered"
+    OutreachMessageOpened:
+      $ref: "./components/messages/outreach.yaml#/OutreachMessageOpened"
+    OutreachMessageClicked:
+      $ref: "./components/messages/outreach.yaml#/OutreachMessageClicked"
+    OutreachResponseReceived:
+      $ref: "./components/messages/outreach.yaml#/OutreachResponseReceived"
+    ConversationCreated:
+      $ref: "./components/messages/outreach.yaml#/ConversationCreated"
+    ConversationStatusChanged:
+      $ref: "./components/messages/outreach.yaml#/ConversationStatusChanged"
+    MeetingScheduled:
+      $ref: "./components/messages/outreach.yaml#/MeetingScheduled"
+    MeetingUpdated:
+      $ref: "./components/messages/outreach.yaml#/MeetingUpdated"
+    MeetingCancelled:
+      $ref: "./components/messages/outreach.yaml#/MeetingCancelled"
+    MeetingCompleted:
+      $ref: "./components/messages/outreach.yaml#/MeetingCompleted"
+    CallLogged:
+      $ref: "./components/messages/outreach.yaml#/CallLogged"
+    FollowUpScheduled:
+      $ref: "./components/messages/outreach.yaml#/FollowUpScheduled"
+    FollowUpCompleted:
+      $ref: "./components/messages/outreach.yaml#/FollowUpCompleted"
+
+    # Integration
+    PlatformConnected:
+      $ref: "./components/messages/integration.yaml#/PlatformConnected"
+    PlatformDisconnected:
+      $ref: "./components/messages/integration.yaml#/PlatformDisconnected"
+    PlatformTokenRefreshed:
+      $ref: "./components/messages/integration.yaml#/PlatformTokenRefreshed"
+    PlatformTokenExpired:
+      $ref: "./components/messages/integration.yaml#/PlatformTokenExpired"
+    SyncJobStarted:
+      $ref: "./components/messages/integration.yaml#/SyncJobStarted"
+    SyncJobCompleted:
+      $ref: "./components/messages/integration.yaml#/SyncJobCompleted"
+    TikTokProfileSynced:
+      $ref: "./components/messages/integration.yaml#/TikTokProfileSynced"
+    TikTokVideosSynced:
+      $ref: "./components/messages/integration.yaml#/TikTokVideosSynced"
+    TikTokAnalyticsSynced:
+      $ref: "./components/messages/integration.yaml#/TikTokAnalyticsSynced"
+    InstagramProfileSynced:
+      $ref: "./components/messages/integration.yaml#/InstagramProfileSynced"
+    InstagramMediaSynced:
+      $ref: "./components/messages/integration.yaml#/InstagramMediaSynced"
+    YouTubeChannelSynced:
+      $ref: "./components/messages/integration.yaml#/YouTubeChannelSynced"
+    YouTubeVideosSynced:
+      $ref: "./components/messages/integration.yaml#/YouTubeVideosSynced"
+    WebhookReceived:
+      $ref: "./components/messages/integration.yaml#/WebhookReceived"
+    WebhookProcessed:
+      $ref: "./components/messages/integration.yaml#/WebhookProcessed"
+    ApiRateLimitApproached:
+      $ref: "./components/messages/integration.yaml#/ApiRateLimitApproached"
+    ApiRateLimitExceeded:
+      $ref: "./components/messages/integration.yaml#/ApiRateLimitExceeded"
+    ApiCallLogged:
+      $ref: "./components/messages/integration.yaml#/ApiCallLogged"
+
+    # Stripe
+    StripeWebhookReceived:
+      $ref: "./components/messages/stripe.yaml#/StripeWebhookReceived"
+    StripeCustomerCreated:
+      $ref: "./components/messages/stripe.yaml#/StripeCustomerCreated"
+    StripeCustomerUpdated:
+      $ref: "./components/messages/stripe.yaml#/StripeCustomerUpdated"
+    StripeSubscriptionCreated:
+      $ref: "./components/messages/stripe.yaml#/StripeSubscriptionCreated"
+    StripeSubscriptionUpdated:
+      $ref: "./components/messages/stripe.yaml#/StripeSubscriptionUpdated"
+    StripeSubscriptionDeleted:
+      $ref: "./components/messages/stripe.yaml#/StripeSubscriptionDeleted"
+    StripeInvoiceCreated:
+      $ref: "./components/messages/stripe.yaml#/StripeInvoiceCreated"
+    StripeInvoicePaid:
+      $ref: "./components/messages/stripe.yaml#/StripeInvoicePaid"
+    StripeInvoicePaymentFailed:
+      $ref: "./components/messages/stripe.yaml#/StripeInvoicePaymentFailed"
+    StripeConnectAccountCreated:
+      $ref: "./components/messages/stripe.yaml#/StripeConnectAccountCreated"
+    StripeConnectAccountUpdated:
+      $ref: "./components/messages/stripe.yaml#/StripeConnectAccountUpdated"
+    StripeTransferCreated:
+      $ref: "./components/messages/stripe.yaml#/StripeTransferCreated"
+    StripePayoutCreated:
+      $ref: "./components/messages/stripe.yaml#/StripePayoutCreated"
+    StripePayoutFailed:
+      $ref: "./components/messages/stripe.yaml#/StripePayoutFailed"
+    StripeUsageReported:
+      $ref: "./components/messages/stripe.yaml#/StripeUsageReported"
+    StripeCheckoutCompleted:
+      $ref: "./components/messages/stripe.yaml#/StripeCheckoutCompleted"
+
+    # Analytics
+    MetricRecorded:
+      $ref: "./components/messages/analytics.yaml#/MetricRecorded"
+    CounterIncremented:
+      $ref: "./components/messages/analytics.yaml#/CounterIncremented"
+    AggregationComputed:
+      $ref: "./components/messages/analytics.yaml#/AggregationComputed"
+    TrendAnalyzed:
+      $ref: "./components/messages/analytics.yaml#/TrendAnalyzed"
+    TalentPerformanceComputed:
+      $ref: "./components/messages/analytics.yaml#/TalentPerformanceComputed"
+    TalentRankingsComputed:
+      $ref: "./components/messages/analytics.yaml#/TalentRankingsComputed"
+    CampaignAnalyticsComputed:
+      $ref: "./components/messages/analytics.yaml#/CampaignAnalyticsComputed"
+    CampaignAttributionComputed:
+      $ref: "./components/messages/analytics.yaml#/CampaignAttributionComputed"
+    OutreachAnalyticsComputed:
+      $ref: "./components/messages/analytics.yaml#/OutreachAnalyticsComputed"
+    RevenueAnalyticsComputed:
+      $ref: "./components/messages/analytics.yaml#/RevenueAnalyticsComputed"
+    FunnelAnalyzed:
+      $ref: "./components/messages/analytics.yaml#/FunnelAnalyzed"
+    CohortAnalyzed:
+      $ref: "./components/messages/analytics.yaml#/CohortAnalyzed"
+    PredictionGenerated:
+      $ref: "./components/messages/analytics.yaml#/PredictionGenerated"
+    AnomalyDetected:
+      $ref: "./components/messages/analytics.yaml#/AnomalyDetected"
+    ChurnRiskAssessed:
+      $ref: "./components/messages/analytics.yaml#/ChurnRiskAssessed"
+    ReportGenerated:
+      $ref: "./components/messages/analytics.yaml#/ReportGenerated"
+    ReportScheduled:
+      $ref: "./components/messages/analytics.yaml#/ReportScheduled"
+    DataExportCompleted:
+      $ref: "./components/messages/analytics.yaml#/DataExportCompleted"
+    AlertTriggered:
+      $ref: "./components/messages/analytics.yaml#/AlertTriggered"
+    AlertResolved:
+      $ref: "./components/messages/analytics.yaml#/AlertResolved"
+    DashboardRefreshed:
+      $ref: "./components/messages/analytics.yaml#/DashboardRefreshed"
+
+channels:
+  # Auth
+  auth.user.onboarded:
+    $ref: "./channels/auth.yaml#/auth.user.onboarded"
+  org.team.member.added:
+    $ref: "./channels/auth.yaml#/org.team.member.added"
+
+  # Talent
+  talent.created:
+    $ref: "./channels/talent.yaml#/talent.created"
+  talent.updated:
+    $ref: "./channels/talent.yaml#/talent.updated"
+  talent.status.changed:
+    $ref: "./channels/talent.yaml#/talent.status.changed"
+  talent.note.created:
+    $ref: "./channels/talent.yaml#/talent.note.created"
+  talent.note.updated:
+    $ref: "./channels/talent.yaml#/talent.note.updated"
+
+  # Project
+  project.created:
+    $ref: "./channels/project.yaml#/project.created"
+  issue.created:
+    $ref: "./channels/project.yaml#/issue.created"
+  issue.updated:
+    $ref: "./channels/project.yaml#/issue.updated"
+  issue.checklist.item.completed:
+    $ref: "./channels/project.yaml#/issue.checklist.item.completed"
+
+  # Schedule
+  schedule.block.created:
+    $ref: "./channels/schedule.yaml#/schedule.block.created"
+  schedule.block.updated:
+    $ref: "./channels/schedule.yaml#/schedule.block.updated"
+  schedule.conflicted:
+    $ref: "./channels/schedule.yaml#/schedule.conflicted"
+
+  # Battle
+  battle.recorded:
+    $ref: "./channels/battle.yaml#/battle.recorded"
+  battle.updated:
+    $ref: "./channels/battle.yaml#/battle.updated"
+  performance.snapshot.captured:
+    $ref: "./channels/battle.yaml#/performance.snapshot.captured"
+
+  # Semantic
+  semantic.embedding.upserted:
+    $ref: "./channels/semantic.yaml#/semantic.embedding.upserted"
+  semantic.summary.generated:
+    $ref: "./channels/semantic.yaml#/semantic.summary.generated"
+
+  # Notification
+  notification.requested:
+    $ref: "./channels/notification.yaml#/notification.requested"
+  notification.delivered:
+    $ref: "./channels/notification.yaml#/notification.delivered"
+
+  # Audit
+  audit.written:
+    $ref: "./channels/audit.yaml#/audit.written"
+
+  # Contract
+  contract.created:
+    $ref: "./channels/contract.yaml#/contract.created"
+  contract.signed:
+    $ref: "./channels/contract.yaml#/contract.signed"
+  contract.status.changed:
+    $ref: "./channels/contract.yaml#/contract.status.changed"
+  contract.expired:
+    $ref: "./channels/contract.yaml#/contract.expired"
+  invoice.generated:
+    $ref: "./channels/contract.yaml#/invoice.generated"
+  invoice.paid:
+    $ref: "./channels/contract.yaml#/invoice.paid"
+  payout.processed:
+    $ref: "./channels/contract.yaml#/payout.processed"
+
+  # Campaign
+  campaign.created:
+    $ref: "./channels/campaign.yaml#/campaign.created"
+  campaign.updated:
+    $ref: "./channels/campaign.yaml#/campaign.updated"
+  campaign.status.changed:
+    $ref: "./channels/campaign.yaml#/campaign.status.changed"
+  campaign.talent.added:
+    $ref: "./channels/campaign.yaml#/campaign.talent.added"
+  deliverable.created:
+    $ref: "./channels/campaign.yaml#/deliverable.created"
+  deliverable.status.changed:
+    $ref: "./channels/campaign.yaml#/deliverable.status.changed"
+  deliverable.submitted:
+    $ref: "./channels/campaign.yaml#/deliverable.submitted"
+  deliverable.approved:
+    $ref: "./channels/campaign.yaml#/deliverable.approved"
+  deliverable.rejected:
+    $ref: "./channels/campaign.yaml#/deliverable.rejected"
+  campaign.performance.snapshot:
+    $ref: "./channels/campaign.yaml#/campaign.performance.snapshot"
+
+  # Tenant
+  tenant.provisioned:
+    $ref: "./channels/tenant.yaml#/tenant.provisioned"
+  tenant.updated:
+    $ref: "./channels/tenant.yaml#/tenant.updated"
+  tenant.suspended:
+    $ref: "./channels/tenant.yaml#/tenant.suspended"
+  tenant.reactivated:
+    $ref: "./channels/tenant.yaml#/tenant.reactivated"
+  subscription.created:
+    $ref: "./channels/tenant.yaml#/subscription.created"
+  subscription.changed:
+    $ref: "./channels/tenant.yaml#/subscription.changed"
+  subscription.cancelled:
+    $ref: "./channels/tenant.yaml#/subscription.cancelled"
+  subscription.renewed:
+    $ref: "./channels/tenant.yaml#/subscription.renewed"
+  payment.failed:
+    $ref: "./channels/tenant.yaml#/payment.failed"
+  usage.recorded:
+    $ref: "./channels/tenant.yaml#/usage.recorded"
+  quota.exceeded:
+    $ref: "./channels/tenant.yaml#/quota.exceeded"
+  feature.toggled:
+    $ref: "./channels/tenant.yaml#/feature.toggled"
+
+  # Outreach
+  outreach.campaign.created:
+    $ref: "./channels/outreach.yaml#/outreach.campaign.created"
+  outreach.campaign.updated:
+    $ref: "./channels/outreach.yaml#/outreach.campaign.updated"
+  outreach.message.sent:
+    $ref: "./channels/outreach.yaml#/outreach.message.sent"
+  outreach.message.delivered:
+    $ref: "./channels/outreach.yaml#/outreach.message.delivered"
+  outreach.message.opened:
+    $ref: "./channels/outreach.yaml#/outreach.message.opened"
+  outreach.message.clicked:
+    $ref: "./channels/outreach.yaml#/outreach.message.clicked"
+  outreach.response.received:
+    $ref: "./channels/outreach.yaml#/outreach.response.received"
+  conversation.created:
+    $ref: "./channels/outreach.yaml#/conversation.created"
+  conversation.status.changed:
+    $ref: "./channels/outreach.yaml#/conversation.status.changed"
+  meeting.scheduled:
+    $ref: "./channels/outreach.yaml#/meeting.scheduled"
+  meeting.updated:
+    $ref: "./channels/outreach.yaml#/meeting.updated"
+  meeting.cancelled:
+    $ref: "./channels/outreach.yaml#/meeting.cancelled"
+  meeting.completed:
+    $ref: "./channels/outreach.yaml#/meeting.completed"
+  call.logged:
+    $ref: "./channels/outreach.yaml#/call.logged"
+  followup.scheduled:
+    $ref: "./channels/outreach.yaml#/followup.scheduled"
+  followup.completed:
+    $ref: "./channels/outreach.yaml#/followup.completed"
+
+  # Integration
+  platform.connected:
+    $ref: "./channels/integration.yaml#/platform.connected"
+  platform.disconnected:
+    $ref: "./channels/integration.yaml#/platform.disconnected"
+  platform.token.refreshed:
+    $ref: "./channels/integration.yaml#/platform.token.refreshed"
+  platform.token.expired:
+    $ref: "./channels/integration.yaml#/platform.token.expired"
+  sync.job.started:
+    $ref: "./channels/integration.yaml#/sync.job.started"
+  sync.job.completed:
+    $ref: "./channels/integration.yaml#/sync.job.completed"
+  tiktok.profile.synced:
+    $ref: "./channels/integration.yaml#/tiktok.profile.synced"
+  tiktok.videos.synced:
+    $ref: "./channels/integration.yaml#/tiktok.videos.synced"
+  tiktok.analytics.synced:
+    $ref: "./channels/integration.yaml#/tiktok.analytics.synced"
+  instagram.profile.synced:
+    $ref: "./channels/integration.yaml#/instagram.profile.synced"
+  instagram.media.synced:
+    $ref: "./channels/integration.yaml#/instagram.media.synced"
+  youtube.channel.synced:
+    $ref: "./channels/integration.yaml#/youtube.channel.synced"
+  youtube.videos.synced:
+    $ref: "./channels/integration.yaml#/youtube.videos.synced"
+  webhook.received:
+    $ref: "./channels/integration.yaml#/webhook.received"
+  webhook.processed:
+    $ref: "./channels/integration.yaml#/webhook.processed"
+  api.ratelimit.approached:
+    $ref: "./channels/integration.yaml#/api.ratelimit.approached"
+  api.ratelimit.exceeded:
+    $ref: "./channels/integration.yaml#/api.ratelimit.exceeded"
+  api.call.logged:
+    $ref: "./channels/integration.yaml#/api.call.logged"
+
+  # Stripe
+  stripe.webhook.received:
+    $ref: "./channels/stripe.yaml#/stripe.webhook.received"
+  stripe.customer.created:
+    $ref: "./channels/stripe.yaml#/stripe.customer.created"
+  stripe.customer.updated:
+    $ref: "./channels/stripe.yaml#/stripe.customer.updated"
+  stripe.subscription.created:
+    $ref: "./channels/stripe.yaml#/stripe.subscription.created"
+  stripe.subscription.updated:
+    $ref: "./channels/stripe.yaml#/stripe.subscription.updated"
+  stripe.subscription.deleted:
+    $ref: "./channels/stripe.yaml#/stripe.subscription.deleted"
+  stripe.invoice.created:
+    $ref: "./channels/stripe.yaml#/stripe.invoice.created"
+  stripe.invoice.paid:
+    $ref: "./channels/stripe.yaml#/stripe.invoice.paid"
+  stripe.invoice.payment_failed:
+    $ref: "./channels/stripe.yaml#/stripe.invoice.payment_failed"
+  stripe.connect.account.created:
+    $ref: "./channels/stripe.yaml#/stripe.connect.account.created"
+  stripe.connect.account.updated:
+    $ref: "./channels/stripe.yaml#/stripe.connect.account.updated"
+  stripe.transfer.created:
+    $ref: "./channels/stripe.yaml#/stripe.transfer.created"
+  stripe.payout.created:
+    $ref: "./channels/stripe.yaml#/stripe.payout.created"
+  stripe.payout.failed:
+    $ref: "./channels/stripe.yaml#/stripe.payout.failed"
+  stripe.usage.reported:
+    $ref: "./channels/stripe.yaml#/stripe.usage.reported"
+  stripe.checkout.completed:
+    $ref: "./channels/stripe.yaml#/stripe.checkout.completed"
+
+  # Analytics
+  analytics.metric.recorded:
+    $ref: "./channels/analytics.yaml#/analytics.metric.recorded"
+  analytics.counter.incremented:
+    $ref: "./channels/analytics.yaml#/analytics.counter.incremented"
+  analytics.aggregation.computed:
+    $ref: "./channels/analytics.yaml#/analytics.aggregation.computed"
+  analytics.trend.analyzed:
+    $ref: "./channels/analytics.yaml#/analytics.trend.analyzed"
+  analytics.talent.performance.computed:
+    $ref: "./channels/analytics.yaml#/analytics.talent.performance.computed"
+  analytics.talent.rankings.computed:
+    $ref: "./channels/analytics.yaml#/analytics.talent.rankings.computed"
+  analytics.campaign.computed:
+    $ref: "./channels/analytics.yaml#/analytics.campaign.computed"
+  analytics.campaign.attribution.computed:
+    $ref: "./channels/analytics.yaml#/analytics.campaign.attribution.computed"
+  analytics.outreach.computed:
+    $ref: "./channels/analytics.yaml#/analytics.outreach.computed"
+  analytics.revenue.computed:
+    $ref: "./channels/analytics.yaml#/analytics.revenue.computed"
+  analytics.funnel.analyzed:
+    $ref: "./channels/analytics.yaml#/analytics.funnel.analyzed"
+  analytics.cohort.analyzed:
+    $ref: "./channels/analytics.yaml#/analytics.cohort.analyzed"
+  analytics.prediction.generated:
+    $ref: "./channels/analytics.yaml#/analytics.prediction.generated"
+  analytics.anomaly.detected:
+    $ref: "./channels/analytics.yaml#/analytics.anomaly.detected"
+  analytics.churn.risk.assessed:
+    $ref: "./channels/analytics.yaml#/analytics.churn.risk.assessed"
+  analytics.report.generated:
+    $ref: "./channels/analytics.yaml#/analytics.report.generated"
+  analytics.report.scheduled:
+    $ref: "./channels/analytics.yaml#/analytics.report.scheduled"
+  analytics.export.completed:
+    $ref: "./channels/analytics.yaml#/analytics.export.completed"
+  analytics.alert.triggered:
+    $ref: "./channels/analytics.yaml#/analytics.alert.triggered"
+  analytics.alert.resolved:
+    $ref: "./channels/analytics.yaml#/analytics.alert.resolved"
+  analytics.dashboard.refreshed:
+    $ref: "./channels/analytics.yaml#/analytics.dashboard.refreshed"
+
+operations:
+  # Publishers
+  authServiceEmitsUserOnboarded:
+    $ref: "./operations/publishers.yaml#/authServiceEmitsUserOnboarded"
+  orgServiceEmitsTeamMemberAdded:
+    $ref: "./operations/publishers.yaml#/orgServiceEmitsTeamMemberAdded"
+  talentServiceEmitsTalentCreated:
+    $ref: "./operations/publishers.yaml#/talentServiceEmitsTalentCreated"
+  talentServiceEmitsTalentUpdated:
+    $ref: "./operations/publishers.yaml#/talentServiceEmitsTalentUpdated"
+  talentServiceEmitsTalentStatusChanged:
+    $ref: "./operations/publishers.yaml#/talentServiceEmitsTalentStatusChanged"
+  talentServiceEmitsTalentNoteCreated:
+    $ref: "./operations/publishers.yaml#/talentServiceEmitsTalentNoteCreated"
+  talentServiceEmitsTalentNoteUpdated:
+    $ref: "./operations/publishers.yaml#/talentServiceEmitsTalentNoteUpdated"
+  scheduleServiceEmitsProjectCreated:
+    $ref: "./operations/publishers.yaml#/scheduleServiceEmitsProjectCreated"
+  scheduleServiceEmitsIssueCreated:
+    $ref: "./operations/publishers.yaml#/scheduleServiceEmitsIssueCreated"
+  scheduleServiceEmitsIssueUpdated:
+    $ref: "./operations/publishers.yaml#/scheduleServiceEmitsIssueUpdated"
+  scheduleServiceEmitsChecklistItemCompleted:
+    $ref: "./operations/publishers.yaml#/scheduleServiceEmitsChecklistItemCompleted"
+  scheduleServiceEmitsBlockCreated:
+    $ref: "./operations/publishers.yaml#/scheduleServiceEmitsBlockCreated"
+  scheduleServiceEmitsBlockUpdated:
+    $ref: "./operations/publishers.yaml#/scheduleServiceEmitsBlockUpdated"
+  scheduleServiceEmitsConflict:
+    $ref: "./operations/publishers.yaml#/scheduleServiceEmitsConflict"
+  battleServiceEmitsBattleRecorded:
+    $ref: "./operations/publishers.yaml#/battleServiceEmitsBattleRecorded"
+  battleServiceEmitsBattleUpdated:
+    $ref: "./operations/publishers.yaml#/battleServiceEmitsBattleUpdated"
+  battleServiceEmitsPerformanceSnapshot:
+    $ref: "./operations/publishers.yaml#/battleServiceEmitsPerformanceSnapshot"
+  semanticServiceEmitsEmbeddingUpserted:
+    $ref: "./operations/publishers.yaml#/semanticServiceEmitsEmbeddingUpserted"
+  semanticServiceEmitsSummaryGenerated:
+    $ref: "./operations/publishers.yaml#/semanticServiceEmitsSummaryGenerated"
+  notificationServiceEmitsDelivered:
+    $ref: "./operations/publishers.yaml#/notificationServiceEmitsDelivered"
+  auditServiceEmitsAuditLogWritten:
+    $ref: "./operations/publishers.yaml#/auditServiceEmitsAuditLogWritten"
+
+  # Subscribers
+  semanticServiceConsumesNotes:
+    $ref: "./operations/subscribers.yaml#/semanticServiceConsumesNotes"
+  semanticServiceConsumesBattles:
+    $ref: "./operations/subscribers.yaml#/semanticServiceConsumesBattles"
+  scheduleServiceConsumesTalentStatus:
+    $ref: "./operations/subscribers.yaml#/scheduleServiceConsumesTalentStatus"
+  dashboardReadModelConsumesPerformance:
+    $ref: "./operations/subscribers.yaml#/dashboardReadModelConsumesPerformance"
+  notificationServiceConsumesConflicts:
+    $ref: "./operations/subscribers.yaml#/notificationServiceConsumesConflicts"
+  notificationServiceConsumesRequests:
+    $ref: "./operations/subscribers.yaml#/notificationServiceConsumesRequests"
+  auditServiceConsumesTalentCreated:
+    $ref: "./operations/subscribers.yaml#/auditServiceConsumesTalentCreated"
+  auditServiceConsumesTalentUpdated:
+    $ref: "./operations/subscribers.yaml#/auditServiceConsumesTalentUpdated"
+  auditServiceConsumesIssueCreated:
+    $ref: "./operations/subscribers.yaml#/auditServiceConsumesIssueCreated"
+  auditServiceConsumesScheduleBlockCreated:
+    $ref: "./operations/subscribers.yaml#/auditServiceConsumesScheduleBlockCreated"
+  auditServiceConsumesBattleRecorded:
+    $ref: "./operations/subscribers.yaml#/auditServiceConsumesBattleRecorded"
+
+  # Contract publishers
+  contractServiceEmitsContractCreated:
+    $ref: "./operations/publishers.yaml#/contractServiceEmitsContractCreated"
+  contractServiceEmitsContractSigned:
+    $ref: "./operations/publishers.yaml#/contractServiceEmitsContractSigned"
+  contractServiceEmitsContractStatusChanged:
+    $ref: "./operations/publishers.yaml#/contractServiceEmitsContractStatusChanged"
+  contractServiceEmitsContractExpired:
+    $ref: "./operations/publishers.yaml#/contractServiceEmitsContractExpired"
+  billingServiceEmitsInvoiceGenerated:
+    $ref: "./operations/publishers.yaml#/billingServiceEmitsInvoiceGenerated"
+  billingServiceEmitsInvoicePaid:
+    $ref: "./operations/publishers.yaml#/billingServiceEmitsInvoicePaid"
+  billingServiceEmitsPayoutProcessed:
+    $ref: "./operations/publishers.yaml#/billingServiceEmitsPayoutProcessed"
+
+  # Contract subscribers
+  notificationServiceConsumesContractExpired:
+    $ref: "./operations/subscribers.yaml#/notificationServiceConsumesContractExpired"
+  notificationServiceConsumesContractSigned:
+    $ref: "./operations/subscribers.yaml#/notificationServiceConsumesContractSigned"
+  billingServiceConsumesInvoicePaid:
+    $ref: "./operations/subscribers.yaml#/billingServiceConsumesInvoicePaid"
+  auditServiceConsumesContractCreated:
+    $ref: "./operations/subscribers.yaml#/auditServiceConsumesContractCreated"
+  auditServiceConsumesPayoutProcessed:
+    $ref: "./operations/subscribers.yaml#/auditServiceConsumesPayoutProcessed"
+
+  # Campaign publishers
+  campaignServiceEmitsCampaignCreated:
+    $ref: "./operations/publishers.yaml#/campaignServiceEmitsCampaignCreated"
+  campaignServiceEmitsCampaignUpdated:
+    $ref: "./operations/publishers.yaml#/campaignServiceEmitsCampaignUpdated"
+  campaignServiceEmitsCampaignStatusChanged:
+    $ref: "./operations/publishers.yaml#/campaignServiceEmitsCampaignStatusChanged"
+  campaignServiceEmitsTalentAdded:
+    $ref: "./operations/publishers.yaml#/campaignServiceEmitsTalentAdded"
+  campaignServiceEmitsDeliverableCreated:
+    $ref: "./operations/publishers.yaml#/campaignServiceEmitsDeliverableCreated"
+  campaignServiceEmitsDeliverableStatusChanged:
+    $ref: "./operations/publishers.yaml#/campaignServiceEmitsDeliverableStatusChanged"
+  campaignServiceEmitsDeliverableSubmitted:
+    $ref: "./operations/publishers.yaml#/campaignServiceEmitsDeliverableSubmitted"
+  campaignServiceEmitsDeliverableApproved:
+    $ref: "./operations/publishers.yaml#/campaignServiceEmitsDeliverableApproved"
+  campaignServiceEmitsDeliverableRejected:
+    $ref: "./operations/publishers.yaml#/campaignServiceEmitsDeliverableRejected"
+  campaignServiceEmitsPerformanceSnapshot:
+    $ref: "./operations/publishers.yaml#/campaignServiceEmitsPerformanceSnapshot"
+
+  # Campaign subscribers
+  notificationServiceConsumesDeliverableSubmitted:
+    $ref: "./operations/subscribers.yaml#/notificationServiceConsumesDeliverableSubmitted"
+  notificationServiceConsumesDeliverableRejected:
+    $ref: "./operations/subscribers.yaml#/notificationServiceConsumesDeliverableRejected"
+  notificationServiceConsumesDeliverableApproved:
+    $ref: "./operations/subscribers.yaml#/notificationServiceConsumesDeliverableApproved"
+  billingServiceConsumesCampaignCompleted:
+    $ref: "./operations/subscribers.yaml#/billingServiceConsumesCampaignCompleted"
+  dashboardReadModelConsumesCampaignPerformance:
+    $ref: "./operations/subscribers.yaml#/dashboardReadModelConsumesCampaignPerformance"
+  auditServiceConsumesCampaignCreated:
+    $ref: "./operations/subscribers.yaml#/auditServiceConsumesCampaignCreated"
+  auditServiceConsumesDeliverableStatusChanged:
+    $ref: "./operations/subscribers.yaml#/auditServiceConsumesDeliverableStatusChanged"
+
+  # Tenant publishers
+  tenantServiceEmitsTenantProvisioned:
+    $ref: "./operations/publishers.yaml#/tenantServiceEmitsTenantProvisioned"
+  tenantServiceEmitsTenantUpdated:
+    $ref: "./operations/publishers.yaml#/tenantServiceEmitsTenantUpdated"
+  tenantServiceEmitsTenantSuspended:
+    $ref: "./operations/publishers.yaml#/tenantServiceEmitsTenantSuspended"
+  tenantServiceEmitsTenantReactivated:
+    $ref: "./operations/publishers.yaml#/tenantServiceEmitsTenantReactivated"
+  subscriptionServiceEmitsSubscriptionCreated:
+    $ref: "./operations/publishers.yaml#/subscriptionServiceEmitsSubscriptionCreated"
+  subscriptionServiceEmitsSubscriptionChanged:
+    $ref: "./operations/publishers.yaml#/subscriptionServiceEmitsSubscriptionChanged"
+  subscriptionServiceEmitsSubscriptionCancelled:
+    $ref: "./operations/publishers.yaml#/subscriptionServiceEmitsSubscriptionCancelled"
+  subscriptionServiceEmitsSubscriptionRenewed:
+    $ref: "./operations/publishers.yaml#/subscriptionServiceEmitsSubscriptionRenewed"
+  subscriptionServiceEmitsPaymentFailed:
+    $ref: "./operations/publishers.yaml#/subscriptionServiceEmitsPaymentFailed"
+  usageServiceEmitsUsageRecorded:
+    $ref: "./operations/publishers.yaml#/usageServiceEmitsUsageRecorded"
+  usageServiceEmitsQuotaExceeded:
+    $ref: "./operations/publishers.yaml#/usageServiceEmitsQuotaExceeded"
+  featureServiceEmitsFeatureToggled:
+    $ref: "./operations/publishers.yaml#/featureServiceEmitsFeatureToggled"
+
+  # Tenant subscribers
+  notificationServiceConsumesTenantSuspended:
+    $ref: "./operations/subscribers.yaml#/notificationServiceConsumesTenantSuspended"
+  notificationServiceConsumesPaymentFailed:
+    $ref: "./operations/subscribers.yaml#/notificationServiceConsumesPaymentFailed"
+  notificationServiceConsumesQuotaExceeded:
+    $ref: "./operations/subscribers.yaml#/notificationServiceConsumesQuotaExceeded"
+  provisioningServiceConsumesSubscriptionCreated:
+    $ref: "./operations/subscribers.yaml#/provisioningServiceConsumesSubscriptionCreated"
+  provisioningServiceConsumesSubscriptionCancelled:
+    $ref: "./operations/subscribers.yaml#/provisioningServiceConsumesSubscriptionCancelled"
+  featureServiceConsumesSubscriptionChanged:
+    $ref: "./operations/subscribers.yaml#/featureServiceConsumesSubscriptionChanged"
+  auditServiceConsumesTenantProvisioned:
+    $ref: "./operations/subscribers.yaml#/auditServiceConsumesTenantProvisioned"
+  auditServiceConsumesSubscriptionChanged:
+    $ref: "./operations/subscribers.yaml#/auditServiceConsumesSubscriptionChanged"
+  analyticsServiceConsumesUsageRecorded:
+    $ref: "./operations/subscribers.yaml#/analyticsServiceConsumesUsageRecorded"
+
+  # Outreach publishers
+  outreachServiceEmitsCampaignCreated:
+    $ref: "./operations/publishers.yaml#/outreachServiceEmitsCampaignCreated"
+  outreachServiceEmitsCampaignUpdated:
+    $ref: "./operations/publishers.yaml#/outreachServiceEmitsCampaignUpdated"
+  outreachServiceEmitsMessageSent:
+    $ref: "./operations/publishers.yaml#/outreachServiceEmitsMessageSent"
+  outreachServiceEmitsMessageDelivered:
+    $ref: "./operations/publishers.yaml#/outreachServiceEmitsMessageDelivered"
+  outreachServiceEmitsMessageOpened:
+    $ref: "./operations/publishers.yaml#/outreachServiceEmitsMessageOpened"
+  outreachServiceEmitsMessageClicked:
+    $ref: "./operations/publishers.yaml#/outreachServiceEmitsMessageClicked"
+  outreachServiceEmitsResponseReceived:
+    $ref: "./operations/publishers.yaml#/outreachServiceEmitsResponseReceived"
+  outreachServiceEmitsConversationCreated:
+    $ref: "./operations/publishers.yaml#/outreachServiceEmitsConversationCreated"
+  outreachServiceEmitsConversationStatusChanged:
+    $ref: "./operations/publishers.yaml#/outreachServiceEmitsConversationStatusChanged"
+  calendarServiceEmitsMeetingScheduled:
+    $ref: "./operations/publishers.yaml#/calendarServiceEmitsMeetingScheduled"
+  calendarServiceEmitsMeetingUpdated:
+    $ref: "./operations/publishers.yaml#/calendarServiceEmitsMeetingUpdated"
+  calendarServiceEmitsMeetingCancelled:
+    $ref: "./operations/publishers.yaml#/calendarServiceEmitsMeetingCancelled"
+  calendarServiceEmitsMeetingCompleted:
+    $ref: "./operations/publishers.yaml#/calendarServiceEmitsMeetingCompleted"
+  outreachServiceEmitsCallLogged:
+    $ref: "./operations/publishers.yaml#/outreachServiceEmitsCallLogged"
+  outreachServiceEmitsFollowUpScheduled:
+    $ref: "./operations/publishers.yaml#/outreachServiceEmitsFollowUpScheduled"
+  outreachServiceEmitsFollowUpCompleted:
+    $ref: "./operations/publishers.yaml#/outreachServiceEmitsFollowUpCompleted"
+
+  # Outreach subscribers
+  notificationServiceConsumesResponseReceived:
+    $ref: "./operations/subscribers.yaml#/notificationServiceConsumesResponseReceived"
+  notificationServiceConsumesMeetingScheduled:
+    $ref: "./operations/subscribers.yaml#/notificationServiceConsumesMeetingScheduled"
+  notificationServiceConsumesFollowUpScheduled:
+    $ref: "./operations/subscribers.yaml#/notificationServiceConsumesFollowUpScheduled"
+  talentServiceConsumesConversationStatusChanged:
+    $ref: "./operations/subscribers.yaml#/talentServiceConsumesConversationStatusChanged"
+  analyticsServiceConsumesMessageOpened:
+    $ref: "./operations/subscribers.yaml#/analyticsServiceConsumesMessageOpened"
+  analyticsServiceConsumesMessageClicked:
+    $ref: "./operations/subscribers.yaml#/analyticsServiceConsumesMessageClicked"
+  semanticServiceConsumesMeetingCompleted:
+    $ref: "./operations/subscribers.yaml#/semanticServiceConsumesMeetingCompleted"
+  auditServiceConsumesOutreachMessageSent:
+    $ref: "./operations/subscribers.yaml#/auditServiceConsumesOutreachMessageSent"
+  auditServiceConsumesCallLogged:
+    $ref: "./operations/subscribers.yaml#/auditServiceConsumesCallLogged"
+
+  # Integration publishers
+  integrationServiceEmitsPlatformConnected:
+    $ref: "./operations/publishers.yaml#/integrationServiceEmitsPlatformConnected"
+  integrationServiceEmitsPlatformDisconnected:
+    $ref: "./operations/publishers.yaml#/integrationServiceEmitsPlatformDisconnected"
+  integrationServiceEmitsTokenRefreshed:
+    $ref: "./operations/publishers.yaml#/integrationServiceEmitsTokenRefreshed"
+  integrationServiceEmitsTokenExpired:
+    $ref: "./operations/publishers.yaml#/integrationServiceEmitsTokenExpired"
+  syncServiceEmitsSyncJobStarted:
+    $ref: "./operations/publishers.yaml#/syncServiceEmitsSyncJobStarted"
+  syncServiceEmitsSyncJobCompleted:
+    $ref: "./operations/publishers.yaml#/syncServiceEmitsSyncJobCompleted"
+  syncServiceEmitsTikTokProfileSynced:
+    $ref: "./operations/publishers.yaml#/syncServiceEmitsTikTokProfileSynced"
+  syncServiceEmitsTikTokVideosSynced:
+    $ref: "./operations/publishers.yaml#/syncServiceEmitsTikTokVideosSynced"
+  syncServiceEmitsTikTokAnalyticsSynced:
+    $ref: "./operations/publishers.yaml#/syncServiceEmitsTikTokAnalyticsSynced"
+  syncServiceEmitsInstagramProfileSynced:
+    $ref: "./operations/publishers.yaml#/syncServiceEmitsInstagramProfileSynced"
+  syncServiceEmitsInstagramMediaSynced:
+    $ref: "./operations/publishers.yaml#/syncServiceEmitsInstagramMediaSynced"
+  syncServiceEmitsYouTubeChannelSynced:
+    $ref: "./operations/publishers.yaml#/syncServiceEmitsYouTubeChannelSynced"
+  syncServiceEmitsYouTubeVideosSynced:
+    $ref: "./operations/publishers.yaml#/syncServiceEmitsYouTubeVideosSynced"
+  webhookServiceEmitsWebhookReceived:
+    $ref: "./operations/publishers.yaml#/webhookServiceEmitsWebhookReceived"
+  webhookServiceEmitsWebhookProcessed:
+    $ref: "./operations/publishers.yaml#/webhookServiceEmitsWebhookProcessed"
+  integrationServiceEmitsRateLimitApproached:
+    $ref: "./operations/publishers.yaml#/integrationServiceEmitsRateLimitApproached"
+  integrationServiceEmitsRateLimitExceeded:
+    $ref: "./operations/publishers.yaml#/integrationServiceEmitsRateLimitExceeded"
+  integrationServiceEmitsApiCallLogged:
+    $ref: "./operations/publishers.yaml#/integrationServiceEmitsApiCallLogged"
+
+  # Integration subscribers
+  notificationServiceConsumesTokenExpired:
+    $ref: "./operations/subscribers.yaml#/notificationServiceConsumesTokenExpired"
+  notificationServiceConsumesRateLimitApproached:
+    $ref: "./operations/subscribers.yaml#/notificationServiceConsumesRateLimitApproached"
+  notificationServiceConsumesRateLimitExceeded:
+    $ref: "./operations/subscribers.yaml#/notificationServiceConsumesRateLimitExceeded"
+  notificationServiceConsumesSyncJobCompleted:
+    $ref: "./operations/subscribers.yaml#/notificationServiceConsumesSyncJobCompleted"
+  talentServiceConsumesTikTokProfileSynced:
+    $ref: "./operations/subscribers.yaml#/talentServiceConsumesTikTokProfileSynced"
+  talentServiceConsumesInstagramProfileSynced:
+    $ref: "./operations/subscribers.yaml#/talentServiceConsumesInstagramProfileSynced"
+  talentServiceConsumesYouTubeChannelSynced:
+    $ref: "./operations/subscribers.yaml#/talentServiceConsumesYouTubeChannelSynced"
+  analyticsServiceConsumesTikTokAnalyticsSynced:
+    $ref: "./operations/subscribers.yaml#/analyticsServiceConsumesTikTokAnalyticsSynced"
+  dashboardReadModelConsumesPlatformSyncs:
+    $ref: "./operations/subscribers.yaml#/dashboardReadModelConsumesPlatformSyncs"
+  webhookProcessorConsumesWebhookReceived:
+    $ref: "./operations/subscribers.yaml#/webhookProcessorConsumesWebhookReceived"
+  auditServiceConsumesPlatformConnected:
+    $ref: "./operations/subscribers.yaml#/auditServiceConsumesPlatformConnected"
+  auditServiceConsumesPlatformDisconnected:
+    $ref: "./operations/subscribers.yaml#/auditServiceConsumesPlatformDisconnected"
+  monitoringServiceConsumesApiCallLogged:
+    $ref: "./operations/subscribers.yaml#/monitoringServiceConsumesApiCallLogged"
+
+  # Stripe publishers
+  stripeGatewayEmitsWebhookReceived:
+    $ref: "./operations/publishers.yaml#/stripeGatewayEmitsWebhookReceived"
+  stripeGatewayEmitsCustomerCreated:
+    $ref: "./operations/publishers.yaml#/stripeGatewayEmitsCustomerCreated"
+  stripeGatewayEmitsCustomerUpdated:
+    $ref: "./operations/publishers.yaml#/stripeGatewayEmitsCustomerUpdated"
+  stripeGatewayEmitsSubscriptionCreated:
+    $ref: "./operations/publishers.yaml#/stripeGatewayEmitsSubscriptionCreated"
+  stripeGatewayEmitsSubscriptionUpdated:
+    $ref: "./operations/publishers.yaml#/stripeGatewayEmitsSubscriptionUpdated"
+  stripeGatewayEmitsSubscriptionDeleted:
+    $ref: "./operations/publishers.yaml#/stripeGatewayEmitsSubscriptionDeleted"
+  stripeGatewayEmitsInvoiceCreated:
+    $ref: "./operations/publishers.yaml#/stripeGatewayEmitsInvoiceCreated"
+  stripeGatewayEmitsInvoicePaid:
+    $ref: "./operations/publishers.yaml#/stripeGatewayEmitsInvoicePaid"
+  stripeGatewayEmitsInvoicePaymentFailed:
+    $ref: "./operations/publishers.yaml#/stripeGatewayEmitsInvoicePaymentFailed"
+  stripeGatewayEmitsConnectAccountCreated:
+    $ref: "./operations/publishers.yaml#/stripeGatewayEmitsConnectAccountCreated"
+  stripeGatewayEmitsConnectAccountUpdated:
+    $ref: "./operations/publishers.yaml#/stripeGatewayEmitsConnectAccountUpdated"
+  stripeGatewayEmitsTransferCreated:
+    $ref: "./operations/publishers.yaml#/stripeGatewayEmitsTransferCreated"
+  stripeGatewayEmitsPayoutCreated:
+    $ref: "./operations/publishers.yaml#/stripeGatewayEmitsPayoutCreated"
+  stripeGatewayEmitsPayoutFailed:
+    $ref: "./operations/publishers.yaml#/stripeGatewayEmitsPayoutFailed"
+  usageServiceEmitsStripeUsageReported:
+    $ref: "./operations/publishers.yaml#/usageServiceEmitsStripeUsageReported"
+  stripeGatewayEmitsCheckoutCompleted:
+    $ref: "./operations/publishers.yaml#/stripeGatewayEmitsCheckoutCompleted"
+
+  # Stripe subscribers
+  tenantServiceConsumesStripeSubscriptionCreated:
+    $ref: "./operations/subscribers.yaml#/tenantServiceConsumesStripeSubscriptionCreated"
+  tenantServiceConsumesStripeSubscriptionUpdated:
+    $ref: "./operations/subscribers.yaml#/tenantServiceConsumesStripeSubscriptionUpdated"
+  tenantServiceConsumesStripeSubscriptionDeleted:
+    $ref: "./operations/subscribers.yaml#/tenantServiceConsumesStripeSubscriptionDeleted"
+  tenantServiceConsumesStripeInvoicePaid:
+    $ref: "./operations/subscribers.yaml#/tenantServiceConsumesStripeInvoicePaid"
+  tenantServiceConsumesStripeInvoicePaymentFailed:
+    $ref: "./operations/subscribers.yaml#/tenantServiceConsumesStripeInvoicePaymentFailed"
+  notificationServiceConsumesStripeInvoicePaymentFailed:
+    $ref: "./operations/subscribers.yaml#/notificationServiceConsumesStripeInvoicePaymentFailed"
+  notificationServiceConsumesStripePayoutFailed:
+    $ref: "./operations/subscribers.yaml#/notificationServiceConsumesStripePayoutFailed"
+  talentServiceConsumesStripeConnectAccountCreated:
+    $ref: "./operations/subscribers.yaml#/talentServiceConsumesStripeConnectAccountCreated"
+  talentServiceConsumesStripeConnectAccountUpdated:
+    $ref: "./operations/subscribers.yaml#/talentServiceConsumesStripeConnectAccountUpdated"
+  contractServiceConsumesStripeTransferCreated:
+    $ref: "./operations/subscribers.yaml#/contractServiceConsumesStripeTransferCreated"
+  contractServiceConsumesStripePayoutCreated:
+    $ref: "./operations/subscribers.yaml#/contractServiceConsumesStripePayoutCreated"
+  provisioningServiceConsumesStripeCheckoutCompleted:
+    $ref: "./operations/subscribers.yaml#/provisioningServiceConsumesStripeCheckoutCompleted"
+  auditServiceConsumesStripeWebhookReceived:
+    $ref: "./operations/subscribers.yaml#/auditServiceConsumesStripeWebhookReceived"
+
+  # Analytics publishers
+  analyticsServiceEmitsMetricRecorded:
+    $ref: "./operations/publishers.yaml#/analyticsServiceEmitsMetricRecorded"
+  analyticsServiceEmitsCounterIncremented:
+    $ref: "./operations/publishers.yaml#/analyticsServiceEmitsCounterIncremented"
+  analyticsServiceEmitsAggregationComputed:
+    $ref: "./operations/publishers.yaml#/analyticsServiceEmitsAggregationComputed"
+  analyticsServiceEmitsTrendAnalyzed:
+    $ref: "./operations/publishers.yaml#/analyticsServiceEmitsTrendAnalyzed"
+  analyticsServiceEmitsTalentPerformanceComputed:
+    $ref: "./operations/publishers.yaml#/analyticsServiceEmitsTalentPerformanceComputed"
+  analyticsServiceEmitsTalentRankingsComputed:
+    $ref: "./operations/publishers.yaml#/analyticsServiceEmitsTalentRankingsComputed"
+  analyticsServiceEmitsCampaignAnalyticsComputed:
+    $ref: "./operations/publishers.yaml#/analyticsServiceEmitsCampaignAnalyticsComputed"
+  analyticsServiceEmitsCampaignAttributionComputed:
+    $ref: "./operations/publishers.yaml#/analyticsServiceEmitsCampaignAttributionComputed"
+  analyticsServiceEmitsOutreachAnalyticsComputed:
+    $ref: "./operations/publishers.yaml#/analyticsServiceEmitsOutreachAnalyticsComputed"
+  analyticsServiceEmitsRevenueAnalyticsComputed:
+    $ref: "./operations/publishers.yaml#/analyticsServiceEmitsRevenueAnalyticsComputed"
+  analyticsServiceEmitsFunnelAnalyzed:
+    $ref: "./operations/publishers.yaml#/analyticsServiceEmitsFunnelAnalyzed"
+  analyticsServiceEmitsCohortAnalyzed:
+    $ref: "./operations/publishers.yaml#/analyticsServiceEmitsCohortAnalyzed"
+  mlServiceEmitsPredictionGenerated:
+    $ref: "./operations/publishers.yaml#/mlServiceEmitsPredictionGenerated"
+  mlServiceEmitsAnomalyDetected:
+    $ref: "./operations/publishers.yaml#/mlServiceEmitsAnomalyDetected"
+  mlServiceEmitsChurnRiskAssessed:
+    $ref: "./operations/publishers.yaml#/mlServiceEmitsChurnRiskAssessed"
+  reportingServiceEmitsReportGenerated:
+    $ref: "./operations/publishers.yaml#/reportingServiceEmitsReportGenerated"
+  reportingServiceEmitsReportScheduled:
+    $ref: "./operations/publishers.yaml#/reportingServiceEmitsReportScheduled"
+  dataExportServiceEmitsExportCompleted:
+    $ref: "./operations/publishers.yaml#/dataExportServiceEmitsExportCompleted"
+  alertingServiceEmitsAlertTriggered:
+    $ref: "./operations/publishers.yaml#/alertingServiceEmitsAlertTriggered"
+  alertingServiceEmitsAlertResolved:
+    $ref: "./operations/publishers.yaml#/alertingServiceEmitsAlertResolved"
+  dashboardServiceEmitsDashboardRefreshed:
+    $ref: "./operations/publishers.yaml#/dashboardServiceEmitsDashboardRefreshed"
+
+  # Analytics subscribers
+  dashboardServiceConsumesMetricRecorded:
+    $ref: "./operations/subscribers.yaml#/dashboardServiceConsumesMetricRecorded"
+  dashboardServiceConsumesAggregationComputed:
+    $ref: "./operations/subscribers.yaml#/dashboardServiceConsumesAggregationComputed"
+  dashboardServiceConsumesTalentPerformanceComputed:
+    $ref: "./operations/subscribers.yaml#/dashboardServiceConsumesTalentPerformanceComputed"
+  dashboardServiceConsumesCampaignAnalyticsComputed:
+    $ref: "./operations/subscribers.yaml#/dashboardServiceConsumesCampaignAnalyticsComputed"
+  dashboardServiceConsumesRevenueAnalyticsComputed:
+    $ref: "./operations/subscribers.yaml#/dashboardServiceConsumesRevenueAnalyticsComputed"
+  notificationServiceConsumesAlertTriggered:
+    $ref: "./operations/subscribers.yaml#/notificationServiceConsumesAlertTriggered"
+  notificationServiceConsumesAnomalyDetected:
+    $ref: "./operations/subscribers.yaml#/notificationServiceConsumesAnomalyDetected"
+  notificationServiceConsumesChurnRiskAssessed:
+    $ref: "./operations/subscribers.yaml#/notificationServiceConsumesChurnRiskAssessed"
+  notificationServiceConsumesReportGenerated:
+    $ref: "./operations/subscribers.yaml#/notificationServiceConsumesReportGenerated"
+  emailServiceConsumesDataExportCompleted:
+    $ref: "./operations/subscribers.yaml#/emailServiceConsumesDataExportCompleted"
+  cacheServiceConsumesAggregationComputed:
+    $ref: "./operations/subscribers.yaml#/cacheServiceConsumesAggregationComputed"
+  searchServiceConsumesTalentRankingsComputed:
+    $ref: "./operations/subscribers.yaml#/searchServiceConsumesTalentRankingsComputed"
+  customerSuccessServiceConsumesChurnRiskAssessed:
+    $ref: "./operations/subscribers.yaml#/customerSuccessServiceConsumesChurnRiskAssessed"
+  dataWarehouseConsumesAllAnalytics:
+    $ref: "./operations/subscribers.yaml#/dataWarehouseConsumesAllAnalytics"

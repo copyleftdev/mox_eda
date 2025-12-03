@@ -1,0 +1,108 @@
+# Multi-tenant & Billing domain channels
+tenant.provisioned:
+  address: tenant.provisioned
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    tenantProvisioned:
+      $ref: "../components/messages/tenant.yaml#/TenantProvisioned"
+
+tenant.updated:
+  address: tenant.updated
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    tenantUpdated:
+      $ref: "../components/messages/tenant.yaml#/TenantUpdated"
+
+tenant.suspended:
+  address: tenant.suspended
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    tenantSuspended:
+      $ref: "../components/messages/tenant.yaml#/TenantSuspended"
+
+tenant.reactivated:
+  address: tenant.reactivated
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    tenantReactivated:
+      $ref: "../components/messages/tenant.yaml#/TenantReactivated"
+
+subscription.created:
+  address: subscription.created
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    subscriptionCreated:
+      $ref: "../components/messages/tenant.yaml#/SubscriptionCreated"
+
+subscription.changed:
+  address: subscription.changed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    subscriptionChanged:
+      $ref: "../components/messages/tenant.yaml#/SubscriptionChanged"
+
+subscription.cancelled:
+  address: subscription.cancelled
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    subscriptionCancelled:
+      $ref: "../components/messages/tenant.yaml#/SubscriptionCancelled"
+
+subscription.renewed:
+  address: subscription.renewed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    subscriptionRenewed:
+      $ref: "../components/messages/tenant.yaml#/SubscriptionRenewed"
+
+payment.failed:
+  address: payment.failed
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    paymentFailed:
+      $ref: "../components/messages/tenant.yaml#/PaymentFailed"
+
+usage.recorded:
+  address: usage.recorded
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    usageRecorded:
+      $ref: "../components/messages/tenant.yaml#/UsageRecorded"
+
+quota.exceeded:
+  address: quota.exceeded
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    quotaExceeded:
+      $ref: "../components/messages/tenant.yaml#/QuotaExceeded"
+
+feature.toggled:
+  address: feature.toggled
+  servers:
+    - $ref: "../servers.yaml#/natsProd"
+    - $ref: "../servers.yaml#/natsDev"
+  messages:
+    featureFlagToggled:
+      $ref: "../components/messages/tenant.yaml#/FeatureFlagToggled"

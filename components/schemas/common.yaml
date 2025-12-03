@@ -1,0 +1,77 @@
+# Common primitives and CloudEvent envelope
+Id:
+  type: string
+  description: System-wide ULID/UUID id.
+
+OrgId:
+  allOf: [{ $ref: "#/Id" }]
+
+UserId:
+  allOf: [{ $ref: "#/Id" }]
+
+TeamId:
+  allOf: [{ $ref: "#/Id" }]
+
+TalentId:
+  allOf: [{ $ref: "#/Id" }]
+
+ProjectId:
+  allOf: [{ $ref: "#/Id" }]
+
+IssueId:
+  allOf: [{ $ref: "#/Id" }]
+
+ScheduleBlockId:
+  allOf: [{ $ref: "#/Id" }]
+
+BattleId:
+  allOf: [{ $ref: "#/Id" }]
+
+NoteId:
+  allOf: [{ $ref: "#/Id" }]
+
+Timestamp:
+  type: string
+  format: date-time
+
+CloudEvent:
+  type: object
+  required:
+    - specversion
+    - id
+    - source
+    - type
+    - time
+    - data
+  properties:
+    specversion:
+      type: string
+      const: "1.0"
+    id:
+      type: string
+      format: uuid
+    source:
+      type: string
+      description: Logical emitter, e.g. "/talent-service"
+    type:
+      type: string
+      description: Reverse-DNS event type, e.g. "com.mana.talent.note.created"
+    time:
+      type: string
+      format: date-time
+    subject:
+      type: string
+      nullable: true
+      description: Resource path summary, e.g. "talent/123"
+    datacontenttype:
+      type: string
+      default: application/json
+    dataschema:
+      type: string
+      nullable: true
+    traceparent:
+      type: string
+      nullable: true
+      description: W3C traceparent for correlation.
+    data:
+      description: Event-specific payload (defined per message type).

@@ -1,0 +1,234 @@
+# Integration & External Platform domain messages
+PlatformConnected:
+  name: PlatformConnected
+  title: External platform connected
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.platform.connected"
+          data:
+            $ref: "../schemas/integration.yaml#/PlatformConnectedData"
+
+PlatformDisconnected:
+  name: PlatformDisconnected
+  title: External platform disconnected
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.platform.disconnected"
+          data:
+            $ref: "../schemas/integration.yaml#/PlatformDisconnectedData"
+
+PlatformTokenRefreshed:
+  name: PlatformTokenRefreshed
+  title: Platform token refreshed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.platform.token.refreshed"
+          data:
+            $ref: "../schemas/integration.yaml#/PlatformTokenRefreshedData"
+
+PlatformTokenExpired:
+  name: PlatformTokenExpired
+  title: Platform token expired
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.platform.token.expired"
+          data:
+            $ref: "../schemas/integration.yaml#/PlatformTokenExpiredData"
+
+SyncJobStarted:
+  name: SyncJobStarted
+  title: Sync job started
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.sync.job.started"
+          data:
+            $ref: "../schemas/integration.yaml#/SyncJobStartedData"
+
+SyncJobCompleted:
+  name: SyncJobCompleted
+  title: Sync job completed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.sync.job.completed"
+          data:
+            $ref: "../schemas/integration.yaml#/SyncJobCompletedData"
+
+TikTokProfileSynced:
+  name: TikTokProfileSynced
+  title: TikTok profile synced
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.tiktok.profile.synced"
+          data:
+            $ref: "../schemas/integration.yaml#/TikTokProfileSyncedData"
+
+TikTokVideosSynced:
+  name: TikTokVideosSynced
+  title: TikTok videos synced
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.tiktok.videos.synced"
+          data:
+            $ref: "../schemas/integration.yaml#/TikTokVideosSyncedData"
+
+TikTokAnalyticsSynced:
+  name: TikTokAnalyticsSynced
+  title: TikTok analytics synced
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.tiktok.analytics.synced"
+          data:
+            $ref: "../schemas/integration.yaml#/TikTokAnalyticsSyncedData"
+
+InstagramProfileSynced:
+  name: InstagramProfileSynced
+  title: Instagram profile synced
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.instagram.profile.synced"
+          data:
+            $ref: "../schemas/integration.yaml#/InstagramProfileSyncedData"
+
+InstagramMediaSynced:
+  name: InstagramMediaSynced
+  title: Instagram media synced
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.instagram.media.synced"
+          data:
+            $ref: "../schemas/integration.yaml#/InstagramMediaSyncedData"
+
+YouTubeChannelSynced:
+  name: YouTubeChannelSynced
+  title: YouTube channel synced
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.youtube.channel.synced"
+          data:
+            $ref: "../schemas/integration.yaml#/YouTubeChannelSyncedData"
+
+YouTubeVideosSynced:
+  name: YouTubeVideosSynced
+  title: YouTube videos synced
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.youtube.videos.synced"
+          data:
+            $ref: "../schemas/integration.yaml#/YouTubeVideosSyncedData"
+
+WebhookReceived:
+  name: WebhookReceived
+  title: Webhook received from platform
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.webhook.received"
+          data:
+            $ref: "../schemas/integration.yaml#/WebhookReceivedData"
+
+WebhookProcessed:
+  name: WebhookProcessed
+  title: Webhook processed
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.webhook.processed"
+          data:
+            $ref: "../schemas/integration.yaml#/WebhookProcessedData"
+
+ApiRateLimitApproached:
+  name: ApiRateLimitApproached
+  title: API rate limit approached
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.api.ratelimit.approached"
+          data:
+            $ref: "../schemas/integration.yaml#/ApiRateLimitApproachedData"
+
+ApiRateLimitExceeded:
+  name: ApiRateLimitExceeded
+  title: API rate limit exceeded
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.api.ratelimit.exceeded"
+          data:
+            $ref: "../schemas/integration.yaml#/ApiRateLimitExceededData"
+
+ApiCallLogged:
+  name: ApiCallLogged
+  title: API call logged
+  payload:
+    allOf:
+      - $ref: "../schemas/common.yaml#/CloudEvent"
+      - type: object
+        properties:
+          type:
+            const: "com.mana.api.call.logged"
+          data:
+            $ref: "../schemas/integration.yaml#/ApiCallLoggedData"
