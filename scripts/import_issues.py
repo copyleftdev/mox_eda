@@ -119,11 +119,18 @@ def create_milestone(title: str, description: str, dry_run: bool = False) -> Opt
         log_info(f"[DRY-RUN] Would create milestone: {title}")
         return None
     
+    # Check if milestone already exists
+    existing = get_milestone_number(title)
+    if existing:
+        return existing
+    
+    # Create new milestone
     result = run_gh([
         "api", f"repos/{REPO}/milestones",
+        "-X", "POST",
         "-f", f"title={title}",
         "-f", "state=open",
-        "-f", f"description={description[:200]}..."
+        "-f", f"description={description[:200] if description else 'RFC milestone'}"
     ], check=False)
     
     if result.returncode == 0:
@@ -141,17 +148,36 @@ def get_milestone_number(title: str) -> Optional[int]:
         return int(result.stdout.strip())
     return None
 
+def issue_exists(title: str) -> bool:
+    """Check if an issue with this title already exists."""
+    result = run_gh([
+        "issue", "list",
+        "--repo", REPO,
+        "--search", f'"{title}" in:title',
+        "--json", "title",
+        "--limit", "1"
+    ], check=False)
+    if result.returncode == 0 and result.stdout.strip():
+        issues = json.loads(result.stdout)
+        return any(i.get("title") == title for i in issues)
+    return False
+
 def create_issue(
     title: str,
     body: str,
     labels: list[str],
-    milestone: Optional[int] = None,
+    milestone_title: Optional[str] = None,
     dry_run: bool = False
 ) -> bool:
     """Create a GitHub issue."""
     if dry_run:
         log_info(f"[DRY-RUN] Would create issue: {title}")
         print(f"  Labels: {', '.join(labels)}")
+        return True
+    
+    # Skip if already exists
+    if issue_exists(title):
+        log_warn(f"Skipping (exists): {title}")
         return True
     
     args = [
@@ -164,10 +190,12 @@ def create_issue(
     for label in labels:
         args.extend(["--label", label])
     
-    if milestone:
-        args.extend(["--milestone", str(milestone)])
+    if milestone_title:
+        args.extend(["--milestone", milestone_title])
     
     result = run_gh(args, check=False)
+    if result.returncode != 0:
+        log_error(f"gh error: {result.stderr}")
     return result.returncode == 0
 
 def create_epic_issue(rfc: dict, dry_run: bool = False) -> bool:
@@ -222,7 +250,7 @@ def create_epic_issue(rfc: dict, dry_run: bool = False) -> bool:
 def create_task_issue(
     rfc: dict,
     task: dict,
-    milestone_num: Optional[int],
+    milestone_title: Optional[str],
     dry_run: bool = False
 ) -> bool:
     """Create an issue for a task."""
@@ -267,7 +295,7 @@ def create_task_issue(
     estimate = task.get("estimate", "m")
     labels.append(f"size:{estimate}")
     
-    success = create_issue(title, body, labels, milestone_num, dry_run)
+    success = create_issue(title, body, labels, milestone_title, dry_run)
     if success:
         log_success(f"Created: {title}")
     else:
@@ -322,11 +350,11 @@ def import_all(dry_run: bool = False, epics_only: bool = False, tasks_only: bool
         
         # Create milestone
         milestone_title = f"{rfc_id}: {rfc_title}"
-        milestone_num = None
         
         if not dry_run:
-            create_milestone(milestone_title, rfc.get("summary", ""), dry_run)
-            milestone_num = get_milestone_number(milestone_title)
+            milestone_num = create_milestone(milestone_title, rfc.get("summary", ""), dry_run)
+            if milestone_num:
+                log_info(f"Created milestone #{milestone_num}: {milestone_title}")
         
         # Create epic
         if not tasks_only:
@@ -337,7 +365,7 @@ def import_all(dry_run: bool = False, epics_only: bool = False, tasks_only: bool
         # Create task issues
         if not epics_only:
             for task in rfc.get("tasks", []):
-                create_task_issue(rfc, task, milestone_num, dry_run)
+                create_task_issue(rfc, task, milestone_title, dry_run)
                 if not dry_run:
                     time.sleep(1)  # Rate limit
     

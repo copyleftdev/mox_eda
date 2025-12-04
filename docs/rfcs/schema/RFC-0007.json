@@ -1,0 +1,63 @@
+{
+  "id": "RFC-0007",
+  "title": "Domain Model",
+  "status": "draft",
+  "created": "2024-12-03",
+  "updated": "2024-12-03",
+  "authors": ["Platform Team"],
+  "summary": "Complete mapping of AsyncAPI specification (122 events) to TigerBeetle-style state machine across 14 domains.",
+  "motivation": "The AsyncAPI spec defines 122 event types across 14 domains. This RFC ensures 100% implementation coverage.",
+  "dependencies": [{"rfc_id": "RFC-0004", "relationship": "requires", "description": "State machine hosts all domains"}],
+  "components": [
+    {"name": "Auth Domain", "description": "User auth and team membership", "path": "src/domain/auth/", "modules": [{"name": "auth", "description": "Auth events", "file": "src/domain/auth/mod.rs", "interfaces": []}]},
+    {"name": "Tenant Domain", "description": "Multi-tenancy, orgs, subscriptions", "path": "src/domain/tenant/", "modules": [{"name": "tenant", "description": "Tenant aggregate", "file": "src/domain/tenant/mod.rs", "interfaces": []}]},
+    {"name": "Talent Domain", "description": "Talent profiles and notes", "path": "src/domain/talent/", "modules": [{"name": "talent", "description": "Talent aggregate", "file": "src/domain/talent/mod.rs", "interfaces": []}]},
+    {"name": "Project Domain", "description": "Projects, issues, checklists", "path": "src/domain/project/", "modules": [{"name": "project", "description": "Project aggregate", "file": "src/domain/project/mod.rs", "interfaces": []}]},
+    {"name": "Schedule Domain", "description": "Schedule blocks and conflicts", "path": "src/domain/schedule/", "modules": [{"name": "schedule", "description": "Schedule management", "file": "src/domain/schedule/mod.rs", "interfaces": []}]},
+    {"name": "Battle Domain", "description": "Performance battles", "path": "src/domain/battle/", "modules": [{"name": "battle", "description": "Battle tracking", "file": "src/domain/battle/mod.rs", "interfaces": []}]},
+    {"name": "Semantic Domain", "description": "AI embeddings and summaries", "path": "src/domain/semantic/", "modules": [{"name": "semantic", "description": "AI features", "file": "src/domain/semantic/mod.rs", "interfaces": []}]},
+    {"name": "Notification Domain", "description": "Notification routing", "path": "src/domain/notification/", "modules": [{"name": "notification", "description": "Notifications", "file": "src/domain/notification/mod.rs", "interfaces": []}]},
+    {"name": "Audit Domain", "description": "Audit logging", "path": "src/domain/audit/", "modules": [{"name": "audit", "description": "Audit trail", "file": "src/domain/audit/mod.rs", "interfaces": []}]},
+    {"name": "Contract Domain", "description": "Contracts, invoices, payouts", "path": "src/domain/contract/", "modules": [{"name": "contract", "description": "Contract aggregate", "file": "src/domain/contract/mod.rs", "interfaces": []}]},
+    {"name": "Campaign Domain", "description": "Campaigns and deliverables", "path": "src/domain/campaign/", "modules": [{"name": "campaign", "description": "Campaign aggregate", "file": "src/domain/campaign/mod.rs", "interfaces": []}]},
+    {"name": "Outreach Domain", "description": "Outreach, messages, meetings", "path": "src/domain/outreach/", "modules": [{"name": "outreach", "description": "Outreach management", "file": "src/domain/outreach/mod.rs", "interfaces": []}]},
+    {"name": "Integration Domain", "description": "Platform connections, syncs", "path": "src/domain/integration/", "modules": [{"name": "integration", "description": "Integrations", "file": "src/domain/integration/mod.rs", "interfaces": []}]},
+    {"name": "Stripe Domain", "description": "Stripe billing and payouts", "path": "src/domain/stripe/", "modules": [{"name": "stripe", "description": "Stripe integration", "file": "src/domain/stripe/mod.rs", "interfaces": []}]},
+    {"name": "Analytics Domain", "description": "Metrics, reports, alerts", "path": "src/domain/analytics/", "modules": [{"name": "analytics", "description": "Analytics engine", "file": "src/domain/analytics/mod.rs", "interfaces": []}]}
+  ],
+  "acceptance_criteria": [
+    {"id": "AC-001", "category": "functional", "criterion": "All 14 domains implemented", "verification": "Each domain module exists", "priority": "must"},
+    {"id": "AC-002", "category": "functional", "criterion": "All 122 event types mapped", "verification": "Cross-reference asyncapi.yaml", "priority": "must"},
+    {"id": "AC-003", "category": "functional", "criterion": "Talent status FSM enforced", "verification": "Test invalid transitions", "priority": "must"},
+    {"id": "AC-004", "category": "functional", "criterion": "Campaign status FSM enforced", "verification": "Test invalid transitions", "priority": "must"},
+    {"id": "AC-005", "category": "functional", "criterion": "Contract status FSM enforced", "verification": "Test invalid transitions", "priority": "must"},
+    {"id": "AC-006", "category": "functional", "criterion": "Platform enum covers 10 platforms", "verification": "Verify all platforms", "priority": "must"},
+    {"id": "AC-007", "category": "functional", "criterion": "Money type handles multi-currency", "verification": "Test arithmetic", "priority": "must"},
+    {"id": "AC-008", "category": "functional", "criterion": "All 16 Stripe events handled", "verification": "Verify handlers", "priority": "must"}
+  ],
+  "tasks": [
+    {"id": "TASK-001", "title": "Implement Auth domain", "description": "Create AuthState for user onboarding and team membership events.", "component": "Auth Domain", "acceptance_criteria_ids": ["AC-001", "AC-002"], "depends_on": [], "labels": ["domain", "auth"], "estimate": "s"},
+    {"id": "TASK-002", "title": "Implement Tenant domain", "description": "Create Tenant, Organization, Subscription, Quotas. Handle 12 tenant events.", "component": "Tenant Domain", "acceptance_criteria_ids": ["AC-001", "AC-002"], "depends_on": ["TASK-001"], "labels": ["domain", "tenant"], "estimate": "m"},
+    {"id": "TASK-003", "title": "Implement Talent domain", "description": "Create Talent, TalentNote with status FSM. Handle 5 talent events.", "component": "Talent Domain", "acceptance_criteria_ids": ["AC-001", "AC-002", "AC-003"], "depends_on": ["TASK-002"], "labels": ["domain", "talent"], "estimate": "m"},
+    {"id": "TASK-004", "title": "Implement Project domain", "description": "Create Project, Issue, ChecklistItem. Handle 4 project events.", "component": "Project Domain", "acceptance_criteria_ids": ["AC-001", "AC-002"], "depends_on": ["TASK-002"], "labels": ["domain", "project"], "estimate": "m"},
+    {"id": "TASK-005", "title": "Implement Schedule domain", "description": "Create ScheduleBlock with conflict detection. Handle 3 schedule events.", "component": "Schedule Domain", "acceptance_criteria_ids": ["AC-001", "AC-002"], "depends_on": ["TASK-002"], "labels": ["domain", "schedule"], "estimate": "s"},
+    {"id": "TASK-006", "title": "Implement Battle domain", "description": "Create Battle, PerformanceSnapshot. Handle 3 battle events.", "component": "Battle Domain", "acceptance_criteria_ids": ["AC-001", "AC-002"], "depends_on": ["TASK-003"], "labels": ["domain", "battle"], "estimate": "s"},
+    {"id": "TASK-007", "title": "Implement Semantic domain", "description": "Create Embedding, SemanticSummary. Handle 2 semantic events.", "component": "Semantic Domain", "acceptance_criteria_ids": ["AC-001", "AC-002"], "depends_on": ["TASK-003"], "labels": ["domain", "semantic"], "estimate": "s"},
+    {"id": "TASK-008", "title": "Implement Notification domain", "description": "Create Notification with channel routing. Handle 2 events.", "component": "Notification Domain", "acceptance_criteria_ids": ["AC-001", "AC-002"], "depends_on": ["TASK-002"], "labels": ["domain", "notification"], "estimate": "s"},
+    {"id": "TASK-009", "title": "Implement Audit domain", "description": "Create AuditLog for compliance. Handle AuditLogWritten event.", "component": "Audit Domain", "acceptance_criteria_ids": ["AC-001", "AC-002"], "depends_on": ["TASK-002"], "labels": ["domain", "audit"], "estimate": "s"},
+    {"id": "TASK-010", "title": "Implement Contract domain", "description": "Create Contract, Invoice, Payout, Money. Handle 7 contract events.", "component": "Contract Domain", "acceptance_criteria_ids": ["AC-001", "AC-002", "AC-005", "AC-007"], "depends_on": ["TASK-003"], "labels": ["domain", "contract"], "estimate": "l"},
+    {"id": "TASK-011", "title": "Implement Campaign domain", "description": "Create Campaign, Deliverable with status FSMs. Handle 10 events.", "component": "Campaign Domain", "acceptance_criteria_ids": ["AC-001", "AC-002", "AC-004"], "depends_on": ["TASK-003"], "labels": ["domain", "campaign"], "estimate": "l"},
+    {"id": "TASK-012", "title": "Implement Outreach domain", "description": "Create OutreachCampaign, Message, Conversation, Meeting. Handle 16 events.", "component": "Outreach Domain", "acceptance_criteria_ids": ["AC-001", "AC-002"], "depends_on": ["TASK-003"], "labels": ["domain", "outreach"], "estimate": "xl"},
+    {"id": "TASK-013", "title": "Implement Integration domain", "description": "Create PlatformConnection, SyncJob, WebhookEvent. Handle 18 events.", "component": "Integration Domain", "acceptance_criteria_ids": ["AC-001", "AC-002", "AC-006"], "depends_on": ["TASK-002"], "labels": ["domain", "integration"], "estimate": "l"},
+    {"id": "TASK-014", "title": "Implement Stripe domain", "description": "Create StripeCustomer, StripeSubscription, StripeInvoice. Handle 16 events.", "component": "Stripe Domain", "acceptance_criteria_ids": ["AC-001", "AC-002", "AC-008"], "depends_on": ["TASK-002", "TASK-010"], "labels": ["domain", "stripe"], "estimate": "l"},
+    {"id": "TASK-015", "title": "Implement Analytics domain", "description": "Create Metric, Aggregation, Funnel, Cohort, Report, Alert. Handle 21 events.", "component": "Analytics Domain", "acceptance_criteria_ids": ["AC-001", "AC-002"], "depends_on": ["TASK-003", "TASK-011"], "labels": ["domain", "analytics"], "estimate": "xl"}
+  ],
+  "metrics": [
+    {"name": "domain_count", "target": "14", "unit": "domains", "percentile": null},
+    {"name": "event_coverage", "target": "122", "unit": "events", "percentile": null}
+  ],
+  "references": [
+    {"title": "Mox AsyncAPI Spec", "url": "../../asyncapi.yaml"},
+    {"title": "Domain-Driven Design", "url": "https://www.domainlanguage.com/ddd/"}
+  ]
+}
