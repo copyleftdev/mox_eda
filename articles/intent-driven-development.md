@@ -175,7 +175,7 @@ Think about it:
 | GitHub Issues | "What's already implemented?" |
 | Acceptance Criteria | "How do I know this task is done?" |
 
-An AI coding assistant (like Cursor, Windsurf, or Copilot) can now:
+An AI coding assistant (like [Windsurf](https://windsurf.com/refer?referral_code=f718a97d8e), Cursor, or Copilot) can now:
 
 1. Read the RFC to understand the architecture
 2. Check the JSON schema for task details
